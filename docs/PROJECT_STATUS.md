@@ -36,6 +36,24 @@ when the repository contains verifiable artifacts or commands that prove it.
   configurations from three open-dev tasks and validates on the held-out task,
   so a four-task average cannot silently select a configuration using the same
   task on which it is reported.
+- Selector complementarity auditing is available at
+  `selector/selector_complementarity.py`. It compares full candidate-score
+  rankings, top-set overlaps, selected-candidate cross-ranks, tie statistics,
+  and selected method/seed/epoch metadata across label-free selectors. The
+  current open-development artifact is
+  `results/gda_select/open_dev/selector_complementarity_diagnostic.json`; it
+  confirms that Transfer Score and Agreement Reference/repaired SPECTRA-like
+  selectors use substantially different top-of-ranking signals, but simple
+  overlap statistics do not yet provide a reliable trust rule.
+- Explicit Stage-B consensus controls are available at
+  `selector/consensus_selection.py`. The current open-development artifact is
+  `results/gda_select/open_dev/stage_b_consensus_objective_v2.json`, with
+  leave-one-task-out validation in
+  `results/gda_select/open_dev/stage_b_consensus_loto_objective_v2.json`.
+  Transfer Score top-20% -> SPECTRA/Agreement consensus slightly improves the
+  four-task mean over Agreement Reference (`0.1589` versus `0.1630`) but fails
+  worst-task, task-non-inferiority, oracle-recall, localized-gain, and LOTO
+  promotion checks.
 - The reliable fusion workflow now includes the v3 top-1 repair modes:
   fixed rank fusion, Transfer Score shortlist -> SPECTRA rerank, SPECTRA
   shortlist -> Transfer Score rerank, and support-adaptive mixture using
@@ -47,7 +65,9 @@ when the repository contains verifiable artifacts or commands that prove it.
   gamma sweeps for shrinkage ablations, and `pair_consistency` chooses gamma
   from `{0, .25, .5, .75, 1}` by minimizing a label-free pair-sum consistency
   residual. This is an implementation scaffold only; no real-target
-  improvement is claimed from it yet.
+  improvement is claimed from it yet. `spectra_cal.py --output-selector` now
+  allows fixed-gamma and pair-consistency runs to be written under distinct
+  selector names without overwriting the default `spectra_cal.json`.
 - The v3 AutoSOTA objective scaffold is available at
   `selector/objective_v2.py` with configuration in
   `configs/v3_search_space.yaml`. It consumes an exported open-development
@@ -153,6 +173,8 @@ python -m py_compile \
   shift_simulator/committee_descriptors.py \
   selector/freeze_reliable_selector.py \
   selector/loto_open_dev_selection.py \
+  selector/selector_complementarity.py \
+  selector/consensus_selection.py \
   selector/check_reliable_inputs.py \
   selector/reliable_selection.py \
   selector/run_reliable_suite.py \
@@ -160,6 +182,8 @@ python -m py_compile \
   tests/test_spectra_prior.py \
   tests/selector/test_objective_v2.py \
   tests/selector/test_loto_open_dev_selection.py \
+  tests/selector/test_selector_complementarity.py \
+  tests/selector/test_consensus_selection.py \
   tests/sealed_eval/test_export_open_dev_truth.py \
   tests/test_committee_descriptors.py \
   tests/test_descriptor_metric.py \
@@ -236,6 +260,24 @@ torch-importing tests should use Python 3.12 in this container.
   calibration bugs, and a small repaired open-development grid has been
   regenerated/evaluated. The best repaired configuration is a near-miss, not a
   frozen final selector.
+- The selector complementarity diagnostic has identified real ranking
+  diversity between Transfer Score, Agreement Reference, `spectra_cal`, and the
+  repaired reliable selector. A deployable label-free owner/consensus rule is
+  still open: top-set overlap and rank correlation alone do not separate the
+  Citation failures from the Airport wins.
+- The first explicit Stage-B consensus attempt is also not ready to freeze.
+  Its four-task mean is competitive, but LOTO validation shows that the
+  apparent gain is not stable enough for sealed evaluation.
+- Actual covariance-shrinkage sweeps are runnable but not yet part of the
+  four-task open-development evidence table. A single CPU smoke test on
+  `ACMv9_to_Citationv1` with `--covariance-shrinkage-mode fixed`,
+  `--fixed-covariance-gamma 0`, and `--output-selector spectra_cov_gamma000`
+  completed with `label_access_count: 0`, `protocol_violation_count: 0`, and
+  `selector_runtime_seconds: 68.96`. `selector/run_covariance_gamma_sweep.py`
+  now provides the manifest-backed runner for the planned four-task
+  `{0, 0.5, 1, pair_consistency}` diagnostic. The full sweep still has not
+  been executed/evaluated and must remain open-development only, not an ad hoc
+  sealed-evaluation precursor.
 - The final one-time 12 held-out transfer sealed evaluation is still pending.
   It should not be run until exactly one "ours" configuration is frozen from
   open-development evidence. Until that evaluator runs once on a frozen

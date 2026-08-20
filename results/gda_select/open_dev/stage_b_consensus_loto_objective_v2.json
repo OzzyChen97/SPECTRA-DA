@@ -1,0 +1,192 @@
+{
+  "aggregate": {
+    "cvar_20pct_validation_normalized_regret": 0.4925373134318728,
+    "mean_validation_normalized_regret": 0.2339115933041031,
+    "mean_validation_oracle_recall_at_20pct": 0.25,
+    "mean_validation_selected_micro_f1": 0.5586987905189444,
+    "promotion_ready": false,
+    "validation_task_noninferiority_rate_vs_transfer": 0.25,
+    "worst_validation_normalized_regret": 0.4925373134318728
+  },
+  "candidate_selectors": [
+    "agreement_reference",
+    "ts20_agreement_rerank",
+    "ts20_spectra_agreement_consensus"
+  ],
+  "created_at": "2026-08-20T15:46:58.747313+00:00",
+  "folds": [
+    {
+      "heldout_task": "ACMv9_to_Citationv1",
+      "selected_selector": "agreement_reference",
+      "train_metrics": {
+        "cvar_20pct_normalized_regret": 0.2225913621253655,
+        "eligible": false,
+        "guards": {
+          "mean_regret_below_max": true,
+          "micro_above_transfer": true,
+          "shortlist_recall20_at_least_min": true,
+          "task_noninferiority_rate_at_least_min": false,
+          "worst_regret_below_max": true
+        },
+        "mean_normalized_regret": 0.17751834801351118,
+        "mean_oracle_recall_at_20pct": 0.6666666666666666,
+        "mean_selected_micro_f1": 0.5506737848789938,
+        "selection_reason": "fallback_best_mean_regret",
+        "shortlist_guardrail_required": false,
+        "task_count": 3,
+        "task_noninferiority_rate_vs_transfer": 0.3333333333333333,
+        "transfer_mean_selected_micro_f1": 0.4971172396015234,
+        "worst_normalized_regret": 0.2225913621253655
+      },
+      "train_tasks": [
+        "Citationv1_to_ACMv9",
+        "USA_to_BRAZIL",
+        "BRAZIL_to_USA"
+      ],
+      "validation": {
+        "noninferior_to_transfer": false,
+        "normalized_regret": 0.11950923962419449,
+        "oracle_candidate_id": "ACMv9_to_Citationv1__A2GNN__9a46ad4e4aff__seed-2026__epoch-0070",
+        "oracle_recall_at_20pct": 0.0,
+        "selected_candidate_id": "ACMv9_to_Citationv1__ADAlign__7047bc64d360__seed-2028__epoch-0020",
+        "selected_micro_f1": 0.727811975377728,
+        "transfer_normalized_regret": 0.006513177824892606,
+        "transfer_selected_micro_f1": 0.8113038612199217
+      }
+    },
+    {
+      "heldout_task": "Citationv1_to_ACMv9",
+      "selected_selector": "agreement_reference",
+      "train_metrics": {
+        "cvar_20pct_normalized_regret": 0.2225913621253655,
+        "eligible": false,
+        "guards": {
+          "mean_regret_below_max": true,
+          "micro_above_transfer": true,
+          "shortlist_recall20_at_least_min": true,
+          "task_noninferiority_rate_at_least_min": false,
+          "worst_regret_below_max": true
+        },
+        "mean_normalized_regret": 0.18368527520991615,
+        "mean_oracle_recall_at_20pct": 0.6666666666666666,
+        "mean_selected_micro_f1": 0.5678504262442193,
+        "selection_reason": "fallback_best_mean_regret",
+        "shortlist_guardrail_required": false,
+        "task_count": 3,
+        "task_noninferiority_rate_vs_transfer": 0.3333333333333333,
+        "transfer_mean_selected_micro_f1": 0.5235703785266825,
+        "worst_normalized_regret": 0.2225913621253655
+      },
+      "train_tasks": [
+        "ACMv9_to_Citationv1",
+        "USA_to_BRAZIL",
+        "BRAZIL_to_USA"
+      ],
+      "validation": {
+        "noninferior_to_transfer": false,
+        "normalized_regret": 0.10100845803497958,
+        "oracle_candidate_id": "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2027__epoch-0120",
+        "oracle_recall_at_20pct": 0.0,
+        "selected_candidate_id": "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2026__epoch-0120",
+        "selected_micro_f1": 0.6762820512820513,
+        "transfer_normalized_regret": 0.01626545217954594,
+        "transfer_selected_micro_f1": 0.7319444444444444
+      }
+    },
+    {
+      "heldout_task": "USA_to_BRAZIL",
+      "selected_selector": "ts20_agreement_rerank",
+      "train_metrics": {
+        "cvar_20pct_normalized_regret": 0.19601328903576967,
+        "eligible": false,
+        "guards": {
+          "mean_regret_below_max": true,
+          "micro_above_transfer": false,
+          "shortlist_recall20_at_least_min": true,
+          "task_noninferiority_rate_at_least_min": false,
+          "worst_regret_below_max": true
+        },
+        "mean_normalized_regret": 0.1034992928966426,
+        "mean_oracle_recall_at_20pct": 0.6666666666666666,
+        "mean_selected_micro_f1": 0.6350384291099916,
+        "selection_reason": "fallback_best_mean_regret",
+        "shortlist_guardrail_required": false,
+        "task_count": 3,
+        "task_noninferiority_rate_vs_transfer": 0.3333333333333333,
+        "transfer_mean_selected_micro_f1": 0.6555925724763573,
+        "worst_normalized_regret": 0.19601328903576967
+      },
+      "train_tasks": [
+        "ACMv9_to_Citationv1",
+        "Citationv1_to_ACMv9",
+        "BRAZIL_to_USA"
+      ],
+      "validation": {
+        "noninferior_to_transfer": true,
+        "normalized_regret": 0.4925373134318728,
+        "oracle_candidate_id": "USA_to_BRAZIL__GRADE__21365f93e920__seed-2027__epoch-0020",
+        "oracle_recall_at_20pct": 0.0,
+        "selected_candidate_id": "USA_to_BRAZIL__ADAlign__7047bc64d360__seed-2028__epoch-0060",
+        "selected_micro_f1": 0.4122137404580153,
+        "transfer_normalized_regret": 0.6417910447748646,
+        "transfer_selected_micro_f1": 0.33587786259541985
+      }
+    },
+    {
+      "heldout_task": "BRAZIL_to_USA",
+      "selected_selector": "agreement_reference",
+      "train_metrics": {
+        "cvar_20pct_normalized_regret": 0.2089552238801884,
+        "eligible": false,
+        "guards": {
+          "mean_regret_below_max": true,
+          "micro_above_transfer": true,
+          "shortlist_recall20_at_least_min": true,
+          "task_noninferiority_rate_at_least_min": false,
+          "worst_regret_below_max": true
+        },
+        "mean_normalized_regret": 0.14315764051312083,
+        "mean_oracle_recall_at_20pct": 0.3333333333333333,
+        "mean_selected_micro_f1": 0.6537819783522419,
+        "selection_reason": "fallback_best_mean_regret",
+        "shortlist_guardrail_required": false,
+        "task_count": 3,
+        "task_noninferiority_rate_vs_transfer": 0.3333333333333333,
+        "transfer_mean_selected_micro_f1": 0.6263753894199287,
+        "worst_normalized_regret": 0.2089552238801884
+      },
+      "train_tasks": [
+        "ACMv9_to_Citationv1",
+        "Citationv1_to_ACMv9",
+        "USA_to_BRAZIL"
+      ],
+      "validation": {
+        "noninferior_to_transfer": false,
+        "normalized_regret": 0.2225913621253655,
+        "oracle_candidate_id": "BRAZIL_to_USA__SourceOnly__27f8f3a22eee__seed-2028__epoch-0020",
+        "oracle_recall_at_20pct": 1.0,
+        "selected_candidate_id": "BRAZIL_to_USA__ADAlign__7047bc64d360__seed-2027__epoch-0020",
+        "selected_micro_f1": 0.41848739495798326,
+        "transfer_normalized_regret": 0.20265780730816865,
+        "transfer_selected_micro_f1": 0.42352941176470593
+      }
+    }
+  ],
+  "label_access_count": 0,
+  "objective_report": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/open_dev/stage_b_consensus_objective_v2.json",
+  "open_development_tasks": [
+    "ACMv9_to_Citationv1",
+    "Citationv1_to_ACMv9",
+    "USA_to_BRAZIL",
+    "BRAZIL_to_USA"
+  ],
+  "protocol_violation_count": 0,
+  "schema_version": 1,
+  "thresholds": {
+    "mean_regret_max": 0.2,
+    "shortlist_recall20_min": 0.75,
+    "task_noninferiority_min": 0.75,
+    "worst_regret_max": 0.3
+  },
+  "transfer_selector": "transfer_score"
+}

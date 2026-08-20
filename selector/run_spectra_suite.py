@@ -56,6 +56,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--device", default="cuda:0")
     parser.add_argument("--skip-static", action="store_true")
     parser.add_argument("--skip-cal", action="store_true")
+    parser.add_argument(
+        "--cal-output-prefix",
+        help=(
+            "optional prefix for calibrated selector names; emits "
+            "<prefix>_global_cal and <prefix>_cal instead of the defaults"
+        ),
+    )
     return parser.parse_args()
 
 
@@ -92,6 +99,14 @@ def main() -> None:
             calibration_dir = calibration_directory(calibration_root, task)
             for spectral_mode in ("global", "banded"):
                 requested_name = "spectra_global_cal" if spectral_mode == "global" else "spectra_cal"
+                output_selector = None
+                if args.cal_output_prefix:
+                    output_selector = (
+                        f"{args.cal_output_prefix}_global_cal"
+                        if spectral_mode == "global"
+                        else f"{args.cal_output_prefix}_cal"
+                    )
+                    requested_name = output_selector
                 print(f"[spectra] task={task} selector={requested_name}", flush=True)
                 namespace = argparse.Namespace(
                     task=task,
@@ -111,6 +126,7 @@ def main() -> None:
                         else None
                     ),
                     spectral_mode=spectral_mode,
+                    output_selector=output_selector,
                 )
                 result = select_calibrated(namespace)
                 output = destination / f"{result['selector']}.json"

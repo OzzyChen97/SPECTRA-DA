@@ -37,6 +37,69 @@ held-out task non-inferiority rate is still `0.50` and oracle recall@20% is
 still `0.50`. The gain is therefore real but family-localized rather than a
 stable four-task promotion signal.
 
+## Selector complementarity diagnostic
+
+`results/gda_select/open_dev/selector_complementarity_diagnostic.json` records
+the label-free ranking overlap between Transfer Score, Agreement Reference,
+`spectra_cal`, and the best repaired reliable selector on the same four
+675-candidate Gate-1 tasks. It reads selector JSON files and already exported
+open-development metrics only; it reports `label_access_count: 0` and
+`protocol_violation_count: 0`.
+
+The main finding is that the selectors are genuinely complementary, but the
+current label-free overlap signals do not yet identify a safe owner:
+
+| Pair | Mean rank Spearman | Mean top-20% Jaccard | Same selected rate |
+|---|---:|---:|---:|
+| Transfer Score vs Agreement Reference | 0.1354 | 0.0330 | 0.000 |
+| Transfer Score vs repaired reliable selector | 0.1676 | 0.0331 | 0.000 |
+| Transfer Score vs `spectra_cal` | 0.4849 | 0.3061 | 0.000 |
+| Agreement Reference vs repaired reliable selector | 0.9907 | 0.9927 | 0.000 |
+
+Transfer Score wins the two Citation transfers, while the repaired selector
+wins the two Airport transfers. The low Transfer-Score/Agreement overlap
+supports the hypothesis that the methods capture different top-of-ranking
+signals; however, low overlap occurs on both wins and losses, so it is not by
+itself a deployable trust rule.
+
+## Stage-B consensus selectors
+
+To avoid another large near-duplicate grid, `selector/consensus_selection.py`
+implements two explicit Stage-B controls:
+
+- `ts20_agreement_rerank`: Transfer Score top-20% shortlist followed by
+  Agreement Reference reranking.
+- `ts20_spectra_agreement_consensus`: Transfer Score top-20% shortlist followed
+  by the mean of tie-aware SPECTRA and Agreement percentile midranks.
+
+Open-development results are stored in
+`results/gda_select/open_dev/stage_b_consensus_objective_v2.json`.
+
+| Selector | Mean NRegret | Worst NRegret | Mean selected Micro-F1 | Top-10% hit |
+|---|---:|---:|---:|---:|
+| Transfer Score | 0.216807 | 0.641791 | 0.575664 | 0.500 |
+| Agreement Reference | 0.163016 | 0.222591 | 0.594958 | 0.250 |
+| TS@20% -> Agreement rerank | 0.200759 | 0.492537 | 0.579332 | 0.250 |
+| TS@20% -> SPECTRA/Agreement consensus | 0.158871 | 0.313433 | 0.595910 | 0.250 |
+
+The consensus variant slightly improves mean normalized regret over Agreement
+Reference, but it is still not promotion-ready: worst-task regret exceeds the
+`0.30` absolute guardrail, task non-inferiority versus Transfer Score remains
+`0.50`, oracle recall@20% remains `0.50`, and localized-gain share is `0.884`.
+The leave-one-task-out selector-choice diagnostic is worse
+(`0.233912` validation mean normalized regret and `0.25` validation
+non-inferiority), so this is recorded as a useful diagnostic, not a frozen
+method.
+
+Actual covariance-shrinkage controls are implemented in `spectra_cal.py`
+through `--covariance-shrinkage-mode fixed` and `pair_consistency`, and
+`--output-selector` now prevents those runs from overwriting the default
+`spectra_cal.json`. A single CPU smoke test for
+`ACMv9_to_Citationv1`/`spectra_cov_gamma000` completed with zero label access
+and zero protocol violations. The full four-task `{0, 0.5, 1,
+pair_consistency}` sweep remains pending and should be run as a planned
+open-development diagnostic before any sealed evaluation.
+
 ## Final metrics
 
 | Metric | Value |

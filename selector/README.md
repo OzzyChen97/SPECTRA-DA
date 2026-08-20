@@ -52,6 +52,47 @@ covariance` onto the pair-sum risk subspace. These modes make the support gate
 act on the hidden correlated-error term, not only on the risk prior, while
 preserving the released selector when shrinkage mode is `none`.
 
+Controlled covariance-shrinkage sweeps should write distinct selector names
+with `--output-selector`, for example:
+
+```bash
+SPECTRA_PUBLIC_ROOT=/path/to/trajectory_bank/public \
+python selector/spectra_cal.py \
+  --candidate-root /path/to/trajectory_bank/candidates/gda_select_v1 \
+  --task ACMv9_to_Citationv1 \
+  --calibration-dir /path/to/trajectory_bank/calibration/gda_select_v1/ACMv9_to_Citationv1/<calibration_hash> \
+  --output results/gda_select/selections/covariance_gamma_sweep/ACMv9_to_Citationv1/spectra_cov_gamma050.json \
+  --covariance-shrinkage-mode fixed \
+  --fixed-covariance-gamma 0.5 \
+  --output-selector spectra_cov_gamma050
+```
+
+This avoids overwriting the default `spectra_cal.json` while making the
+actual `d + 2 \gamma \hat c` covariance intervention explicit in the output
+metadata.
+
+For the open-development sweep, prefer the batch runner so the exact gamma
+grid and per-task outputs are captured in one manifest:
+
+```bash
+SPECTRA_PUBLIC_ROOT=/path/to/trajectory_bank/public \
+python selector/run_covariance_gamma_sweep.py \
+  --candidate-root /path/to/trajectory_bank/candidates/gda_select_v1 \
+  --calibration-root /path/to/trajectory_bank/calibration/gda_select_v1 \
+  --output-root results/gda_select/selections/covariance_gamma_sweep \
+  --task ACMv9_to_Citationv1 \
+  --task Citationv1_to_ACMv9 \
+  --task USA_to_BRAZIL \
+  --task BRAZIL_to_USA \
+  --fixed-gammas 0,0.5,1 \
+  --include-pair-consistency
+```
+
+The runner writes `covariance_gamma_sweep_manifest.json` with the emitted
+selector names, shrinkage modes, per-selector runtimes, and aggregated protocol
+counters. It remains an open-development diagnostic; it is not a sealed-final
+selection mechanism.
+
 The deployment selector optionally accepts a frozen source-only sidecar
 manifest. Every sidecar is hash-checked against the base candidate ordering,
 spectral configuration, and parent calibration before its simulated risks and
@@ -117,6 +158,49 @@ After source-family-holdout validation chooses one configuration,
 `freeze_reliable_selector.py` copies only that registered selector into a clean
 root with `reliable_freeze_manifest.json`; the full grid is not a sealed
 submission artifact.
+
+`selector_complementarity.py` diagnoses whether candidate selectors are using
+the same or different label-free ranking evidence before adding another fusion
+rule. It reports pairwise rank Spearman, top-5/10/20% Jaccard overlap,
+selected-candidate cross-ranks, tie statistics, and selected method/seed/epoch
+metadata. Optional open-development objective reports may be supplied to attach
+already exported regret and non-inferiority fields, but the script itself reads
+no target labels and rejects sealed paths. Example:
+
+```bash
+python selector/selector_complementarity.py \
+  --selection-root results/gda_select/submissions/final_multi_selector/selections \
+  --selection-root results/gda_select/selections/reliable_grid_repaired \
+  --objective-report results/gda_select/open_dev/objective_v2_reliable_grid_v3_spectra_cal.json \
+  --objective-report results/gda_select/open_dev/repaired_reliable_grid_objective_v2.json \
+  --selector transfer_score \
+  --selector agreement_reference \
+  --selector spectra_cal \
+  --selector spectra_reliable_uw000_tw100_cs000_ct100_str_sf020 \
+  --output results/gda_select/open_dev/selector_complementarity_diagnostic.json
+```
+
+`consensus_selection.py` builds the compact Stage-B shortlist controls with
+semantic selector names instead of overloading the `spectra_reliable_*` grid
+prefix. It supports a hard Transfer Score shortlist followed by one reranker
+or by a tie-aware midrank consensus of multiple rerankers:
+
+```bash
+python selector/consensus_selection.py \
+  --shortlist-root results/gda_select/submissions/final_multi_selector/selections \
+  --shortlist-selector transfer_score \
+  --rerank-root results/gda_select/submissions/final_multi_selector/selections \
+  --rerank-selector spectra_cal \
+  --rerank-root results/gda_select/submissions/final_multi_selector/selections \
+  --rerank-selector agreement_reference \
+  --output-root results/gda_select/selections/stage_b_consensus \
+  --output-selector ts20_spectra_agreement_consensus \
+  --shortlist-fraction 0.2
+```
+
+The current open-development result is not promotion-ready; see
+`results/gda_select/open_dev/stage_b_consensus_objective_v2.json` and the LOTO
+report under the same directory.
 
 `core_ablation.py` evaluates the frozen four-task source-simulated folds under
 equal-information controls. It verifies global/spectral linear equivalence and

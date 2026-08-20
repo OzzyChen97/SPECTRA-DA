@@ -4,6 +4,7 @@ import numpy as np
 
 from covariance_transport import corrected_band_risk_recovery
 from selector.spectra_cal import (
+    calibrated_selector_name,
     covariance_shrinkage_gamma,
     curvature_prior_strength,
     pair_sum_consistency_gamma,
@@ -44,6 +45,22 @@ def test_covariance_shrinkage_modes_are_explicit_and_label_free() -> None:
     np.testing.assert_allclose(shrunk, np.zeros_like(covariances))
     assert diagnostics["mode"] == "support_gate"
     assert diagnostics["gamma"] == 0.0
+
+
+def test_calibrated_selector_name_can_be_overridden_for_gamma_sweeps() -> None:
+    assert calibrated_selector_name(spectral_mode="banded", robust=False) == "spectra_cal"
+    assert (
+        calibrated_selector_name(spectral_mode="global", robust=True)
+        == "spectra_global_robust"
+    )
+    assert (
+        calibrated_selector_name(
+            spectral_mode="banded",
+            robust=False,
+            output_selector="spectra_cov_gamma050",
+        )
+        == "spectra_cov_gamma050"
+    )
 
 
 def test_support_gate_removes_unsupported_covariance_from_recovery() -> None:

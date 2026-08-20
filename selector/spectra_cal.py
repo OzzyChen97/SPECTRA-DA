@@ -523,6 +523,21 @@ def bootstrap_uncertainty(
     return np.std(np.stack(estimates), axis=0, ddof=1)
 
 
+def calibrated_selector_name(
+    *,
+    spectral_mode: str,
+    robust: bool,
+    output_selector: str | None = None,
+) -> str:
+    if output_selector:
+        return str(output_selector)
+    if spectral_mode == "global":
+        return "spectra_global_robust" if robust else "spectra_global_cal"
+    if spectral_mode == "banded":
+        return "spectra_robust" if robust else "spectra_cal"
+    raise ValueError(f"unknown spectral mode: {spectral_mode}")
+
+
 def select(args: argparse.Namespace) -> dict[str, Any]:
     if args.task not in TASK_BY_ID:
         raise KeyError(f"unknown GDA-Select task: {args.task}")
@@ -622,10 +637,11 @@ def select(args: argparse.Namespace) -> dict[str, Any]:
     optimum = float(robust_score.min())
     selected = min(identifier for identifier, score in scores.items() if score == optimum)
     robust = args.bootstrap_samples > 1 and args.uncertainty_beta > 0
-    if spectral_mode == "global":
-        selector_name = "spectra_global_robust" if robust else "spectra_global_cal"
-    else:
-        selector_name = "spectra_robust" if robust else "spectra_cal"
+    selector_name = calibrated_selector_name(
+        spectral_mode=spectral_mode,
+        robust=robust,
+        output_selector=getattr(args, "output_selector", None),
+    )
     return {
         "schema_version": 1,
         "created_at": datetime.now(timezone.utc).isoformat(),
@@ -687,6 +703,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--task", required=True)
     parser.add_argument("--calibration-dir", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument(
+        "--output-selector",
+        help=(
+            "optional selector name written into the output JSON; useful for "
+            "controlled covariance-shrinkage sweeps without changing scoring"
+        ),
+    )
     parser.add_argument("--transport-regularization", type=float, default=0.1)
     parser.add_argument("--descriptor-floor", type=float, default=0.05)
     parser.add_argument("--risk-ridge", type=float, default=1e-6)
