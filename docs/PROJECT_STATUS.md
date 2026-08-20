@@ -210,21 +210,23 @@ PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /usr/bin/python3.12 -m pytest \
 The default Python 3.13 environment has a mismatched torch binary, so broader
 torch-importing tests should use Python 3.12 in this container.
 
-## Not yet completed
+## Open items and current constraints
 
-- The public GitHub `main` branch has been updated to
-  `68aaad4fc650a673f6f3f75a745379ce33d43551` with the current code, paper,
-  open-development artifacts, and final multi-selector package. The local
-  `main` branch additionally contains `.github/workflows/release-audit.yml`;
-  that one file requires a token with `workflow` scope before it can be pushed.
-- The full 16-task reliable grid and final multi-selector package have been
-  generated. They are packaging artifacts for external evaluation, not evidence
-  that an "ours" grid may be selected after seeing final sealed scores.
+- The public GitHub `main` branch contains the current code, paper,
+  open-development artifacts, final multi-selector package, repaired reliable
+  selector code, and leave-one-task-out audit. The local `main` branch
+  additionally contains `.github/workflows/release-audit.yml`; that one file is
+  intentionally not on the public branch because pushing or updating GitHub
+  Actions workflow files requires a token with `workflow` scope.
+- The full 16-task reliable grid and final multi-selector package are generated
+  packaging artifacts for external evaluation. They are not evidence that an
+  "ours" grid may be selected after seeing final sealed scores.
 - `selector/objective_v2.py` has been run on the real 675-candidate Gate-1
-  open-development bank. The best current open-development signal is
-  `agreement_reference` (`0.1630` mean normalized regret), not `spectra_cal`
-  or the current SPECTRA-Trust reliable grid. This remains open-development
-  evidence only.
+  open-development bank. The best current open-development single baseline
+  signal is `agreement_reference` (`0.1630` mean normalized regret), and the
+  best repaired reliable-selector near-miss is
+  `spectra_reliable_uw000_tw100_cs000_ct100_str_sf020` (`0.0875` mean
+  normalized regret). This remains open-development evidence only.
 - The committee descriptor extractor is not yet wired into the default
   calibration bank. The descriptor metric diagnostic can score existing
   calibration descriptor keys, but the graph+committee+Transfer Score descriptor
