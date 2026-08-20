@@ -1,0 +1,78 @@
+schema_version: 1
+objective: open_real_target_mean_normalized_regret
+direction: minimize
+objective_source: open-real-target-development
+selector_entrypoint: selector/objective_v2.py
+
+# These four tasks are no longer treated as hidden final evaluation after the
+# Gate-1 aggregate result has been inspected.  A trusted evaluator must export
+# candidate-level truth for exactly this open-development set before AutoSOTA
+# can use objective_v2.  The remaining 12 transfers stay sealed for one final
+# evaluation.
+open_development_tasks:
+  - ACMv9_to_Citationv1
+  - Citationv1_to_ACMv9
+  - USA_to_BRAZIL
+  - BRAZIL_to_USA
+
+expected_candidate_count: 675
+objective_selector: spectra_trust
+transfer_selector: transfer_score
+
+allowed_selector_knobs:
+  covariance_shrinkage_mode:
+    type: categorical
+    values: [none, support_gate, fixed, pair_consistency]
+  fixed_covariance_gamma:
+    type: categorical
+    values: [0.0, 0.25, 0.5, 0.75, 1.0]
+  transfer_score_weight:
+    type: categorical
+    values: [0.0, 0.25, 0.5, 0.75, 1.0]
+  uncertainty_weight:
+    type: categorical
+    values: [0.0, 0.1, 0.5, 1.0]
+  calibration_temperature:
+    type: categorical
+    values: [1.0]
+  fusion_mode:
+    type: categorical
+    values:
+      - rank_fusion
+      - transfer_shortlist_spectra_rerank
+      - spectra_shortlist_transfer_rerank
+      - support_adaptive
+  shortlist_fraction:
+    type: categorical
+    values: [0.10, 0.20, 0.30]
+
+lexicographic_guardrails:
+  primary: mean_normalized_regret
+  top_10_hit_not_below_transfer_score: true
+  source_sim_leave_one_shift_family_cvar_degradation_max: 0.05
+  worst_dev_task_must_not_worsen: true
+  runtime_seconds_max: 350
+  label_access_count: 0
+  protocol_violation_count: 0
+
+gates:
+  gate_a:
+    mean_normalized_regret_below: 0.20
+    top_5pct_hit_rate_at_least: 0.50
+  gate_b:
+    mean_normalized_regret_below_transfer_score: true
+    selected_micro_f1_above_transfer_score: true
+  final_gate:
+    sealed_task_count: 12
+    wins_vs_transfer_score_at_least: 8
+    require_family_stratified_bootstrap_ci_above_zero: true
+
+frozen_paths:
+  - sealed_eval/
+  - protocol/
+  - metrics/
+  - final_12_labels/
+  - trajectory_bank/raw/
+  - candidate ordering
+  - Transfer Score baseline implementation
+  - spectral frame implementation

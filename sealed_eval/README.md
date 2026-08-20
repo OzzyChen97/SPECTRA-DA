@@ -11,3 +11,10 @@ The current filesystem separation is an audited development boundary, not an
 operating-system security boundary. Final hidden-label evaluation must run in a
 separate container, account, or service that exposes neither labels nor
 candidate-level scores to AutoSOTA.
+
+`export_open_dev_truth.py` is the one exception for the already-inspected
+Gate-1 tasks. It is still evaluator-only and requires `--trusted-evaluator`,
+but it intentionally exports candidate-level truth for the four open
+development tasks so that `selector/objective_v2.py` can tune top-1 behavior
+without querying the final 12 sealed transfers. It refuses non-Gate-1 tasks and
+must not be used for final evaluation.

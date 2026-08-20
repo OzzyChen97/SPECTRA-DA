@@ -40,6 +40,12 @@ FORBIDDEN_RESULT_KEYS = {
     "y_target",
 }
 
+SELECTION_PROVENANCE_MANIFESTS = (
+    "baseline_suite_manifest.json",
+    "reliable_freeze_manifest.json",
+    "reliable_grid_manifest.json",
+)
+
 
 def redact_local_paths(value: Any) -> Any:
     """Return a JSON-safe copy with machine-local absolute paths redacted."""
@@ -55,6 +61,35 @@ def redact_local_paths(value: Any) -> Any:
     ):
         return "<redacted-local-path>"
     return value
+
+
+def collect_selection_root_manifests(selection_roots: list[Path]) -> list[dict[str, Any]]:
+    manifests = []
+    for index, root in enumerate(selection_roots):
+        for name in SELECTION_PROVENANCE_MANIFESTS:
+            path = root / name
+            if path.is_file():
+                document = json.loads(path.read_text(encoding="utf-8"))
+                label_access_count = document.get("label_access_count")
+                protocol_violation_count = document.get("protocol_violation_count")
+                if label_access_count != 0 or protocol_violation_count != 0:
+                    raise RuntimeError(
+                        "selection provenance manifest is not sealed-safe: "
+                        f"{path} label_access_count={label_access_count} "
+                        f"protocol_violation_count={protocol_violation_count}"
+                    )
+                manifests.append(
+                    {
+                        "root_index": index,
+                        "manifest_file": name,
+                        "manifest_sha256": sha256_file(path),
+                        "schema_version": document.get("schema_version"),
+                        "purpose": document.get("purpose"),
+                        "label_access_count": label_access_count,
+                        "protocol_violation_count": protocol_violation_count,
+                    }
+                )
+    return manifests
 
 
 def discover_candidate_metadata_records(
@@ -162,7 +197,13 @@ def validate_selection(
 
 def package(args: argparse.Namespace) -> dict[str, Any]:
     candidate_root = args.candidate_root.resolve()
-    selection_root = args.selection_root.resolve()
+    raw_selection_roots = args.selection_root
+    if isinstance(raw_selection_roots, (str, Path)):
+        raw_selection_roots = [raw_selection_roots]
+    selection_roots = [Path(root).resolve() for root in raw_selection_roots]
+    if not selection_roots:
+        raise ValueError("at least one selection root is required")
+    selection_root_manifests = collect_selection_root_manifests(selection_roots)
     output_root = args.output_root.resolve()
     archive = args.archive.resolve() if args.archive is not None else None
     if output_root.exists():
@@ -196,8 +237,10 @@ def package(args: argparse.Namespace) -> dict[str, Any]:
             candidate_ids = [record["metadata"]["candidate_id"] for record in records]
             bank_hash = candidate_bank_hash(records)
             bank_manifest[task] = bank_hash
-            source_directory = selection_root / task
-            paths = sorted(source_directory.glob("*.json"))
+            paths = []
+            for selection_root in selection_roots:
+                source_directory = selection_root / task
+                paths.extend(sorted(source_directory.glob("*.json")))
             if not paths:
                 raise FileNotFoundError(f"no selections for task {task}")
             if args.selector:
@@ -256,6 +299,9 @@ def package(args: argparse.Namespace) -> dict[str, Any]:
             "contains_candidate_artifacts": False,
             "contains_target_labels": False,
             "local_paths_redacted": True,
+            "selection_root_count": len(selection_roots),
+            "selection_root_manifest_count": len(selection_root_manifests),
+            "selection_root_manifests": selection_root_manifests,
             "candidate_validation_mode": (
                 "metadata_only"
                 if args.metadata_only_candidate_check
@@ -271,6 +317,16 @@ def package(args: argparse.Namespace) -> dict[str, Any]:
                 "privately, and return aggregate reports only."
             ),
         }
+        required_selectors = set(getattr(args, "require_selector", None) or [])
+        missing_required = sorted(required_selectors - set(selector_set or ()))
+        if missing_required:
+            raise ValueError(f"missing required selectors in submission package: {missing_required}")
+        min_selector_count = int(getattr(args, "min_selector_count", 1))
+        if len(selector_set or ()) < min_selector_count:
+            raise ValueError(
+                f"submission selector_count={len(selector_set or ())}, "
+                f"expected at least {min_selector_count}"
+            )
         atomic_json(manifest, temporary / "submission_manifest.json")
         temporary.replace(output_root)
     except BaseException:
@@ -288,7 +344,16 @@ def package(args: argparse.Namespace) -> dict[str, Any]:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--candidate-root", type=Path, required=True)
-    parser.add_argument("--selection-root", type=Path, required=True)
+    parser.add_argument(
+        "--selection-root",
+        type=Path,
+        action="append",
+        required=True,
+        help=(
+            "Root containing task/selector.json files. May be repeated to "
+            "package baselines and frozen SPECTRA outputs together."
+        ),
+    )
     parser.add_argument("--output-root", type=Path, required=True)
     parser.add_argument("--archive", type=Path)
     parser.add_argument("--expected-candidates-per-task", type=int, default=675)
@@ -316,6 +381,23 @@ def parse_args() -> argparse.Namespace:
         help=(
             "Selector name to include. May be repeated. "
             "By default, every selector JSON found for each task is packaged."
+        ),
+    )
+    parser.add_argument(
+        "--require-selector",
+        action="append",
+        help=(
+            "Selector that must be present in the final package. May be repeated; "
+            "use this for locked multi-selector sealed submissions."
+        ),
+    )
+    parser.add_argument(
+        "--min-selector-count",
+        type=int,
+        default=1,
+        help=(
+            "Minimum selector count required in the package. Set to at least 2 "
+            "for final sealed comparisons against baselines."
         ),
     )
     return parser.parse_args()

@@ -4,13 +4,14 @@ This directory uses the official ICLR 2027 style files.
 
 ## Build
 
-With Tectonic installed:
+Use the repository-pinned Tectonic binary:
 
 ```bash
-tectonic --keep-logs main.tex
+./tools/tectonic --keep-logs main.tex
 ```
 
-Regenerate deterministic figures from the public aggregate metrics:
+Regenerate deterministic result/audit figures from the public aggregate
+metrics:
 
 ```bash
 MPLCONFIGDIR="$PWD/.matplotlib" python scripts/make_figures.py
@@ -24,12 +25,12 @@ and 675 candidates per task. The pending externally operated 16-transfer
 sealed evaluation is described as future evidence rather than a completed
 result.
 
-## GPT-image-2 architecture candidates
+## Architecture figure
 
-`notes/imagegen_prompts.jsonl` contains four prepared diagram briefs for the
-bundled image-generation CLI. Generation requires `OPENAI_API_KEY` in the
-environment, an OpenAI-compatible Images endpoint, and outbound network access.
-The reviewed candidates are in `figures/gpt-image-2-candidates/`; candidate B
-is the selected full-width Figure 1. See `notes/figure1_selection.md` for the
-exact prompt and selection audit. The deterministic vector figure in
-`figures/pipeline.pdf` remains available as a fallback.
+The current full-width Figure 1 is the selected GPT-image-2 candidate stored as
+`figures/figure1-gpt-image-2.png`. It was generated with
+`tools/generate_gpt_image2_figure.py`, which reads the workspace AutoSOTA
+`config.yaml` research endpoint and does not store credentials in this
+repository. The four generated candidates are retained in
+`figures/gpt-image-2-candidates-v2/`; see `notes/figure1_selection.md` for the
+prompt and selection audit.

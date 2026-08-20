@@ -36,7 +36,8 @@ shifts change which shared errors appear at local, community, and global
 scales. A useful selector must exploit graph structure without assuming that
 candidate errors are independent.
 
-We propose \method, a model-selection layer for a frozen UGDA candidate bank.
+We propose \method, a covariance-aware model-selection layer for a frozen UGDA
+candidate bank.
 As illustrated in Figure~\ref{fig:pipeline}, \method first decomposes hard or
 soft candidate predictions using a tight spectral frame on the unlabeled
 target graph. It then converts band-wise pair disagreement into individual
@@ -50,7 +51,7 @@ rather than core contributions.
 
 \begin{figure*}[t]
   \centering
-  \includegraphics[width=0.96\textwidth]{figures/gpt-image-2-candidates/pipeline-gpt2-b.png}
+  \includegraphics[width=0.96\textwidth]{figures/figure1-gpt-image-2.png}
   \caption{\textbf{SPECTRA-DA pipeline.} Frozen candidate predictions are
   decomposed over a tight target-graph spectral frame. Observable band-wise
   disagreement is combined with error covariance transported from labeled
@@ -60,23 +61,22 @@ rather than core contributions.
   \label{fig:pipeline}
 \end{figure*}
 
-The current evidence supports three contributions. First, we formalize
-\benchmark, a sealed-label protocol that jointly evaluates algorithm,
-hyperparameter, seed, and checkpoint selection over immutable candidate
-trajectories. Second, we derive an exact tight-frame decomposition of hard
-classification error and a covariance-controlled recovery bound from
-pairwise spectral disagreement. The analysis also identifies an attribution
-boundary: without band-conditioned calibration or nonlinear recovery,
-spectral and global linear disagreement estimators are equivalent. Third, on a
-frozen development evaluation containing four transfer tasks, 44 held-out
-source-simulated shift folds, and 675 candidates per task, the final selector
-reduces mean normalized regret from $0.02278$ to $0.01415$ ($37.9\%$ relative),
-with median Kendall $\tau=0.933$, a $95.5\%$ top-$5\%$ hit rate, and zero
-target-label accesses or protocol violations. A separate equal-protocol
-real-target development comparison also exposes the present boundary:
-Transfer Score attains lower top-1 regret ($0.1467$ versus $0.2560$), whereas
-our selector attains higher Kendall correlation. We therefore do not claim
-full 16-transfer state of the art; top-of-ranking calibration and cross-family
-covariance transport remain unresolved. A controlled ablation further shows
-that covariance correction supplies the dominant gain, whereas the incremental
-selection benefit from spectral conditioning is modest on the current folds.
+The current evidence supports three contributions, with a narrower scope than
+a state-of-the-art selector claim. First, we formalize \benchmark, a
+sealed-label protocol that jointly evaluates algorithm, hyperparameter, seed,
+and checkpoint selection over immutable candidate trajectories. Second, we
+derive covariance-aware risk recovery from pairwise disagreement: the tight
+spectral frame gives an exact error decomposition, the pair-sum system exposes
+cross-model error covariance as the hidden term, and the recovery bound shows
+how covariance misspecification propagates to risk error. Third, we identify
+calibration reliability as the central empirical bottleneck. On four
+source-simulated development tasks and 44 held-out shifts, covariance
+correction reduces mean normalized regret from $0.02278$ to $0.01415$, while
+spectral conditioning adds only a modest and statistically inconclusive
+increment over global covariance. On the separately sealed real-target
+development comparison, Transfer Score attains lower top-1 regret ($0.1467$
+versus $0.2560$), whereas our selector attains higher Kendall correlation.
+This split shows that source-simulated calibration can succeed while real-shift
+top-1 selection still fails; consequently, the paper studies the reliability
+of covariance correction rather than claiming full 16-transfer state of the
+art.

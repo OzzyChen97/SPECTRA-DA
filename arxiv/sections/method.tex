@@ -143,7 +143,10 @@ correlated checkpoints does not make $\mathbf c_b$ vanish.
 \subsection{Shift-conditioned covariance transport}
 
 Target covariance cannot be measured without $Y_T$, so \method estimates it
-from labeled source simulations. We construct pseudo-target graphs
+from labeled source simulations. This step is the strongest assumption in the
+method: the source-simulation bank must contain covariance corrections that
+are relevant to the real target, and the unlabeled descriptors must identify
+them reliably. We construct pseudo-target graphs
 \begin{equation}
   \widetilde{\mathcal G}_S^{(k)}
   =\mathcal T_{\xi_k}(\mathcal G_S,Y_S)
@@ -188,9 +191,9 @@ Equation~\eqref{eq:transport_bound} states the empirical requirement plainly:
 the unlabeled descriptor geometry must predict the covariance components that
 matter for recovery. The assumption is testable and can fail under an unseen
 shift family; Section~\ref{sec:experiments} reports this limitation rather than
-hiding it behind aggregate selection performance.
+aggregating it away.
 
-\subsection{Practical recovery and optional uncertainty}
+\subsection{Practical recovery and reliability accounting}
 
 The practical solver combines transported covariance with reliability weights
 and a support-aware prior:
@@ -212,7 +215,9 @@ extreme pair observations and performs one Tukey/endpoint-reliability refit.
 We treat this as a solver detail: Table~\ref{tab:core_ablation} shows that it
 does not explain the aggregate gain.
 
-Optionally, bootstrap resampling of simulated shifts yields risk estimates
+The frozen selector uses a conservative source-only uncertainty term rather
+than treating transported covariance as always trustworthy. Bootstrap
+resampling of simulated shifts yields risk estimates
 $\widehat R_T^{(q)}(h_m)$ and uncertainty
 $u_m=\operatorname{Std}_q[\widehat R_T^{(q)}(h_m)]$. The final selector uses
 \begin{equation}
@@ -222,7 +227,33 @@ $u_m=\operatorname{Std}_q[\widehat R_T^{(q)}(h_m)]$. The final selector uses
 \end{equation}
 All resampling operates on source-simulated calibration data, so the score
 remains target-label-free. Its empirical contribution is reported separately
-from covariance transport in Table~\ref{tab:core_ablation}.
+from covariance transport in Table~\ref{tab:core_ablation}; in the current
+frozen run it is a guardrail, not the dominant source of gain.
+
+The failure mode suggests a stronger reliability criterion for future
+selectors. Let $U_m^{\mathrm{tr}}$ measure disagreement among plausible
+transported covariance corrections or their induced risk-correction vectors,
+and let $T_m$ be an independent transferability score such as Transfer Score.
+The underlying conservative principle is
+\begin{equation}
+  \operatorname{score}_m
+  = \widehat R_m+\lambda U_m^{\mathrm{tr}}-\gamma T_m,
+  \label{eq:reliable_selection}
+\end{equation}
+where aggressive covariance correction is penalized when transport is
+unstable and an independent transferability prior can veto an overconfident
+top prediction. The released evaluation scaffold uses the rank-normalized
+pre-registered version of this rule,
+\begin{equation}
+  s_m=(1-\eta)\operatorname{rank}(\widehat R_m)/\tau
+  +\lambda\operatorname{rank}(U_m^{\mathrm{tr}})
+  +\gamma\operatorname{rank}(-T_m),
+  \label{eq:rank_reliable_selection}
+\end{equation}
+with only $\lambda,\gamma,\eta,\tau$ allowed to vary under source-family
+holdout. We do not report this as a completed result; it is the direct design
+implication of the real-target failure analysis in
+Section~\ref{sec:experiments}.
 
 \paragraph{Attribution boundary and complexity.}
 With an exact tight frame, identical linear recovery in every band, and no

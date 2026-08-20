@@ -3,10 +3,12 @@
 This paper reframes UGDA evaluation around a deployment requirement: selecting
 an algorithm, configuration, seed, and checkpoint without reading target
 labels. \benchmark makes this requirement auditable through immutable
-trajectories and sealed labels, while \method estimates target risk from a
-tight graph-spectral decomposition of candidate disagreement. The resulting
-analysis identifies cross-model error covariance as the central hidden term
-and quantifies how covariance transport error affects recovered risk. In the
+trajectories and sealed labels, while \method estimates target risk with a
+covariance-aware recovery system built on candidate disagreement. The tight
+graph-spectral frame supplies an exact decomposition and exposes band-wise
+heterogeneity, but the resulting analysis identifies cross-model error
+covariance as the central hidden term and quantifies how covariance transport
+error affects recovered risk. In the
 current frozen development scope, the method lowers mean normalized regret by
 $37.9\%$, ranks the candidate bank accurately near its optimum, and satisfies
 the zero-access protocol on source-simulated folds. On the separately sealed
@@ -21,6 +23,10 @@ global covariance control. Robust refitting and bootstrap uncertainty do not
 drive the result and are therefore implementation details, not contributions.
 
 The central limitation is transportability: current unlabeled descriptors do
-not reliably predict risk-correction geometry for unseen shift families. This
+not reliably predict risk-correction geometry for unseen shift families. The
+next method iteration should therefore be conservative rather than more
+expressive: penalize transport uncertainty, fuse the recovered risk with an
+independent transferability prior such as Transfer Score, and choose all
+weights by leave-one-shift-family-out validation. This reliability question
 must be addressed before the frozen 16-transfer evaluation, without additional
 target-specific tuning.

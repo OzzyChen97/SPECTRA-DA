@@ -1,0 +1,211 @@
+{
+  "contains_target_labels": false,
+  "label_access_count": 0,
+  "protocol": {
+    "allowed_knobs": [
+      "uncertainty_weight",
+      "transfer_score_weight",
+      "covariance_shrinkage",
+      "calibration_temperature",
+      "fusion_mode",
+      "shortlist_fraction"
+    ],
+    "forbidden": [
+      "target labels",
+      "new shift types",
+      "new spectral filters",
+      "new recovery solvers"
+    ],
+    "label_free_post_selector": true
+  },
+  "protocol_violation_count": 0,
+  "schema_version": 1,
+  "selection_root": "/mnt/workspace/Wilson/AutoSOTA/baseline/ADAlign/results/gda_select/selections/gda_select_v1",
+  "selector_count": 18,
+  "selectors": [
+    {
+      "calibration_temperature": 1.0,
+      "covariance_shrinkage": 0.0,
+      "fusion_mode": "rank_fusion",
+      "selector": "spectra_trust_uw000_tw025_cs000_ct100",
+      "shortlist_fraction": 0.2,
+      "transfer_score_weight": 0.25,
+      "uncertainty_weight": 0.0
+    },
+    {
+      "calibration_temperature": 1.0,
+      "covariance_shrinkage": 0.0,
+      "fusion_mode": "support_adaptive",
+      "selector": "spectra_trust_uw000_tw025_cs000_ct100_sa_sf020",
+      "shortlist_fraction": 0.2,
+      "transfer_score_weight": 0.25,
+      "uncertainty_weight": 0.0
+    },
+    {
+      "calibration_temperature": 1.0,
+      "covariance_shrinkage": 0.5,
+      "fusion_mode": "rank_fusion",
+      "selector": "spectra_trust_uw000_tw025_cs050_ct100",
+      "shortlist_fraction": 0.2,
+      "transfer_score_weight": 0.25,
+      "uncertainty_weight": 0.0
+    },
+    {
+      "calibration_temperature": 1.0,
+      "covariance_shrinkage": 0.5,
+      "fusion_mode": "support_adaptive",
+      "selector": "spectra_trust_uw000_tw025_cs050_ct100_sa_sf020",
+      "shortlist_fraction": 0.2,
+      "transfer_score_weight": 0.25,
+      "uncertainty_weight": 0.0
+    },
+    {
+      "calibration_temperature": 1.0,
+      "covariance_shrinkage": 0.75,
+      "fusion_mode": "rank_fusion",
+      "selector": "spectra_trust_uw000_tw025_cs075_ct100",
+      "shortlist_fraction": 0.2,
+      "transfer_score_weight": 0.25,
+      "uncertainty_weight": 0.0
+    },
+    {
+      "calibration_temperature": 1.0,
+      "covariance_shrinkage": 0.75,
+      "fusion_mode": "support_adaptive",
+      "selector": "spectra_trust_uw000_tw025_cs075_ct100_sa_sf020",
+      "shortlist_fraction": 0.2,
+      "transfer_score_weight": 0.25,
+      "uncertainty_weight": 0.0
+    },
+    {
+      "calibration_temperature": 1.0,
+      "covariance_shrinkage": 0.0,
+      "fusion_mode": "rank_fusion",
+      "selector": "spectra_trust_uw000_tw050_cs000_ct100",
+      "shortlist_fraction": 0.2,
+      "transfer_score_weight": 0.5,
+      "uncertainty_weight": 0.0
+    },
+    {
+      "calibration_temperature": 1.0,
+      "covariance_shrinkage": 0.0,
+      "fusion_mode": "support_adaptive",
+      "selector": "spectra_trust_uw000_tw050_cs000_ct100_sa_sf020",
+      "shortlist_fraction": 0.2,
+      "transfer_score_weight": 0.5,
+      "uncertainty_weight": 0.0
+    },
+    {
+      "calibration_temperature": 1.0,
+      "covariance_shrinkage": 0.5,
+      "fusion_mode": "rank_fusion",
+      "selector": "spectra_trust_uw000_tw050_cs050_ct100",
+      "shortlist_fraction": 0.2,
+      "transfer_score_weight": 0.5,
+      "uncertainty_weight": 0.0
+    },
+    {
+      "calibration_temperature": 1.0,
+      "covariance_shrinkage": 0.5,
+      "fusion_mode": "support_adaptive",
+      "selector": "spectra_trust_uw000_tw050_cs050_ct100_sa_sf020",
+      "shortlist_fraction": 0.2,
+      "transfer_score_weight": 0.5,
+      "uncertainty_weight": 0.0
+    },
+    {
+      "calibration_temperature": 1.0,
+      "covariance_shrinkage": 0.75,
+      "fusion_mode": "rank_fusion",
+      "selector": "spectra_trust_uw000_tw050_cs075_ct100",
+      "shortlist_fraction": 0.2,
+      "transfer_score_weight": 0.5,
+      "uncertainty_weight": 0.0
+    },
+    {
+      "calibration_temperature": 1.0,
+      "covariance_shrinkage": 0.75,
+      "fusion_mode": "support_adaptive",
+      "selector": "spectra_trust_uw000_tw050_cs075_ct100_sa_sf020",
+      "shortlist_fraction": 0.2,
+      "transfer_score_weight": 0.5,
+      "uncertainty_weight": 0.0
+    },
+    {
+      "calibration_temperature": 1.0,
+      "covariance_shrinkage": 0.0,
+      "fusion_mode": "rank_fusion",
+      "selector": "spectra_trust_uw000_tw075_cs000_ct100",
+      "shortlist_fraction": 0.2,
+      "transfer_score_weight": 0.75,
+      "uncertainty_weight": 0.0
+    },
+    {
+      "calibration_temperature": 1.0,
+      "covariance_shrinkage": 0.0,
+      "fusion_mode": "support_adaptive",
+      "selector": "spectra_trust_uw000_tw075_cs000_ct100_sa_sf020",
+      "shortlist_fraction": 0.2,
+      "transfer_score_weight": 0.75,
+      "uncertainty_weight": 0.0
+    },
+    {
+      "calibration_temperature": 1.0,
+      "covariance_shrinkage": 0.5,
+      "fusion_mode": "rank_fusion",
+      "selector": "spectra_trust_uw000_tw075_cs050_ct100",
+      "shortlist_fraction": 0.2,
+      "transfer_score_weight": 0.75,
+      "uncertainty_weight": 0.0
+    },
+    {
+      "calibration_temperature": 1.0,
+      "covariance_shrinkage": 0.5,
+      "fusion_mode": "support_adaptive",
+      "selector": "spectra_trust_uw000_tw075_cs050_ct100_sa_sf020",
+      "shortlist_fraction": 0.2,
+      "transfer_score_weight": 0.75,
+      "uncertainty_weight": 0.0
+    },
+    {
+      "calibration_temperature": 1.0,
+      "covariance_shrinkage": 0.75,
+      "fusion_mode": "rank_fusion",
+      "selector": "spectra_trust_uw000_tw075_cs075_ct100",
+      "shortlist_fraction": 0.2,
+      "transfer_score_weight": 0.75,
+      "uncertainty_weight": 0.0
+    },
+    {
+      "calibration_temperature": 1.0,
+      "covariance_shrinkage": 0.75,
+      "fusion_mode": "support_adaptive",
+      "selector": "spectra_trust_uw000_tw075_cs075_ct100_sa_sf020",
+      "shortlist_fraction": 0.2,
+      "transfer_score_weight": 0.75,
+      "uncertainty_weight": 0.0
+    }
+  ],
+  "spectra_root": "/mnt/workspace/Wilson/AutoSOTA/baseline/ADAlign/results/gda_select/selections/gda_select_v1",
+  "spectra_selector": "spectra_cal",
+  "tasks": [
+    "ACMv9_to_Citationv1",
+    "ACMv9_to_DBLPv7",
+    "BRAZIL_to_EUROPE",
+    "BRAZIL_to_USA",
+    "Blog1_to_Blog2",
+    "Blog2_to_Blog1",
+    "Citationv1_to_ACMv9",
+    "Citationv1_to_DBLPv7",
+    "DBLPv7_to_ACMv9",
+    "DBLPv7_to_Citationv1",
+    "DE_to_EN",
+    "EN_to_DE",
+    "EUROPE_to_BRAZIL",
+    "EUROPE_to_USA",
+    "USA_to_BRAZIL",
+    "USA_to_EUROPE"
+  ],
+  "transfer_root": "/mnt/workspace/Wilson/AutoSOTA/baseline/ADAlign/results/gda_select/selections/gda_select_v1",
+  "transfer_selector": "transfer_score"
+}

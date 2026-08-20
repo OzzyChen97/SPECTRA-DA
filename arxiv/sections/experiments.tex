@@ -1,9 +1,10 @@
 \section{Experiments}
 \label{sec:experiments}
 
-The experiments ask three questions: whether the frozen selector improves
-label-free model selection, whether graph frequencies expose distinct
-covariance regimes, and which limitations remain after controlled refinement.
+The experiments ask three questions: how much target-label oracle selection
+changes UGDA evaluation, which components explain the source-simulated
+development gain, and where the learned covariance correction fails under real
+target shifts.
 Because the one-time 16-transfer sealed evaluation is not yet complete, all
 numbers in this section are explicitly development or source-simulated
 results.
@@ -61,7 +62,8 @@ accesses target labels.
   Gate-1 real-target bank (four tasks, 140 frozen candidates per task). All
   selectors receive identical public artifacts. This scope is distinct from
   the 675-candidate source-simulated refinement study in
-  Table~\ref{tab:core_ablation}. Best values are bold.}
+  Table~\ref{tab:core_ablation}. Best values are marked as blue bold
+  $\star$; our selector is marked as green bold $\dagger$.}
   \label{tab:selector_comparison}
   \centering
   \small
@@ -72,21 +74,22 @@ accesses target labels.
     Selector & Mean $\nregret$ $\downarrow$ & F1 gap (pt) $\downarrow$ &
     Median $\tau$ $\uparrow$ & Top-$5\%$ hit $\uparrow$ & Micro-F1 (\%) $\uparrow$ \\
     \midrule
-    Source validation & 0.2638 & 11.56 & \textbf{0.761} & 0\% & 53.40 \\
+    Source validation & 0.2638 & 11.56 & \best{0.761} & 0\% & 53.40 \\
     Last source validation & 0.2388 & 10.93 & 0.683 & 0\% & 54.03 \\
-    Entropy & 0.2153 & 8.80 & 0.526 & \textbf{50\%} & 56.17 \\
-    Infomax & 0.1984 & 7.84 & 0.577 & \textbf{50\%} & 57.12 \\
+    Entropy & 0.2153 & 8.80 & 0.526 & \best{50\%} & 56.17 \\
+    Infomax & 0.1984 & 7.84 & 0.577 & \best{50\%} & 57.12 \\
     DEV & 0.5013 & 27.10 & 0.405 & 0\% & 37.86 \\
     SND & 0.8780 & 47.12 & $-0.582$ & 0\% & 17.84 \\
-    Transfer Score & \textbf{0.1467} & \textbf{6.33} & 0.356 & \textbf{50\%} & \textbf{58.64} \\
+    Transfer Score & \best{0.1467} & \best{6.33} & 0.356 & \best{50\%} & \best{58.64} \\
     GDE & 0.7539 & 38.73 & 0.001 & 0\% & 26.24 \\
-    ALine-S & 0.2638 & 11.56 & \textbf{0.761} & 0\% & 53.40 \\
+    ALine-S & 0.2638 & 11.56 & \best{0.761} & 0\% & 53.40 \\
     ALine-D & 0.4737 & 26.07 & 0.274 & 0\% & 38.89 \\
     Agreement reference & 0.5365 & 28.81 & $-0.094$ & 0\% & 36.15 \\
     Global disagreement & 0.5414 & 29.14 & $-0.050$ & 0\% & 35.82 \\
     \midrule
     SPECTRA-Static & 0.5414 & 29.14 & $-0.048$ & 0\% & 35.82 \\
-    \method & 0.2560 & 12.16 & 0.695 & 0\% & 52.81 \\
+    \ours{\method{} (ours)} & \ours{0.2560} & \ours{12.16} &
+    \ours{0.695} & \ours{0\%} & \ours{52.81} \\
     \bottomrule
   \end{tabular}%
   }
@@ -99,8 +102,10 @@ Micro-F1, so the present evidence does not support superiority over existing
 label-free selectors. The diagnostic is nevertheless informative: \method
 reaches median Kendall $\tau=0.695$, substantially above Transfer Score's
 $0.356$, but fails to convert this global ranking quality into a competitive
-top choice. This gap localizes the main empirical weakness to top-of-ranking
-calibration rather than wholesale failure of the recovered ordering.
+top choice. This is the empirical signature of unreliable correction rather
+than an uninformative risk signal: the method orders much of the bank
+reasonably, yet its covariance-adjusted top candidate is not conservative
+enough under real shift.
 
 \subsection{Source-simulated refinement and core attribution}
 
@@ -118,7 +123,9 @@ selectors in Table~\ref{tab:selector_comparison}.
   \caption{Core source-simulated attribution study (four development tasks,
   44 held-out shifts). ``Cov.'' denotes transported covariance; ``UCB'' is
   bootstrap uncertainty. The frozen full row was fixed before this ablation.
-  Lower regret and higher rank/hit metrics are better.}
+  Lower regret and higher rank/hit metrics are better. Best values are marked
+  as blue bold $\star$; the frozen submitted variant is marked as green bold
+  $\dagger$; values that are both are orange $\star\dagger$.}
   \label{tab:core_ablation}
   \centering
   \small
@@ -133,13 +140,13 @@ selectors in Table~\ref{tab:selector_comparison}.
     Spectral linear recovery & 0.27767 & 0.62134 & 0.4813 & 0.0\% \\
     Spectral + prior + UCB, no cov. & 0.05057 & 0.18877 & 0.8550 & 72.7\% \\
     Global + cov. + UCB (no band conditioning) & 0.01471 & 0.04886 &
-    \textbf{0.9442} & \textbf{95.5\%} \\
-    Spectral + cov. + UCB, no robust refit & \textbf{0.01397} &
-    \textbf{0.04758} & 0.9398 & \textbf{95.5\%} \\
+    \best{0.9442} & \best{95.5\%} \\
+    Spectral + cov. + UCB, no robust refit & \best{0.01397} &
+    \best{0.04758} & 0.9398 & \best{95.5\%} \\
     Spectral + cov., no UCB & 0.01452 & 0.04941 & 0.9434 &
-    \textbf{95.5\%} \\
-    \method{} (frozen full) & 0.01415 & 0.04793 & 0.9424 &
-    \textbf{95.5\%} \\
+    \best{95.5\%} \\
+    \ours{\method{} (ours, frozen full)} & \ours{0.01415} &
+    \ours{0.04793} & \ours{0.9424} & \oursbest{95.5\%} \\
     \bottomrule
   \end{tabular}%
   }
@@ -188,9 +195,9 @@ band-conditioned recovery rule can treat differently.
     \toprule
     Statistic & Global & Low & Mid & High \\
     \midrule
-    Mean $|$error correlation$|$ & 0.487 & \textbf{0.381} & 0.573 & 0.617 \\
-    Transport NMAE & 0.092 & 0.227 & \textbf{0.069} & 0.186 \\
-    Below global & -- & 98.9\% & 0.0\% & 5.1\% \\
+    Mean $|$error correlation$|$ & 0.487 & \best{0.381} & 0.573 & 0.617 \\
+    Transport NMAE & 0.092 & 0.227 & \best{0.069} & 0.186 \\
+    Below global & -- & \best{98.9\%} & 0.0\% & 5.1\% \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -209,9 +216,13 @@ shift family is not solved by the current model.
 The source-simulated results support covariance-aware risk recovery and expose
 band-wise covariance heterogeneity, whereas the real-target comparison shows
 that the operational selector is not yet competitive with Transfer Score.
+Together, these results indicate that the hard problem is not recovering risk
+from disagreement once the correction is known, but deciding when a
+source-simulated covariance correction should be trusted on an unseen target.
 The evidence therefore does not establish full UGDA state of the art, broad
 method-ranking reversals, or generalization to all 16 ADAlign transfers. Those
 claims require a frozen one-time target evaluation across Citation, Airport,
-Blog, and Twitch families, paired task-level uncertainty, and equal-information
-comparison to global calibration. We preserve this boundary throughout the
-paper.
+Blog, and Twitch families, paired task-level uncertainty, equal-information
+comparison to global calibration, and explicit reliability tests such as
+leave-one-shift-family-out covariance correction. We preserve this boundary
+throughout the paper.

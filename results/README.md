@@ -13,3 +13,8 @@ The source-simulated `0.014145866` number must not be placed in the same result
 column as the real-target Gate-1 numbers: the candidate pools and evaluators
 are different. A complete 16-transfer real-target comparison remains pending
 an externally operated one-time sealed evaluation.
+
+The next reliability-aware rank-fusion selector is implemented in
+`selector/reliable_selection.py`, but it has no reported real-target metric in
+this release. It should be evaluated only through the same sealed-label
+workflow as the other selectors.

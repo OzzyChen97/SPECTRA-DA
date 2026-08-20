@@ -6,6 +6,7 @@
 | Tight graph spectral frames exactly decompose hard classification error. | Lemma 1 and unit tests in `tests/test_spectral_risk_recovery.py` and `tests/selector/test_spectra_theory_guarantees.py`. | Supported analytically for hard one-hot predictions. |
 | Pairwise spectral disagreement determines individual band risks up to cross-model error covariance. | Exact identity and Theorem 1. | Supported analytically. |
 | Covariance misspecification controls recovery error. | Theorems 1--2 and theory tests. | Supported for the stated unconstrained least-squares core; practical NNLS/Tukey behavior is empirical. |
+| The main technical contribution is covariance-aware risk recovery, not a proven spectral top-1 selector gain. | Core ablation: removing covariance raises mean regret to 0.05057; spectral+covariance versus global+covariance differs by only 0.00056 with interval crossing zero. | Supported; use this framing in Abstract/Introduction/Conclusion. |
 | Spectral bands expose heterogeneous covariance regimes. | 176 source-simulated leave-one-shift-out comparisons: absolute error correlation 0.381/0.573/0.617 in low/mid/high bands versus 0.487 global. | Supported on the source-simulated calibration bank; do not claim every band decorrelates errors. |
 | The frozen refinement selector improves normalized regret over its original frozen selector baseline. | Mean 0.014145866 versus 0.022784678, a 37.915% relative reduction, on four development tasks and 44 folds. | Supported only in this development scope; this is not yet the complete comparison against all label-free selectors. |
 | Covariance correction is the main empirical source of the source-simulated gain. | Strict core ablation: full 0.01415 versus 0.05057 without covariance; paired mean-difference bootstrap interval [0.01583, 0.06026]. | Supported on four tasks and 44 source-simulated folds. |
@@ -16,6 +17,7 @@
 | The deployment selector does not access target labels. | `label_access_count=0`, `protocol_violation_count=0`. | Supported by the frozen audit for the reported development run. |
 | Runtime optimization preserves scientific output. | Iterations 2 and 8 preserve mean regret exactly while reducing runtime from 452.0 s to 320.7 s; frozen rerun is 327.4 s. | Supported. |
 | Descriptor-conditioned risk-correction transport generalizes across shift families. | SARC family-out mean regret 0.06977 and descriptor/correction Spearman -0.04954. | Not supported; present as a failure/limitation. |
+| A conservative reliability-aware selector with transport uncertainty and Transfer Score rank fusion beats Transfer Score. | Proposed by the current failure analysis, but not yet run. | Not supported as a result; mention only as the next method iteration or future design implication. |
 | SPECTRA-DA is SOTA over 16 real transfers. | Requires a frozen comparison against all strong selectors on all 16 transfers. | Not yet supported; must not appear as a factual claim. |
 | Target-label oracle selection changes UGDA method rankings broadly. | Requires Gate-1 oracle gap and ranking reversal results across the full task set. | Pending; motivate using the ADAlign implementation audit without generalizing prevalence. |
 | The cited literature is authentic and claim-aligned. | `notes/citation_audit.md`: 27 cited entries checked against arXiv where available and official proceedings/DOI pages; one wrong arXiv ID corrected and one unverified inherited title removed. | Supported for the current bibliography. Google Scholar endpoints were attempted but timed out from this environment, which is recorded explicitly rather than treated as a successful check. |
@@ -31,6 +33,10 @@
   spectral decomposition, robust fitting, or uncertainty.
 - Describe spectral conditioning as modest and statistically inconclusive for
   top-1 selection on the current folds.
+- Frame the next scientific problem as reliability of covariance correction
+  under unseen real shifts; do not imply the current transport descriptors solve
+  it.
+- Transfer Score is a strong baseline and useful prior, not a defeated method.
 - Describe SARC and delete-one donor variants as rejected diagnostics, not parts
   of the final method.
 - Do not restore the removed unverified SpecReg title or the incorrect SPA

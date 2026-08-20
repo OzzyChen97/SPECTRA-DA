@@ -19,9 +19,15 @@
 \definecolor{spectrablue}{HTML}{2B6CB0}
 \definecolor{spectragreen}{HTML}{2F855A}
 \definecolor{spectraorange}{HTML}{C05621}
+\definecolor{spectrabluebg}{HTML}{E6F0FF}
+\definecolor{spectragreenbg}{HTML}{E6F4EA}
+\definecolor{spectraorangebg}{HTML}{FFF2CC}
 
 \newcommand{\method}{\textsc{Spectra-DA}\xspace}
 \newcommand{\benchmark}{\textsc{GDA-Select}\xspace}
+\newcommand{\best}[1]{\begingroup\setlength{\fboxsep}{1.2pt}\colorbox{spectrabluebg}{\strut\textbf{\textcolor{spectrablue!90!black}{#1}}\textsuperscript{\textcolor{spectrablue!90!black}{\scriptsize$\star$}}}\endgroup}
+\newcommand{\ours}[1]{\begingroup\setlength{\fboxsep}{1.2pt}\colorbox{spectragreenbg}{\strut\textbf{\textcolor{spectragreen!75!black}{#1}}\textsuperscript{\textcolor{spectragreen!75!black}{\scriptsize$\dagger$}}}\endgroup}
+\newcommand{\oursbest}[1]{\begingroup\setlength{\fboxsep}{1.2pt}\colorbox{spectraorangebg}{\strut\textbf{\textcolor{spectraorange!90!black}{#1}}\textsuperscript{\textcolor{spectraorange!90!black}{\scriptsize$\star\dagger$}}}\endgroup}
 \newcommand{\nregret}{\operatorname{NRegret}}
 \newcommand{\cvar}{\operatorname{CVaR}}
 

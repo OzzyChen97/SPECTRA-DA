@@ -4,6 +4,13 @@ The frozen selector achieves mean normalized regret `0.0141458660`, a
 `37.915%` reduction relative to the original `0.0227846777` baseline. It does
 not reach the stricter internal target `0.0134`.
 
+This is a source-simulated development result, not a real-target
+state-of-the-art claim. In the four-task Gate-1 real-target development
+comparison, Transfer Score remains the strongest top-1 selector (`0.1467`
+mean normalized regret versus `0.2560` for SPECTRA-DA). The main empirical
+conclusion is therefore that covariance correction is useful when calibrated,
+but transport reliability under real shift is unresolved.
+
 ## Final metrics
 
 | Metric | Value |
@@ -42,8 +49,9 @@ generalization; descriptor/correction-distance Spearman was `-0.04954`.
 
 The graph spectral risk decomposition is operational, and full covariance
 interactions contain selection-relevant information. The remaining bottleneck
-is cross-family generalization of covariance/risk correction from unlabeled
-shift descriptors—not solver speed or a scalar residual/regularization choice.
+is deciding when covariance/risk correction from unlabeled shift descriptors
+should be trusted under unseen shifts—not solver speed, more spectral filters,
+or a scalar residual/regularization choice.
 
 ## Audit
 

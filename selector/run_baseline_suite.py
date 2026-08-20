@@ -8,6 +8,7 @@ import fcntl
 import json
 import math
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
@@ -18,6 +19,7 @@ from scripts.trajectory_export.schema import (  # noqa: E402
     atomic_json,
     candidate_bank_hash,
     discover_candidate_records,
+    sha256_file,
 )
 from selector.baselines import (  # noqa: E402
     SELECTORS,
@@ -76,6 +78,10 @@ def discover_tasks(candidate_root: Path) -> list[str]:
     return tasks
 
 
+def baseline_manifest_path(output_root: Path) -> Path:
+    return output_root / "baseline_suite_manifest.json"
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--candidate-root", type=Path, required=True)
@@ -97,6 +103,7 @@ def main() -> None:
     output_root = args.output_root.resolve()
     tasks = args.tasks or discover_tasks(candidate_root)
     selectors = args.selectors or sorted(SELECTORS)
+    manifest_tasks: dict[str, dict] = {}
     for task in tasks:
         lock_root = output_root.parent / f".{output_root.name}.locks"
         lock_root.mkdir(parents=True, exist_ok=True)
@@ -107,9 +114,15 @@ def main() -> None:
             bank_hash = candidate_bank_hash(records)
             candidate_ids = {record["metadata"]["candidate_id"] for record in records}
             shared_scores: dict[str, dict[str, float]] = {}
+            task_manifest = {
+                "candidate_bank_sha256": bank_hash,
+                "candidate_count": len(records),
+                "selectors": {},
+            }
             for selector in selectors:
                 function, direction = SELECTORS[selector]
                 output = output_root / task / f"{selector}.json"
+                reused = False
                 if is_valid_cached_selection(
                     output,
                     task=task,
@@ -122,37 +135,83 @@ def main() -> None:
                         f"[baseline] task={task} selector={selector} reuse=validated",
                         flush=True,
                     )
-                    continue
-                print(f"[baseline] task={task} selector={selector}", flush=True)
-                scores = shared_scores.get(selector)
-                if scores is None and selector in {"aol_s", "aol_d"}:
-                    aline_s, aline_d = _agreement_on_the_line(records)
-                    shared_scores.update({"aol_s": aline_s, "aol_d": aline_d})
-                    scores = shared_scores[selector]
-                if scores is None:
-                    scores = function(records)
-                result = build_selection_result(
-                    records,
-                    task,
-                    selector,
-                    scores,
-                    direction,
-                    bank_hash=bank_hash,
-                )
-                atomic_json(result, output)
-                print(
-                    json.dumps(
-                        {
-                            "task": task,
-                            "selector": selector,
-                            "candidate_count": result["candidate_count"],
-                            "selected_candidate_id": result["selected_candidate_id"],
-                            "output": str(output),
-                        },
-                        sort_keys=True,
-                    ),
-                    flush=True,
-                )
+                    result = json.loads(output.read_text(encoding="utf-8"))
+                    reused = True
+                else:
+                    print(f"[baseline] task={task} selector={selector}", flush=True)
+                    scores = shared_scores.get(selector)
+                    if scores is None and selector in {"aol_s", "aol_d"}:
+                        aline_s, aline_d = _agreement_on_the_line(records)
+                        shared_scores.update({"aol_s": aline_s, "aol_d": aline_d})
+                        scores = shared_scores[selector]
+                    if scores is None:
+                        scores = function(records)
+                    result = build_selection_result(
+                        records,
+                        task,
+                        selector,
+                        scores,
+                        direction,
+                        bank_hash=bank_hash,
+                    )
+                    atomic_json(result, output)
+                    print(
+                        json.dumps(
+                            {
+                                "task": task,
+                                "selector": selector,
+                                "candidate_count": result["candidate_count"],
+                                "selected_candidate_id": result["selected_candidate_id"],
+                                "output": str(output),
+                            },
+                            sort_keys=True,
+                        ),
+                        flush=True,
+                    )
+                task_manifest["selectors"][selector] = {
+                    "score_direction": direction,
+                    "score_semantics": result["score_semantics"],
+                    "selected_candidate_id": result["selected_candidate_id"],
+                    "candidate_count": result["candidate_count"],
+                    "reused_cached_selection": reused,
+                    "selection_file": str(output.relative_to(output_root)),
+                    "selection_sha256": sha256_file(output),
+                }
+            manifest_tasks[task] = task_manifest
+    manifest = {
+        "schema_version": 1,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "purpose": "label-free baseline selector suite",
+        "task_count": len(tasks),
+        "tasks": sorted(tasks),
+        "selector_count": len(selectors),
+        "selectors": sorted(selectors),
+        "candidate_bank_sha256": {
+            task: manifest_tasks[task]["candidate_bank_sha256"]
+            for task in sorted(manifest_tasks)
+        },
+        "candidate_count_per_task": {
+            task: manifest_tasks[task]["candidate_count"]
+            for task in sorted(manifest_tasks)
+        },
+        "task_results": manifest_tasks,
+        "label_access_count": 0,
+        "protocol_violation_count": 0,
+    }
+    atomic_json(manifest, baseline_manifest_path(output_root))
+    print(
+        json.dumps(
+            {
+                "manifest": str(baseline_manifest_path(output_root)),
+                "task_count": manifest["task_count"],
+                "selector_count": manifest["selector_count"],
+                "label_access_count": manifest["label_access_count"],
+                "protocol_violation_count": manifest["protocol_violation_count"],
+            },
+            sort_keys=True,
+        ),
+        flush=True,
+    )
 
 
 if __name__ == "__main__":

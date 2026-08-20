@@ -39,10 +39,18 @@ loop. Active selector parameters are recorded in `configs/search_space.yaml`.
 
 `spectra_cal.py` uses a support-aware prior-centered recovery rule. The
 transported source-simulated risk is weighted at the pair-design curvature
-scale `M-2` only when the standardized descriptor matching RMSE is at most 2;
-otherwise it falls back to covariance-corrected disagreement recovery. This
-two-sigma gate is observable without target labels and prevents unsupported
-shift extrapolation from dominating model selection.
+scale `M-2` only when the standardized descriptor matching RMSE is at most 2.
+By default, the covariance correction remains the frozen v2 behavior. For the
+v3 trust experiment, `--covariance-shrinkage-mode support_gate` applies the
+same label-free support test directly to transported covariance:
+`covariance <- gamma * covariance`, where `gamma=1` inside descriptor support
+and `gamma=0` outside it. `--covariance-shrinkage-mode fixed` exposes the
+controlled gamma sweep used by shrinkage ablations. The experimental
+`pair_consistency` mode chooses `gamma` from `{0, .25, .5, .75, 1}` by minimizing
+the label-free residual after projecting `disagreement + 2 * gamma *
+covariance` onto the pair-sum risk subspace. These modes make the support gate
+act on the hidden correlated-error term, not only on the risk prior, while
+preserving the released selector when shrinkage mode is `none`.
 
 The deployment selector optionally accepts a frozen source-only sidecar
 manifest. Every sidecar is hash-checked against the base candidate ordering,
@@ -66,6 +74,41 @@ and conditional-structure shifts. It compares the original recovery, an
 always-on curvature prior, a continuous match-adaptive prior, and the two-sigma
 support gate. The diagnostic reads only frozen source-simulated calibration
 artifacts and enforces GPU 7 plus zero target-label access.
+
+`check_reliable_inputs.py`, `reliable_selection.py`, `run_reliable_suite.py`,
+`run_reliable_grid.py`, and `freeze_reliable_selector.py` implement the next
+conservative selector direction. They consume already generated SPECTRA and
+Transfer Score selection JSON files for the same candidate bank, convert each
+score vector to deterministic percentile ranks, and emit new minimized
+rank-fusion scores:
+
+```text
+score = (1 - covariance_shrinkage) * rank(SPECTRA)
+      + transfer_score_weight * rank(Transfer Score)
+      + uncertainty_weight * rank(transport/source uncertainty)
+```
+
+The same post-selector also supports the two directional shortlist controls
+from the v3 plan: Transfer Score shortlist followed by SPECTRA reranking, and
+SPECTRA shortlist followed by Transfer Score reranking. The `support_adaptive`
+mode reads the label-free covariance gamma stored by SPECTRA diagnostics and
+uses it as the mixture weight between SPECTRA rank and Transfer Score rank,
+falling back to `1 - covariance_shrinkage` for older SPECTRA JSON files.
+
+This post-selector reads no candidate artifacts and no target labels. Its
+parameters must be selected by source leave-one-shift-family-out validation or
+another pre-registered label-free proxy before a one-time sealed evaluation.
+The preflight checker rejects missing inputs, candidate-bank mismatches,
+protocol violations, and missing uncertainty when `--require-uncertainty` is
+enabled. The reliable runners accept either a single combined `--selection-root`
+or separate `--spectra-root` and `--transfer-root` directories, which avoids
+copying baseline JSON files into the frozen SPECTRA output root.
+The grid runner writes `reliable_grid_manifest.json` so an external evaluator
+can verify that only the allowed knobs were varied.
+After source-family-holdout validation chooses one configuration,
+`freeze_reliable_selector.py` copies only that registered selector into a clean
+root with `reliable_freeze_manifest.json`; the full grid is not a sealed
+submission artifact.
 
 `core_ablation.py` evaluates the frozen four-task source-simulated folds under
 equal-information controls. It verifies global/spectral linear equivalence and

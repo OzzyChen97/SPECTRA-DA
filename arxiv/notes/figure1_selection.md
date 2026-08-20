@@ -1,19 +1,23 @@
 # Figure 1 generation and selection
 
-Generated on 2026-08-20 with `gpt-image-2`, high quality, through the AutoSOTA-configured OpenAI-compatible research endpoint. Credentials are not stored in the paper repository.
+Generated on 2026-08-20 with `gpt-image-2`, high quality, through the
+workspace AutoSOTA `config.yaml` research endpoint using
+`tools/generate_gpt_image2_figure.py`. Credentials are not stored in the paper
+repository.
 
 ## Candidate review
 
 | Candidate | Scientific correctness | Text accuracy | Paper-size readability | Visual polish | Decision |
 |---|---:|---:|---:|---:|---|
-| A | 5/5 | 5/5 | 3/5 | 3/5 | Accurate but visually sparse and text-heavy. |
-| B | 5/5 | 5/5 | 4/5 | 5/5 | **Selected.** Clearest separation of target-label-free selection, source-only calibration, and sealed evaluation. |
-| C | 4/5 | 5/5 | 4/5 | 4/5 | Attractive teaser, but gradients and decorative density are less suitable for a camera-ready method figure. |
-| D | 4/5 | 5/5 | 5/5 | 5/5 | Strong typography, but its sequential stage arrows make the calibration dependency less precise than B. |
+| A | 5/5 | 5/5 | 4/5 | 3/5 | Accurate and readable, but visually close to a plain block diagram. |
+| B | 5/5 | 5/5 | 5/5 | 5/5 | Selected. It best separates label-free selection, source-only calibration, and sealed evaluation. |
+| C | 4/5 | 4/5 | 4/5 | 4/5 | More visually rich, but adds equations/axis labels and extra details not needed in the overview. |
+| D | 5/5 | 5/5 | 5/5 | 4/5 | Clean and accurate, but too compressed for the current method story. |
 
-The paper uses `figures/gpt-image-2-candidates/pipeline-gpt2-b.png` as a full-width Figure 1. The previous deterministic figure is retained as a fallback.
+The paper uses candidate B as `figures/figure1-gpt-image-2.png`. The
+deterministic `figures/pipeline.pdf` remains a local fallback/reference asset
+only and is not referenced by the current draft.
 
 ## Exact selected prompt
 
-> Use case: scientific-educational. Asset type: two-lane ICLR paper method overview. Primary request: visualize SPECTRA-DA with an upper Target-Label-Free Selection lane and a lower Source Calibration lane. Upper lane labels, verbatim: Candidate Trajectories; Target Graph and Predictions; Tight Spectral Bands; Pair Disagreement; Covariance-Corrected Risk; Select Candidate. Lower lane labels, verbatim: Source Graph plus Labels; Simulated Graph Shifts; Shift Descriptors; Band Covariance Bank; Uncertainty. Connect Shift Descriptors and Band Covariance Bank to Covariance-Corrected Risk. Place a locked box outside both lanes labeled Sealed Target Labels; One-Time Evaluator, with no arrow into the selector. Style: camera-ready scientific vector diagram, precise alignment, minimal ink, color-blind-safe palette, white background, strong hierarchy, readable labels. Constraints: no people, no devices, no photorealism, no 3D, no equations, no extra text, no watermark, preserve the information boundary exactly.
-
+> Use case: scientific-educational. Asset type: polished method overview figure for an ICLR paper. Primary request: visualize the SPECTRA-DA workflow as three horizontal regions. Region 1 header: Label-free target selection. Boxes: Candidate Bank; Target Predictions; Graph Spectral Frame; Band Agreements; Risk Recovery; Chosen Checkpoint. Region 2 header: Source calibration only. Boxes: Labeled Source Shifts; Unlabeled Matching; Error Covariance Transport. Region 3 header: Sealed evaluation. Boxes: Hidden Target Labels; Final Metrics. Show that source calibration feeds Risk Recovery, and hidden labels are only connected to Final Metrics after Chosen Checkpoint. Style: minimal academic vector diagram, high polish, strong whitespace, color-blind-safe blue-purple-orange-green-red palette, readable at paper width. Constraints: no arrows from Hidden Target Labels to any selector module, no SOTA wording, no result numbers, no equations, no watermark, no extra labels beyond the listed labels.

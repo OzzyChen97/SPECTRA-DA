@@ -38,6 +38,10 @@ from spectral_filters import apply_tight_frame, frame_approximation_diagnostics 
 
 TASK_BY_ID = {task.id: task for task in TASKS}
 PRIOR_DESCRIPTOR_RMSE_THRESHOLD = 2.0
+DEFAULT_COVARIANCE_SHRINKAGE_MODE = "none"
+DEFAULT_FIXED_COVARIANCE_GAMMA = 1.0
+DEFAULT_COVARIANCE_CONSISTENCY_GRID = (0.0, 0.25, 0.5, 0.75, 1.0)
+COVARIANCE_SHRINKAGE_MODES = ("none", "support_gate", "fixed", "pair_consistency")
 SIDECAR_ARRAY_NAMES = (
     "shift_deltas",
     "band_risks",
@@ -62,6 +66,137 @@ def curvature_prior_strength(
         raise ValueError("descriptor RMSE threshold must be positive")
     model_count = values.shape[1]
     return float(max(1, model_count - 2)) if descriptor_rmse <= threshold else 0.0
+
+
+def covariance_support_confidence(
+    descriptor_rmse: float,
+    *,
+    threshold: float = PRIOR_DESCRIPTOR_RMSE_THRESHOLD,
+) -> float:
+    """Return the hard label-free support confidence used for covariance gating."""
+
+    if not np.isfinite(descriptor_rmse) or descriptor_rmse < 0:
+        raise ValueError("descriptor RMSE must be finite and non-negative")
+    if threshold <= 0:
+        raise ValueError("descriptor RMSE threshold must be positive")
+    return 1.0 if descriptor_rmse <= threshold else 0.0
+
+
+def covariance_shrinkage_gamma(
+    descriptor_rmse: float,
+    *,
+    mode: str = DEFAULT_COVARIANCE_SHRINKAGE_MODE,
+    fixed_gamma: float = DEFAULT_FIXED_COVARIANCE_GAMMA,
+    threshold: float = PRIOR_DESCRIPTOR_RMSE_THRESHOLD,
+) -> float:
+    """Choose how strongly transported covariance enters target recovery.
+
+    ``none`` preserves the frozen v2 behavior. ``support_gate`` applies the
+    same descriptor-support test used by the transported-risk prior to the
+    covariance correction itself. ``fixed`` is the controlled gamma-sweep mode
+    needed for support-shrinkage ablations.
+    """
+
+    if mode not in COVARIANCE_SHRINKAGE_MODES:
+        raise ValueError(f"unknown covariance shrinkage mode: {mode}")
+    if mode == "none":
+        return 1.0
+    if mode == "support_gate":
+        return covariance_support_confidence(descriptor_rmse, threshold=threshold)
+    if mode == "pair_consistency":
+        raise ValueError("pair_consistency gamma requires target disagreements")
+    if not np.isfinite(fixed_gamma) or not 0.0 <= fixed_gamma <= 1.0:
+        raise ValueError("fixed covariance gamma must lie in [0, 1]")
+    return float(fixed_gamma)
+
+
+def pair_sum_consistency_gamma(
+    disagreements: np.ndarray,
+    transported_covariances: np.ndarray,
+    *,
+    grid: tuple[float, ...] = DEFAULT_COVARIANCE_CONSISTENCY_GRID,
+) -> tuple[float, list[dict[str, float]]]:
+    """Select gamma by projecting corrected pairs onto the pair-sum subspace."""
+
+    disagreement = np.asarray(disagreements, dtype=np.float64)
+    covariance = np.asarray(transported_covariances, dtype=np.float64)
+    if disagreement.ndim != 3 or disagreement.shape != covariance.shape:
+        raise ValueError("disagreements and covariances must share [bands, models, models]")
+    band_count, model_count, second_count = disagreement.shape
+    if second_count != model_count:
+        raise ValueError("pair consistency expects square model-pair matrices")
+    if model_count < 3:
+        raise ValueError("at least three models are required for pair consistency")
+    if not grid:
+        raise ValueError("covariance consistency grid must be non-empty")
+    if any((not np.isfinite(gamma)) or gamma < 0.0 or gamma > 1.0 for gamma in grid):
+        raise ValueError("covariance consistency grid values must lie in [0, 1]")
+
+    first, second = np.triu_indices(model_count, k=1)
+    design = np.zeros((first.size, model_count), dtype=np.float64)
+    design[np.arange(first.size), first] = 1.0
+    design[np.arange(first.size), second] = 1.0
+    reports: list[dict[str, float]] = []
+    for gamma in grid:
+        residual_energy = 0.0
+        observation_energy = 0.0
+        for band in range(band_count):
+            observations = (
+                disagreement[band, first, second]
+                + 2.0 * float(gamma) * covariance[band, first, second]
+            )
+            fitted, *_ = np.linalg.lstsq(design, observations, rcond=None)
+            residual = observations - design @ fitted
+            residual_energy += float(np.sum(residual**2))
+            observation_energy += float(np.sum(observations**2))
+        normalized = residual_energy / max(observation_energy, 1.0e-12)
+        reports.append(
+            {
+                "gamma": float(gamma),
+                "residual_energy": residual_energy,
+                "normalized_residual": float(normalized),
+            }
+        )
+    best = min(reports, key=lambda report: (report["normalized_residual"], report["gamma"]))
+    return float(best["gamma"]), reports
+
+
+def shrink_transported_covariances(
+    transported_covariances: np.ndarray,
+    descriptor_rmse: float,
+    *,
+    disagreements: np.ndarray | None = None,
+    mode: str = DEFAULT_COVARIANCE_SHRINKAGE_MODE,
+    fixed_gamma: float = DEFAULT_FIXED_COVARIANCE_GAMMA,
+    threshold: float = PRIOR_DESCRIPTOR_RMSE_THRESHOLD,
+) -> tuple[np.ndarray, dict[str, Any]]:
+    """Scale transported covariance by a label-free support confidence."""
+
+    covariances = np.asarray(transported_covariances, dtype=np.float64)
+    consistency_reports: list[dict[str, float]] | None = None
+    if mode == "pair_consistency":
+        if disagreements is None:
+            raise ValueError("pair_consistency mode requires disagreements")
+        gamma, consistency_reports = pair_sum_consistency_gamma(
+            disagreements,
+            covariances,
+        )
+    else:
+        gamma = covariance_shrinkage_gamma(
+            descriptor_rmse,
+            mode=mode,
+            fixed_gamma=fixed_gamma,
+            threshold=threshold,
+        )
+    diagnostics: dict[str, Any] = {
+        "mode": mode,
+        "gamma": float(gamma),
+        "descriptor_rmse": float(descriptor_rmse),
+        "threshold": float(threshold),
+    }
+    if consistency_reports is not None:
+        diagnostics["consistency_grid"] = consistency_reports
+    return gamma * covariances, diagnostics
 
 
 def load_calibration(directory: Path) -> tuple[dict[str, Any], dict[str, np.ndarray]]:
@@ -267,6 +402,9 @@ def recover_with_transport(
     descriptor_floor: float,
     risk_ridge: float,
     pair_weight_power: float,
+    covariance_shrinkage_mode: str = DEFAULT_COVARIANCE_SHRINKAGE_MODE,
+    fixed_covariance_gamma: float = DEFAULT_FIXED_COVARIANCE_GAMMA,
+    support_rmse_threshold: float = PRIOR_DESCRIPTOR_RMSE_THRESHOLD,
 ) -> tuple[np.ndarray, np.ndarray, dict[str, Any]]:
     alpha, match_diagnostics = match_shift_convex_combination(
         shift_deltas,
@@ -279,10 +417,19 @@ def recover_with_transport(
         shift_band_risks,
         shift_band_covariances,
     )
+    descriptor_rmse = float(match_diagnostics["descriptor_rmse"])
+    shrunk_covariances, shrinkage_diagnostics = shrink_transported_covariances(
+        transported_covariances,
+        descriptor_rmse,
+        disagreements=disagreements,
+        mode=covariance_shrinkage_mode,
+        fixed_gamma=fixed_covariance_gamma,
+        threshold=support_rmse_threshold,
+    )
     recovered, recovery_diagnostics = corrected_band_risk_recovery(
         disagreements,
         transported_risks,
-        transported_covariances,
+        shrunk_covariances,
         ridge=risk_ridge,
         pair_weight_power=pair_weight_power,
         # Normalize by the pair design's weakest identifiable curvature.  A
@@ -291,11 +438,13 @@ def recover_with_transport(
         # label-free at deployment time.
         prior_strength=curvature_prior_strength(
             disagreements,
-            float(match_diagnostics["descriptor_rmse"]),
+            descriptor_rmse,
+            threshold=support_rmse_threshold,
         ),
     )
     return recovered, alpha, {
         "matching": match_diagnostics,
+        "covariance_shrinkage": shrinkage_diagnostics,
         "recovery": recovery_diagnostics,
     }
 
@@ -345,6 +494,9 @@ def bootstrap_uncertainty(
     descriptor_floor: float,
     risk_ridge: float,
     pair_weight_power: float,
+    covariance_shrinkage_mode: str = DEFAULT_COVARIANCE_SHRINKAGE_MODE,
+    fixed_covariance_gamma: float = DEFAULT_FIXED_COVARIANCE_GAMMA,
+    support_rmse_threshold: float = PRIOR_DESCRIPTOR_RMSE_THRESHOLD,
 ) -> np.ndarray:
     if samples <= 1:
         return np.zeros(disagreements.shape[1], dtype=np.float64)
@@ -363,6 +515,9 @@ def bootstrap_uncertainty(
             descriptor_floor=descriptor_floor,
             risk_ridge=risk_ridge,
             pair_weight_power=pair_weight_power,
+            covariance_shrinkage_mode=covariance_shrinkage_mode,
+            fixed_covariance_gamma=fixed_covariance_gamma,
+            support_rmse_threshold=support_rmse_threshold,
         )
         estimates.append(0.5 * recovered.sum(axis=1))
     return np.std(np.stack(estimates), axis=0, ddof=1)
@@ -420,6 +575,17 @@ def select(args: argparse.Namespace) -> dict[str, Any]:
         arrays, disagreements = collapse_to_global(arrays, disagreements)
     elif spectral_mode != "banded":
         raise ValueError(f"unknown spectral mode: {spectral_mode}")
+    covariance_shrinkage_mode = getattr(
+        args,
+        "covariance_shrinkage_mode",
+        DEFAULT_COVARIANCE_SHRINKAGE_MODE,
+    )
+    fixed_covariance_gamma = float(
+        getattr(args, "fixed_covariance_gamma", DEFAULT_FIXED_COVARIANCE_GAMMA)
+    )
+    support_rmse_threshold = float(
+        getattr(args, "support_rmse_threshold", PRIOR_DESCRIPTOR_RMSE_THRESHOLD)
+    )
     recovered, alpha, diagnostics = recover_with_transport(
         shift_deltas=arrays["shift_deltas"],
         target_delta=arrays["target_delta"],
@@ -430,6 +596,9 @@ def select(args: argparse.Namespace) -> dict[str, Any]:
         descriptor_floor=args.descriptor_floor,
         risk_ridge=args.risk_ridge,
         pair_weight_power=args.pair_weight_power,
+        covariance_shrinkage_mode=covariance_shrinkage_mode,
+        fixed_covariance_gamma=fixed_covariance_gamma,
+        support_rmse_threshold=support_rmse_threshold,
     )
     point_estimate = 0.5 * recovered.sum(axis=1)
     uncertainty = bootstrap_uncertainty(
@@ -441,6 +610,9 @@ def select(args: argparse.Namespace) -> dict[str, Any]:
         descriptor_floor=args.descriptor_floor,
         risk_ridge=args.risk_ridge,
         pair_weight_power=args.pair_weight_power,
+        covariance_shrinkage_mode=covariance_shrinkage_mode,
+        fixed_covariance_gamma=fixed_covariance_gamma,
+        support_rmse_threshold=support_rmse_threshold,
     )
     robust_score = point_estimate + args.uncertainty_beta * uncertainty
     scores = {
@@ -474,6 +646,9 @@ def select(args: argparse.Namespace) -> dict[str, Any]:
             "descriptor_floor": args.descriptor_floor,
             "risk_ridge": args.risk_ridge,
             "pair_weight_power": args.pair_weight_power,
+            "covariance_shrinkage_mode": covariance_shrinkage_mode,
+            "fixed_covariance_gamma": fixed_covariance_gamma,
+            "support_rmse_threshold": support_rmse_threshold,
             "bootstrap_samples": args.bootstrap_samples,
             "bootstrap_seed": args.bootstrap_seed,
             "uncertainty_beta": args.uncertainty_beta,
@@ -516,6 +691,27 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--descriptor-floor", type=float, default=0.05)
     parser.add_argument("--risk-ridge", type=float, default=1e-6)
     parser.add_argument("--pair-weight-power", type=float, default=1.0)
+    parser.add_argument(
+        "--covariance-shrinkage-mode",
+        choices=COVARIANCE_SHRINKAGE_MODES,
+        default=DEFAULT_COVARIANCE_SHRINKAGE_MODE,
+        help=(
+            "how to scale transported covariance before risk recovery; "
+            "'none' preserves the frozen v2 selector"
+        ),
+    )
+    parser.add_argument(
+        "--fixed-covariance-gamma",
+        type=float,
+        default=DEFAULT_FIXED_COVARIANCE_GAMMA,
+        help="fixed gamma in [0, 1] when --covariance-shrinkage-mode=fixed",
+    )
+    parser.add_argument(
+        "--support-rmse-threshold",
+        type=float,
+        default=PRIOR_DESCRIPTOR_RMSE_THRESHOLD,
+        help="descriptor RMSE threshold shared by the prior and support-gated covariance",
+    )
     parser.add_argument("--bootstrap-samples", type=int, default=0)
     parser.add_argument("--bootstrap-seed", type=int, default=8801)
     parser.add_argument("--uncertainty-beta", type=float, default=0.0)

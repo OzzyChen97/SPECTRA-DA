@@ -1,16 +1,28 @@
 # SPECTRA-DA
 
-**Target-label-free model selection for graph domain adaptation via spectral agreement**
+**Target-label-free model selection for graph domain adaptation via covariance-aware risk recovery**
 
 SPECTRA-DA addresses a deployment problem that is usually hidden by oracle
 evaluation: how to select an adaptation algorithm, hyperparameter setting,
 random seed, and checkpoint without reading any target-domain label.
 
-The selector decomposes pairwise prediction disagreement over a tight graph
-spectral frame, recovers candidate risks from the resulting pair-sum system,
-and transports source-simulated error covariance to correct correlated model
-errors. The repository also provides a sealed-label protocol, trajectory
-artifact schema, model-selection baselines, shift simulation, and audit tests.
+The selector recovers candidate risks from pairwise prediction disagreement
+while explicitly accounting for cross-model error covariance. A tight graph
+spectral frame decomposes the recovery identity and exposes band-wise
+covariance regimes, but the current evidence identifies covariance correction
+and its reliability under shift as the central issue. The repository also
+provides a sealed-label protocol, trajectory artifact schema, model-selection
+baselines, shift simulation, reliability-aware rank fusion, and audit tests.
+
+## Current evidence boundary
+
+This release is not a state-of-the-art real-target selector claim. In the
+four-task Gate-1 real-target development comparison, Transfer Score remains
+stronger in top-1 selection (`0.1467` mean normalized regret versus `0.2560`
+for the current SPECTRA-DA selector), although SPECTRA-DA has higher rank
+correlation. The supported positive result is source-simulated: covariance
+correction improves the frozen development objective, while real-shift
+calibration reliability remains unresolved.
 
 ## Final controlled result
 
@@ -34,11 +46,15 @@ reduced the reproduced runtime from 451.999 s to 320.695 s in the fastest
 accepted run; the independent frozen rerun took 327.394 s.
 
 Detailed results and the iteration audit are in [docs/RESULTS.md](docs/RESULTS.md).
+The current handoff status, including incomplete external items, is in
+[docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md).
+Safe GitHub publishing instructions are in
+[docs/GITHUB_PUBLISHING.md](docs/GITHUB_PUBLISHING.md).
 
 ## What is included
 
 - `selector/`: SPECTRA-Static, calibrated SPECTRA, label-free baselines, and
-  evaluation objectives.
+  reliability-aware rank-fusion selectors.
 - `spectral_filters/`: tight spectral-frame construction and filtering.
 - `covariance_transport/`: descriptor matching and robust covariance-corrected
   risk recovery, including the exact runtime optimizations.
@@ -79,12 +95,20 @@ The core selector and exact workspace-reuse changes can be checked without the
 private benchmark artifacts:
 
 ```bash
+python scripts/release_audit.py
+
 pytest -q \
   tests/selector/test_recovery_workspace_reuse.py \
   tests/selector/test_recovery_structure_cache.py \
   tests/selector/test_spectra_theory_guarantees.py \
   tests/test_spectra_prior.py
 ```
+
+The GitHub Actions workflow `.github/workflows/release-audit.yml` runs the same
+lightweight audit on pushes and pull requests without installing private
+artifacts, PyTorch, or a system LaTeX distribution. The repository includes a
+pinned Tectonic binary for rebuilding `arxiv/main.pdf` when paper sources
+change.
 
 The frozen release passes all 17 tests in this shard.
 
@@ -130,6 +154,92 @@ CUDA_VISIBLE_DEVICES=7 python selector/run_spectra_suite.py \
   --sidecar-manifest configs/spectra_sidecars_16.json \
   --output-root results/gda_select/selections/spectra_frozen_v2 \
   --device cuda:0
+```
+
+Optionally generate the next-iteration conservative fusion selector after
+SPECTRA and Transfer Score selection JSON files exist for the same candidate
+bank:
+
+```bash
+python selector/run_baseline_suite.py \
+  --candidate-root trajectory_bank/candidates/gda_select_v1 \
+  --output-root results/gda_select/selections/baselines \
+  --selector transfer_score \
+  --selector entropy \
+  --selector infomax \
+  --selector source_val \
+  --selector last_source_val \
+  --selector snd \
+  --selector dev \
+  --selector gde \
+  --selector aol_s \
+  --selector aol_d
+```
+
+The baseline suite writes one selector JSON per task plus
+`results/gda_select/selections/baselines/baseline_suite_manifest.json`, which
+records task coverage, selector coverage, candidate-bank hashes, selected
+candidates, cache reuse, and selection-file hashes.
+
+```bash
+python selector/run_reliable_suite.py \
+  --selection-root results/gda_select/selections/spectra_frozen_v2 \
+  --spectra-root results/gda_select/selections/spectra_frozen_v2 \
+  --transfer-root results/gda_select/selections/baselines \
+  --output-root results/gda_select/selections/reliable_rank_fusion \
+  --spectra-selector spectra_robust \
+  --transfer-selector transfer_score \
+  --uncertainty-weight 0.25 \
+  --transfer-score-weight 0.50 \
+  --covariance-shrinkage 0.25 \
+  --calibration-temperature 1.0
+```
+
+This fusion is label-free and packageable for sealed evaluation, but it is a
+new experimental direction rather than a reported result.
+
+To pre-register the full allowed knob grid for external evaluation, use:
+
+```bash
+python selector/check_reliable_inputs.py \
+  --selection-root results/gda_select/selections/spectra_frozen_v2 \
+  --spectra-root results/gda_select/selections/spectra_frozen_v2 \
+  --transfer-root results/gda_select/selections/baselines \
+  --spectra-selector spectra_robust \
+  --transfer-selector transfer_score \
+  --require-uncertainty
+
+python selector/run_reliable_grid.py \
+  --selection-root results/gda_select/selections/spectra_frozen_v2 \
+  --spectra-root results/gda_select/selections/spectra_frozen_v2 \
+  --transfer-root results/gda_select/selections/baselines \
+  --output-root results/gda_select/selections/reliable_grid \
+  --spectra-selector spectra_robust \
+  --transfer-selector transfer_score \
+  --uncertainty-weights 0,0.1,0.5,1 \
+  --transfer-score-weights 0,0.25,0.5,0.75,1 \
+  --covariance-shrinkages 0,0.25,0.5,0.75 \
+  --calibration-temperatures 1
+```
+
+The grid writer produces one selector JSON per task and configuration plus a
+`reliable_grid_manifest.json` recording the allowed search space.
+After choosing one configuration with source-family-holdout validation, freeze
+that single selector with `selector/freeze_reliable_selector.py` before sealed
+evaluation; do not submit the entire grid.
+
+For the one-shot sealed comparison, package the frozen selector and baselines
+together so the evaluator compares all selectors on the same candidate bank:
+
+```bash
+python scripts/package_external_evaluation.py \
+  --candidate-root trajectory_bank/candidates/gda_select_v1 \
+  --selection-root results/gda_select/selections/baselines \
+  --selection-root results/gda_select/selections/reliable_frozen \
+  --output-root results/gda_select/submissions/final_multi_selector \
+  --archive results/gda_select/submissions/final_multi_selector.tar.gz \
+  --require-selector transfer_score \
+  --min-selector-count 2
 ```
 
 See [docs/REPRODUCIBILITY.md](docs/REPRODUCIBILITY.md) for artifact contracts,
