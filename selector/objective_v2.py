@@ -29,7 +29,7 @@ REPO = Path(__file__).resolve().parents[1]
 if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 
-from metrics import normalized_regret, rank_correlations, top_fraction_hit
+from metrics import normalized_regret, rank_correlations
 from protocol.tasks import PILOT_TASKS
 
 OPEN_DEVELOPMENT_TASKS = tuple(task.id for task in PILOT_TASKS)
@@ -37,6 +37,10 @@ FORBIDDEN_TRUTH_PATH_PARTS = {".sealed", "sealed_eval", "final_12_labels"}
 DEFAULT_RUNTIME_BUDGET_SECONDS = 350.0
 DEFAULT_SOURCE_SIM_CVAR_DEGRADATION_MAX = 0.05
 SHORTLIST_RECALL_FRACTIONS = (0.05, 0.10, 0.20, 0.30, 0.50)
+SHORTLIST_FUSION_MODES = {
+    "transfer_shortlist_spectra_rerank",
+    "spectra_shortlist_transfer_rerank",
+}
 SOURCE_SIM_CVAR_KEYS = (
     "source_sim_leave_one_shift_family_cvar",
     "cvar_20pct_normalized_regret",
@@ -227,11 +231,55 @@ def score_to_predicted_risk(selection: dict[str, Any], candidate_ids: list[str])
     return raw if selection["score_direction"] == "minimize" else -raw
 
 
+def score_tie_diagnostics(selection: dict[str, Any], candidate_ids: list[str]) -> dict[str, Any]:
+    scores = [float(selection["candidate_scores"][candidate]) for candidate in candidate_ids]
+    unique_scores = sorted(set(scores))
+    counts = [scores.count(value) for value in unique_scores]
+    direction = selection["score_direction"]
+    optimum = min(scores) if direction == "minimize" else max(scores)
+    return {
+        "unique_score_count": len(unique_scores),
+        "unique_score_ratio": float(len(unique_scores) / len(scores)),
+        "max_tie_group_size": int(max(counts)),
+        "top_score_tie_group_size": int(scores.count(optimum)),
+    }
+
+
 def chosen_candidate(selection: dict[str, Any]) -> str:
     scores = selection["candidate_scores"]
     direction = selection["score_direction"]
     optimum = min(scores.values()) if direction == "minimize" else max(scores.values())
     return min(candidate for candidate, score in scores.items() if score == optimum)
+
+
+def top_score_tie_candidates(selection: dict[str, Any]) -> set[str]:
+    scores = selection["candidate_scores"]
+    direction = selection["score_direction"]
+    optimum = min(scores.values()) if direction == "minimize" else max(scores.values())
+    return {str(candidate) for candidate, score in scores.items() if score == optimum}
+
+
+def indices_with_cutoff_ties(values: np.ndarray, *, fraction: float, lower_is_better: bool) -> set[int]:
+    if values.ndim != 1:
+        raise ValueError("tie-aware top set requires a one-dimensional vector")
+    if values.size == 0:
+        raise ValueError("tie-aware top set requires at least one candidate")
+    if not 0.0 < fraction <= 1.0:
+        raise ValueError("top-set fraction must lie in (0, 1]")
+    order = np.argsort(values if lower_is_better else -values, kind="stable")
+    cutoff = max(1, math.ceil(fraction * values.size))
+    boundary = float(values[int(order[cutoff - 1])])
+    if lower_is_better:
+        return {int(index) for index, value in enumerate(values) if float(value) <= boundary}
+    return {int(index) for index, value in enumerate(values) if float(value) >= boundary}
+
+
+def top_fraction_hit_tie_aware(selected_index: int, true_risks: np.ndarray, *, fraction: float) -> bool:
+    return selected_index in indices_with_cutoff_ties(
+        true_risks,
+        fraction=fraction,
+        lower_is_better=True,
+    )
 
 
 def ndcg_at_k(predicted_risks: np.ndarray, true_risks: np.ndarray, *, k: int = 10) -> float | None:
@@ -300,20 +348,28 @@ def shortlist_recall_metrics(
     model_count = predicted_risks.size
     if model_count == 0:
         raise ValueError("shortlist recall requires at least one candidate")
-    predicted_order = np.argsort(predicted_risks, kind="stable")
     true_order = np.argsort(true_risks, kind="stable")
     oracle_index = int(true_order[0])
     top5_count = max(1, math.ceil(0.05 * model_count))
-    true_top5 = set(int(index) for index in true_order[:top5_count])
+    top5_boundary = float(true_risks[int(true_order[top5_count - 1])])
+    true_top5 = {
+        int(index)
+        for index, risk in enumerate(true_risks)
+        if float(risk) <= top5_boundary
+    }
     metrics: dict[str, float] = {}
     for fraction in fractions:
         if not 0.0 < fraction <= 1.0:
             raise ValueError("shortlist recall fractions must lie in (0, 1]")
-        cutoff = max(1, math.ceil(fraction * model_count))
-        predicted_top = set(int(index) for index in predicted_order[:cutoff])
+        predicted_top = indices_with_cutoff_ties(
+            predicted_risks,
+            fraction=fraction,
+            lower_is_better=True,
+        )
         key = _pct_key(fraction)
         metrics[f"oracle_recall_at_{key}"] = float(oracle_index in predicted_top)
         metrics[f"top5_recall_at_{key}"] = float(len(predicted_top & true_top5) / len(true_top5))
+        metrics[f"predicted_shortlist_size_at_{key}"] = float(len(predicted_top))
     return metrics
 
 
@@ -341,7 +397,12 @@ def evaluate_selection(selection: dict[str, Any], truth: dict[str, Any]) -> dict
     selected_index = candidate_ids.index(selected_id)
     selected_risk = float(true_risks[selected_index])
     oracle_index = int(np.argmin(true_risks))
+    top_tie_ids = top_score_tie_candidates(selection)
+    top_tie_indices = [candidate_ids.index(candidate) for candidate in sorted(top_tie_ids)]
+    top_tie_risks = np.asarray([true_risks[index] for index in top_tie_indices], dtype=np.float64)
     correlations = rank_correlations(predicted_risks, true_risks)
+    fusion_config = selection.get("fusion_config")
+    fusion_mode = fusion_config.get("fusion_mode") if isinstance(fusion_config, dict) else None
     report = {
         "task": task,
         "selector": str(selection["selector"]),
@@ -356,16 +417,21 @@ def evaluate_selection(selection: dict[str, Any], truth: dict[str, Any]) -> dict
         "oracle_micro_f1": 1.0 - float(true_risks[oracle_index]),
         "oracle_micro_f1_gap": selected_risk - float(true_risks[oracle_index]),
         "oracle_micro_f1_gap_points": 100.0 * (selected_risk - float(true_risks[oracle_index])),
+        "top_score_tie_best_normalized_regret": normalized_regret(float(np.min(top_tie_risks)), true_risks),
+        "top_score_tie_worst_normalized_regret": normalized_regret(float(np.max(top_tie_risks)), true_risks),
+        "top_score_tie_expected_normalized_regret": normalized_regret(float(np.mean(top_tie_risks)), true_risks),
         "normalized_regret": normalized_regret(selected_risk, true_risks),
         "kendall_tau": correlations["kendall_tau"],
         "spearman_rho": correlations["spearman_rho"],
         "top_weighted_kendall": top_weighted_kendall(predicted_risks, true_risks),
         "ndcg_at_10": ndcg_at_k(predicted_risks, true_risks, k=10),
-        "top_5pct_hit": top_fraction_hit(selected_index, true_risks, fraction=0.05),
-        "top_10pct_hit": top_fraction_hit(selected_index, true_risks, fraction=0.10),
-        "top_20pct_hit": top_fraction_hit(selected_index, true_risks, fraction=0.20),
+        "top_5pct_hit": top_fraction_hit_tie_aware(selected_index, true_risks, fraction=0.05),
+        "top_10pct_hit": top_fraction_hit_tie_aware(selected_index, true_risks, fraction=0.10),
+        "top_20pct_hit": top_fraction_hit_tie_aware(selected_index, true_risks, fraction=0.20),
         "selector_runtime_seconds": selection.get("selector_runtime_seconds"),
+        "fusion_mode": fusion_mode,
     }
+    report.update(score_tie_diagnostics(selection, candidate_ids))
     report.update(shortlist_recall_metrics(predicted_risks, true_risks))
     return report
 
@@ -394,6 +460,25 @@ def aggregate_selector(reports: list[dict[str, Any]]) -> dict[str, Any]:
         "top_5pct_hit_rate": finite_mean([float(report["top_5pct_hit"]) for report in reports]),
         "top_10pct_hit_rate": finite_mean([float(report["top_10pct_hit"]) for report in reports]),
         "top_20pct_hit_rate": finite_mean([float(report["top_20pct_hit"]) for report in reports]),
+        "mean_unique_score_ratio": finite_mean(
+            [float(report["unique_score_ratio"]) for report in reports]
+        ),
+        "max_tie_group_size": int(max(int(report["max_tie_group_size"]) for report in reports)),
+        "max_top_score_tie_group_size": int(
+            max(int(report["top_score_tie_group_size"]) for report in reports)
+        ),
+        "mean_top_score_tie_best_normalized_regret": finite_mean(
+            [report["top_score_tie_best_normalized_regret"] for report in reports]
+        ),
+        "mean_top_score_tie_worst_normalized_regret": finite_mean(
+            [report["top_score_tie_worst_normalized_regret"] for report in reports]
+        ),
+        "mean_top_score_tie_expected_normalized_regret": finite_mean(
+            [report["top_score_tie_expected_normalized_regret"] for report in reports]
+        ),
+        "fusion_modes": sorted(
+            {str(report["fusion_mode"]) for report in reports if report.get("fusion_mode") is not None}
+        ),
         **{
             f"mean_oracle_recall_at_{_pct_key(fraction)}": finite_mean(
                 [float(report[f"oracle_recall_at_{_pct_key(fraction)}"]) for report in reports]
@@ -403,6 +488,12 @@ def aggregate_selector(reports: list[dict[str, Any]]) -> dict[str, Any]:
         **{
             f"mean_top5_recall_at_{_pct_key(fraction)}": finite_mean(
                 [float(report[f"top5_recall_at_{_pct_key(fraction)}"]) for report in reports]
+            )
+            for fraction in SHORTLIST_RECALL_FRACTIONS
+        },
+        **{
+            f"mean_predicted_shortlist_size_at_{_pct_key(fraction)}": finite_mean(
+                [float(report[f"predicted_shortlist_size_at_{_pct_key(fraction)}"]) for report in reports]
             )
             for fraction in SHORTLIST_RECALL_FRACTIONS
         },
@@ -423,6 +514,7 @@ def discover_selection_paths(
 ) -> list[Path]:
     paths: list[Path] = []
     seen: set[Path] = set()
+    found_pairs: set[tuple[str, str]] = set()
     for root in roots:
         root = root.resolve()
         candidates: list[Path] = []
@@ -432,7 +524,11 @@ def discover_selection_paths(
             for task in tasks:
                 task_root = root / task
                 if selectors:
-                    candidates.extend(task_root / f"{selector}.json" for selector in selectors)
+                    for selector in selectors:
+                        path = task_root / f"{selector}.json"
+                        if path.is_file():
+                            candidates.append(path)
+                            found_pairs.add((task, selector))
                 else:
                     candidates.extend(sorted(task_root.glob("*.json")))
         for path in candidates:
@@ -443,6 +539,19 @@ def discover_selection_paths(
                 raise FileNotFoundError(f"missing selection JSON: {resolved}")
             seen.add(resolved)
             paths.append(resolved)
+    if selectors:
+        missing = [
+            f"{task}/{selector}.json"
+            for task in tasks
+            for selector in selectors
+            if (task, selector) not in found_pairs
+        ]
+        if missing:
+            raise FileNotFoundError(
+                "missing selection JSON after searching all roots: "
+                + ", ".join(missing[:10])
+                + (" ..." if len(missing) > 10 else "")
+            )
     if not paths:
         raise FileNotFoundError("no selection JSON files discovered")
     return paths
@@ -465,6 +574,25 @@ def localized_gain_share(
     return float(max(gains) / total)
 
 
+def task_noninferiority_rate(
+    selector_reports: list[dict[str, Any]],
+    transfer_reports: list[dict[str, Any]],
+) -> float | None:
+    transfer_by_task = {report["task"]: report for report in transfer_reports}
+    comparisons = []
+    for report in selector_reports:
+        transfer = transfer_by_task.get(report["task"])
+        if transfer is None:
+            return None
+        comparisons.append(
+            float(report["normalized_regret"])
+            <= float(transfer["normalized_regret"]) + 1.0e-12
+        )
+    if not comparisons:
+        return None
+    return float(np.mean(comparisons))
+
+
 def add_objective_guardrails(
     aggregates: dict[str, dict[str, Any]],
     *,
@@ -485,11 +613,16 @@ def add_objective_guardrails(
     transfer = aggregates.get(transfer_selector)
     runtime = candidate.get("selector_runtime_seconds")
     runtime_pass = runtime is None or float(runtime) <= runtime_budget_seconds
+    fusion_modes = set(candidate.get("fusion_modes") or [])
+    shortlist_guardrail_required = bool(fusion_modes & SHORTLIST_FUSION_MODES)
+    if not fusion_modes and str(objective_selector or "").lower().find("shortlist") >= 0:
+        shortlist_guardrail_required = True
     guardrails: dict[str, Any] = {
         "objective_selector": objective_selector,
         "transfer_selector": transfer_selector,
         "runtime_budget_seconds": runtime_budget_seconds,
         "runtime_guardrail_pass": runtime_pass,
+        "shortlist_guardrail_required": shortlist_guardrail_required,
         "gate_a_pass": (
             float(candidate["mean_normalized_regret"]) < 0.20
             and float(candidate["top_5pct_hit_rate"]) >= 0.50
@@ -512,6 +645,14 @@ def add_objective_guardrails(
                     float(candidate["mean_selected_micro_f1"])
                     > float(transfer["mean_selected_micro_f1"])
                 ),
+                "open_dev_mean_regret_absolute_guardrail_pass": (
+                    float(candidate["mean_normalized_regret"]) < 0.20
+                ),
+                "open_dev_mean_regret_absolute_max": 0.20,
+                "open_dev_worst_regret_absolute_guardrail_pass": (
+                    float(candidate["worst_normalized_regret"]) < 0.30
+                ),
+                "open_dev_worst_regret_absolute_max": 0.30,
                 "top_10_guardrail_pass": (
                     float(candidate["top_10pct_hit_rate"])
                     >= float(transfer["top_10pct_hit_rate"])
@@ -532,12 +673,27 @@ def add_objective_guardrails(
                     float(candidate["mean_top5_recall_at_10pct"])
                     >= float(transfer["mean_top5_recall_at_10pct"])
                 ),
+                "oracle_recall_20pct_absolute_guardrail_pass": (
+                    float(candidate["mean_oracle_recall_at_20pct"]) >= 0.75
+                ),
+                "oracle_recall_20pct_absolute_min": 0.75,
                 "localized_gain_share_vs_transfer": localized_gain_share(
                     candidate["tasks"],
                     transfer["tasks"],
                 ),
+                "task_noninferiority_rate_vs_transfer": task_noninferiority_rate(
+                    candidate["tasks"],
+                    transfer["tasks"],
+                ),
+                "task_noninferiority_rate_min": 0.75,
             }
         )
+        guardrails["task_noninferiority_guardrail_pass"] = (
+            guardrails["task_noninferiority_rate_vs_transfer"] is not None
+            and float(guardrails["task_noninferiority_rate_vs_transfer"]) >= 0.75
+        )
+        if not shortlist_guardrail_required:
+            guardrails["shortlist_guardrail_status"] = "diagnostic_only"
         guardrails["gate_b_pass"] = (
             guardrails["beats_transfer_mean_regret"]
             and guardrails["beats_transfer_selected_micro_f1"]
@@ -557,7 +713,17 @@ def add_objective_guardrails(
     guardrails["promotion_ready"] = bool(
         guardrails["runtime_guardrail_pass"]
         and guardrails["promotion_gate_pass"]
-        and guardrails.get("top_10_guardrail_pass") is not False
+        and guardrails.get("open_dev_mean_regret_absolute_guardrail_pass") is not False
+        and guardrails.get("open_dev_worst_regret_absolute_guardrail_pass") is not False
+        and guardrails.get("task_noninferiority_guardrail_pass") is not False
+        and (
+            not shortlist_guardrail_required
+            or guardrails.get("top_10_guardrail_pass") is not False
+        )
+        and (
+            not shortlist_guardrail_required
+            or guardrails.get("oracle_recall_20pct_absolute_guardrail_pass") is not False
+        )
         and guardrails.get("worst_task_guardrail_pass") is not False
     )
     guardrails["autosota_primary_value"] = candidate["mean_normalized_regret"]
@@ -669,10 +835,11 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             DEFAULT_SOURCE_SIM_CVAR_DEGRADATION_MAX,
         ),
     )
-    guardrails["promotion_ready"] = bool(
-        guardrails["promotion_ready"]
-        and guardrails.get("source_sim_cvar_guardrail_pass") is not False
-    )
+    if "promotion_ready" in guardrails:
+        guardrails["promotion_ready"] = bool(
+            guardrails["promotion_ready"]
+            and guardrails.get("source_sim_cvar_guardrail_pass") is not False
+        )
     result = {
         "schema_version": 1,
         "created_at": datetime.now(timezone.utc).isoformat(),

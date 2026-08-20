@@ -79,21 +79,29 @@ artifacts and enforces GPU 7 plus zero target-label access.
 `run_reliable_grid.py`, and `freeze_reliable_selector.py` implement the next
 conservative selector direction. They consume already generated SPECTRA and
 Transfer Score selection JSON files for the same candidate bank, convert each
-score vector to deterministic percentile ranks, and emit new minimized
+score vector to tie-aware percentile midranks, and emit new minimized
 rank-fusion scores:
 
 ```text
-score = (1 - covariance_shrinkage) * rank(SPECTRA)
+score = (1 - spectra_rank_shrinkage) * rank(SPECTRA)
       + transfer_score_weight * rank(Transfer Score)
       + uncertainty_weight * rank(transport/source uncertainty)
 ```
+
+The CLI keeps `--covariance-shrinkage` as a backward-compatible argument name,
+but this post-hoc rank fusion step does not recompute `d + 2 gamma c`. Actual
+covariance shrinkage must be produced inside `spectra_cal.py` and recorded in
+the SPECTRA selector diagnostics.
 
 The same post-selector also supports the two directional shortlist controls
 from the v3 plan: Transfer Score shortlist followed by SPECTRA reranking, and
 SPECTRA shortlist followed by Transfer Score reranking. The `support_adaptive`
 mode reads the label-free covariance gamma stored by SPECTRA diagnostics and
-uses it as the mixture weight between SPECTRA rank and Transfer Score rank,
-falling back to `1 - covariance_shrinkage` for older SPECTRA JSON files.
+uses it as the normalized mixture weight between SPECTRA rank and Transfer
+Score rank, falling back to `1 - covariance_shrinkage` for older SPECTRA JSON
+files. Shortlist/rerank modes use a hard exclusion barrier outside the selected
+shortlist, so an out-of-shortlist candidate cannot win because of score-scale
+artifacts.
 
 This post-selector reads no candidate artifacts and no target labels. Its
 parameters must be selected by source leave-one-shift-family-out validation or

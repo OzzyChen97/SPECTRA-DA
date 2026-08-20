@@ -21,6 +21,7 @@ from typing import Any
 import numpy as np
 
 SCHEMA_VERSION = 1
+SHORTLIST_EXCLUSION_SCORE = 1.0e12
 FUSION_MODES = (
     "rank_fusion",
     "transfer_shortlist_spectra_rerank",
@@ -80,12 +81,31 @@ def load_selection(path: Path) -> dict[str, Any]:
 
 
 def percentile_ranks(scores: dict[str, float], direction: str) -> dict[str, float]:
-    """Return deterministic ranks in [0, 1], with lower always better."""
+    """Return midranks in [0, 1], with lower always better.
+
+    Equal scores receive the same average percentile rank.  This avoids letting
+    candidate-id ordering create artificial ranking differences for selectors
+    with plateaued or intentionally tied scores.
+    """
 
     reverse = direction == "maximize"
-    ordered = sorted(scores, key=lambda candidate: (-scores[candidate], candidate) if reverse else (scores[candidate], candidate))
+    ordered = sorted(
+        scores,
+        key=lambda candidate: -scores[candidate] if reverse else scores[candidate],
+    )
     denominator = max(1, len(ordered) - 1)
-    return {candidate: rank / denominator for rank, candidate in enumerate(ordered)}
+    ranks: dict[str, float] = {}
+    start = 0
+    while start < len(ordered):
+        value = scores[ordered[start]]
+        stop = start + 1
+        while stop < len(ordered) and scores[ordered[stop]] == value:
+            stop += 1
+        midrank = 0.5 * (start + stop - 1) / denominator
+        for candidate in ordered[start:stop]:
+            ranks[candidate] = float(midrank)
+        start = stop
+    return ranks
 
 
 def top_fraction_candidates(
@@ -99,7 +119,8 @@ def top_fraction_candidates(
         raise ValueError("shortlist_fraction must lie in (0, 1]")
     ordered = sorted(ranks, key=lambda candidate: (ranks[candidate], candidate))
     cutoff = max(1, math.ceil(fraction * len(ordered)))
-    return set(ordered[:cutoff])
+    cutoff_rank = ranks[ordered[cutoff - 1]]
+    return {candidate for candidate, rank in ranks.items() if rank <= cutoff_rank}
 
 
 def covariance_confidence(
@@ -197,7 +218,11 @@ def reliable_rank_fusion(
             fallback_shrinkage=covariance_shrinkage,
         )
         spectra_weight = covariance_gamma / calibration_temperature
-        transfer_weight = (1.0 - covariance_gamma) * max(1.0, transfer_score_weight)
+        transfer_weight = (1.0 - covariance_gamma) * transfer_score_weight
+        normalizer = spectra_weight + transfer_weight
+        if normalizer > 0.0:
+            spectra_weight /= normalizer
+            transfer_weight /= normalizer
         fused_scores = {
             candidate: float(
                 spectra_weight * spectra_rank[candidate]
@@ -216,7 +241,7 @@ def reliable_rank_fusion(
                 spectra_rank[candidate]
                 + uncertainty_weight * uncertainty_rank[candidate]
                 if candidate in selected_shortlist
-                else 1.0 + transfer_rank[candidate]
+                else SHORTLIST_EXCLUSION_SCORE + transfer_rank[candidate]
             )
             for candidate in candidates
         }
@@ -230,7 +255,7 @@ def reliable_rank_fusion(
                 transfer_rank[candidate]
                 + uncertainty_weight * uncertainty_rank[candidate]
                 if candidate in selected_shortlist
-                else 1.0 + spectra_rank[candidate]
+                else SHORTLIST_EXCLUSION_SCORE + spectra_rank[candidate]
             )
             for candidate in candidates
         }
@@ -260,13 +285,21 @@ def reliable_rank_fusion(
             ),
             "uncertainty_weight": float(uncertainty_weight),
             "transfer_score_weight": float(transfer_score_weight),
+            "spectra_rank_shrinkage": float(covariance_shrinkage),
             "covariance_shrinkage": float(covariance_shrinkage),
+            "covariance_shrinkage_note": (
+                "post-hoc rank-fusion compatibility alias; actual covariance "
+                "shrinkage must be produced by spectra_cal.py diagnostics"
+            ),
             "calibration_temperature": float(calibration_temperature),
             "fusion_mode": fusion_mode,
             "shortlist_fraction": float(shortlist_fraction),
             "covariance_gamma": covariance_gamma,
             "covariance_gamma_source": covariance_gamma_source,
             "shortlist_size": len(selected_shortlist) if selected_shortlist is not None else None,
+            "shortlist_exclusion_score": (
+                SHORTLIST_EXCLUSION_SCORE if selected_shortlist is not None else None
+            ),
             "shortlist_owner": (
                 "transfer_score"
                 if fusion_mode == "transfer_shortlist_spectra_rerank"

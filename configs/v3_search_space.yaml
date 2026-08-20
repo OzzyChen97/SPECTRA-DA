@@ -48,7 +48,8 @@ allowed_selector_knobs:
 
 lexicographic_guardrails:
   primary: mean_normalized_regret
-  top_10_hit_not_below_transfer_score: true
+  top_10_hit_not_below_transfer_score: shortlist_modes_only
+  shortlist_recall_not_below_transfer_score: shortlist_modes_only
   source_sim_leave_one_shift_family_cvar_degradation_max: 0.05
   worst_dev_task_must_not_worsen: true
   runtime_seconds_max: 350

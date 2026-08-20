@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from selector.objective_v2 import load_open_dev_truth, run
+from selector.objective_v2 import discover_selection_paths, load_open_dev_truth, run
 
 
 def _write_json(path: Path, document: dict) -> None:
@@ -20,10 +20,11 @@ def _selection(
     selector: str,
     scores: dict[str, float],
     direction: str = "minimize",
+    fusion_config: dict | None = None,
 ) -> dict:
     optimum = min(scores.values()) if direction == "minimize" else max(scores.values())
     selected = min(candidate for candidate, value in scores.items() if value == optimum)
-    return {
+    document = {
         "schema_version": 1,
         "task": task,
         "selector": selector,
@@ -37,6 +38,9 @@ def _selection(
         "protocol_violation_count": 0,
         "selector_runtime_seconds": 1.0,
     }
+    if fusion_config is not None:
+        document["fusion_config"] = fusion_config
+    return document
 
 
 def test_objective_v2_evaluates_open_dev_rank_fusion_inputs(tmp_path: Path) -> None:
@@ -107,6 +111,86 @@ def test_objective_v2_evaluates_open_dev_rank_fusion_inputs(tmp_path: Path) -> N
     assert result["guardrails"]["worst_task_guardrail_pass"]
     assert result["guardrails"]["source_sim_cvar_guardrail_pass"] is None
     assert result["guardrails"]["gate_b_pass"]
+
+
+def test_discover_selection_paths_searches_across_roots(tmp_path: Path) -> None:
+    task = "ACMv9_to_Citationv1"
+    baseline_root = tmp_path / "baseline"
+    repaired_root = tmp_path / "repaired"
+    _write_json(
+        baseline_root / task / "transfer_score.json",
+        _selection(
+            task=task,
+            selector="transfer_score",
+            scores={"a": 0.1, "b": 0.2},
+            direction="maximize",
+        ),
+    )
+    _write_json(
+        repaired_root / task / "spectra_reliable.json",
+        _selection(
+            task=task,
+            selector="spectra_reliable",
+            scores={"a": 0.1, "b": 0.2},
+        ),
+    )
+
+    paths = discover_selection_paths(
+        [baseline_root, repaired_root],
+        selectors=["transfer_score", "spectra_reliable"],
+        tasks=[task],
+    )
+
+    assert sorted(path.name for path in paths) == [
+        "spectra_reliable.json",
+        "transfer_score.json",
+    ]
+
+
+def test_objective_v2_all_selector_diagnostic_without_objective_selector(tmp_path: Path) -> None:
+    task = "ACMv9_to_Citationv1"
+    truth = {
+        "schema_version": 1,
+        "tasks": [
+            {
+                "task": task,
+                "candidate_bank_sha256": f"bank-{task}",
+                "candidate_truth": {
+                    "best": {"target_error": 0.10},
+                    "bad": {"target_error": 0.50},
+                },
+            }
+        ],
+    }
+    truth_path = tmp_path / "open_dev_truth.json"
+    _write_json(truth_path, truth)
+    root = tmp_path / "selectors"
+    for selector in ("transfer_score", "agreement_reference", "spectra_reliable"):
+        _write_json(
+            root / task / f"{selector}.json",
+            _selection(
+                task=task,
+                selector=selector,
+                scores={"best": 0.0, "bad": 1.0},
+            ),
+        )
+
+    result = run(
+        Namespace(
+            dev_truth_report=truth_path,
+            selection_root=[root],
+            selector=["transfer_score", "agreement_reference", "spectra_reliable"],
+            tasks=[task],
+            objective_selector=None,
+            transfer_selector="transfer_score",
+            expected_candidate_count=2,
+            runtime_budget_seconds=350.0,
+            output=None,
+        )
+    )
+
+    assert result["selector_count"] == 3
+    assert result["guardrails"]["status"] == "not_evaluated"
 
 
 def test_objective_v2_flags_worst_task_regression_vs_transfer_score(tmp_path: Path) -> None:
@@ -392,6 +476,205 @@ def test_objective_v2_reports_shortlist_recall_without_top1_success(tmp_path: Pa
     assert transfer["mean_oracle_recall_at_10pct"] == 0.0
     assert result["guardrails"]["oracle_recall_10pct_guardrail_pass"]
     assert result["guardrails"]["top5_recall_10pct_guardrail_pass"]
+
+
+def test_direct_selector_is_not_rejected_by_shortlist_guardrail(tmp_path: Path) -> None:
+    task = "ACMv9_to_Citationv1"
+    candidates = [f"c{i:02d}" for i in range(20)]
+    truth = {
+        "schema_version": 1,
+        "tasks": [
+            {
+                "task": task,
+                "candidate_bank_sha256": f"bank-{task}",
+                "candidate_truth": {
+                    candidate: {"target_error": 0.05 + 0.02 * index}
+                    for index, candidate in enumerate(candidates)
+                },
+            }
+        ],
+    }
+    truth_path = tmp_path / "open_dev_truth.json"
+    _write_json(truth_path, truth)
+
+    candidate_scores = {candidate: 100.0 + index for index, candidate in enumerate(candidates)}
+    candidate_scores["c03"] = 0.0
+    candidate_scores["c04"] = 0.1
+    candidate_scores["c05"] = 0.2
+    candidate_scores["c06"] = 0.3
+    transfer_scores = {candidate: 10.0 + index for index, candidate in enumerate(candidates)}
+    transfer_scores["c19"] = 100.0
+    transfer_scores["c00"] = 99.0
+
+    spectra_root = tmp_path / "spectra"
+    transfer_root = tmp_path / "transfer"
+    _write_json(
+        spectra_root / task / "agreement_reference.json",
+        _selection(task=task, selector="agreement_reference", scores=candidate_scores),
+    )
+    _write_json(
+        transfer_root / task / "transfer_score.json",
+        _selection(
+            task=task,
+            selector="transfer_score",
+            scores=transfer_scores,
+            direction="maximize",
+        ),
+    )
+
+    result = run(
+        Namespace(
+            dev_truth_report=truth_path,
+            selection_root=[spectra_root, transfer_root],
+            selector=None,
+            tasks=[task],
+            objective_selector="agreement_reference",
+            transfer_selector="transfer_score",
+            expected_candidate_count=20,
+            runtime_budget_seconds=350.0,
+            output=None,
+        )
+    )
+
+    guardrails = result["guardrails"]
+    assert not guardrails["oracle_recall_10pct_guardrail_pass"]
+    assert guardrails["shortlist_guardrail_required"] is False
+    assert guardrails["shortlist_guardrail_status"] == "diagnostic_only"
+    assert guardrails["gate_b_pass"]
+    assert guardrails["promotion_ready"]
+
+
+def test_shortlist_selector_is_rejected_by_shortlist_guardrail(tmp_path: Path) -> None:
+    task = "ACMv9_to_Citationv1"
+    candidates = [f"c{i:02d}" for i in range(20)]
+    truth = {
+        "schema_version": 1,
+        "tasks": [
+            {
+                "task": task,
+                "candidate_bank_sha256": f"bank-{task}",
+                "candidate_truth": {
+                    candidate: {"target_error": 0.05 + 0.02 * index}
+                    for index, candidate in enumerate(candidates)
+                },
+            }
+        ],
+    }
+    truth_path = tmp_path / "open_dev_truth.json"
+    _write_json(truth_path, truth)
+
+    candidate_scores = {candidate: 100.0 + index for index, candidate in enumerate(candidates)}
+    candidate_scores["c03"] = 0.0
+    candidate_scores["c04"] = 0.1
+    candidate_scores["c05"] = 0.2
+    candidate_scores["c06"] = 0.3
+    transfer_scores = {candidate: 10.0 + index for index, candidate in enumerate(candidates)}
+    transfer_scores["c19"] = 100.0
+    transfer_scores["c00"] = 99.0
+
+    spectra_root = tmp_path / "spectra"
+    transfer_root = tmp_path / "transfer"
+    _write_json(
+        spectra_root / task / "spectra_reliable_tsr.json",
+        _selection(
+            task=task,
+            selector="spectra_reliable_tsr",
+            scores=candidate_scores,
+            fusion_config={"fusion_mode": "transfer_shortlist_spectra_rerank"},
+        ),
+    )
+    _write_json(
+        transfer_root / task / "transfer_score.json",
+        _selection(
+            task=task,
+            selector="transfer_score",
+            scores=transfer_scores,
+            direction="maximize",
+        ),
+    )
+
+    result = run(
+        Namespace(
+            dev_truth_report=truth_path,
+            selection_root=[spectra_root, transfer_root],
+            selector=None,
+            tasks=[task],
+            objective_selector="spectra_reliable_tsr",
+            transfer_selector="transfer_score",
+            expected_candidate_count=20,
+            runtime_budget_seconds=350.0,
+            output=None,
+        )
+    )
+
+    guardrails = result["guardrails"]
+    assert not guardrails["oracle_recall_10pct_guardrail_pass"]
+    assert guardrails["shortlist_guardrail_required"] is True
+    assert guardrails["gate_b_pass"]
+    assert not guardrails["promotion_ready"]
+
+
+def test_objective_v2_reports_tie_diagnostics_and_tie_aware_shortlists(tmp_path: Path) -> None:
+    task = "ACMv9_to_Citationv1"
+    truth = {
+        "schema_version": 1,
+        "tasks": [
+            {
+                "task": task,
+                "candidate_bank_sha256": f"bank-{task}",
+                "candidate_truth": {
+                    "best": {"target_error": 0.10},
+                    "tied_worse": {"target_error": 0.20},
+                    "middle": {"target_error": 0.30},
+                    "bad": {"target_error": 0.50},
+                },
+            }
+        ],
+    }
+    truth_path = tmp_path / "open_dev_truth.json"
+    _write_json(truth_path, truth)
+
+    spectra_root = tmp_path / "spectra"
+    transfer_root = tmp_path / "transfer"
+    _write_json(
+        spectra_root / task / "agreement_reference.json",
+        _selection(
+            task=task,
+            selector="agreement_reference",
+            scores={"best": 0.0, "tied_worse": 0.0, "middle": 1.0, "bad": 2.0},
+        ),
+    )
+    _write_json(
+        transfer_root / task / "transfer_score.json",
+        _selection(
+            task=task,
+            selector="transfer_score",
+            scores={"best": 0.9, "tied_worse": 0.8, "middle": 0.7, "bad": 0.1},
+            direction="maximize",
+        ),
+    )
+
+    result = run(
+        Namespace(
+            dev_truth_report=truth_path,
+            selection_root=[spectra_root, transfer_root],
+            selector=None,
+            tasks=[task],
+            objective_selector="agreement_reference",
+            transfer_selector="transfer_score",
+            expected_candidate_count=4,
+            runtime_budget_seconds=350.0,
+            output=None,
+        )
+    )
+
+    report = result["selectors"]["agreement_reference"]["tasks"][0]
+    assert report["unique_score_ratio"] == pytest.approx(0.75)
+    assert report["top_score_tie_group_size"] == 2
+    assert report["top_score_tie_best_normalized_regret"] == pytest.approx(0.0)
+    assert report["top_score_tie_worst_normalized_regret"] > 0.0
+    assert report["oracle_recall_at_5pct"] == 1.0
+    assert report["predicted_shortlist_size_at_5pct"] == 2.0
 
 
 def test_objective_v2_rejects_sealed_truth_paths(tmp_path: Path) -> None:

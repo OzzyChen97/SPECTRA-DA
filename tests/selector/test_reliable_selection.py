@@ -56,6 +56,21 @@ def test_percentile_ranks_make_lower_always_better() -> None:
     }
 
 
+def test_percentile_ranks_use_midrank_for_ties() -> None:
+    assert percentile_ranks({"a": 1.0, "b": 1.0, "c": 3.0, "d": 4.0}, "minimize") == {
+        "a": pytest.approx(1.0 / 6.0),
+        "b": pytest.approx(1.0 / 6.0),
+        "c": pytest.approx(2.0 / 3.0),
+        "d": pytest.approx(1.0),
+    }
+    assert percentile_ranks({"a": 4.0, "b": 4.0, "c": 2.0, "d": 1.0}, "maximize") == {
+        "a": pytest.approx(1.0 / 6.0),
+        "b": pytest.approx(1.0 / 6.0),
+        "c": pytest.approx(2.0 / 3.0),
+        "d": pytest.approx(1.0),
+    }
+
+
 def test_reliable_rank_fusion_can_follow_transfer_score_prior() -> None:
     spectra = _selection(
         "spectra_robust",
@@ -142,6 +157,50 @@ def test_transfer_shortlist_spectra_rerank_uses_transfer_for_top_region() -> Non
     assert result["fusion_config"]["shortlist_size"] == 2
 
 
+def test_transfer_shortlist_is_a_hard_exclusion_region() -> None:
+    spectra = _selection(
+        "spectra_robust",
+        {
+            "outside_spectra_best": 0.01,
+            "inside_second": 0.02,
+            "inside_first": 0.03,
+            "outside_bad": 0.90,
+        },
+        "minimize",
+        uncertainty={
+            "outside_spectra_best": 0.0,
+            "inside_second": 100.0,
+            "inside_first": 200.0,
+            "outside_bad": 0.0,
+        },
+    )
+    transfer = _selection(
+        "transfer_score",
+        {
+            "outside_spectra_best": 0.10,
+            "inside_second": 0.90,
+            "inside_first": 0.80,
+            "outside_bad": 0.20,
+        },
+        "maximize",
+    )
+
+    result = reliable_rank_fusion(
+        spectra,
+        transfer,
+        uncertainty_weight=10.0,
+        transfer_score_weight=0.0,
+        covariance_shrinkage=0.0,
+        calibration_temperature=1.0,
+        selector_name="spectra_reliable_tsr",
+        fusion_mode="transfer_shortlist_spectra_rerank",
+        shortlist_fraction=0.5,
+    )
+
+    assert result["selected_candidate_id"] in {"inside_first", "inside_second"}
+    assert result["candidate_scores"]["outside_spectra_best"] > 1.0e11
+
+
 def test_spectra_shortlist_transfer_rerank_is_the_directional_control() -> None:
     spectra = _selection(
         "spectra_robust",
@@ -206,6 +265,47 @@ def test_support_adaptive_fusion_uses_spectra_covariance_gamma() -> None:
     )
     assert result["selected_candidate_id"] == "transfer_best"
     assert result["fusion_config"]["covariance_gamma"] == 0.0
+
+
+def test_support_adaptive_transfer_weight_is_not_clamped_to_one() -> None:
+    spectra = _selection(
+        "spectra_robust",
+        {"spectra_best": 0.01, "transfer_best": 0.02, "bad": 0.50},
+        "minimize",
+    )
+    spectra["transport_diagnostics"] = {
+        "covariance_shrinkage": {"mode": "pair_consistency", "gamma": 0.5}
+    }
+    transfer = _selection(
+        "transfer_score",
+        {"spectra_best": 0.10, "transfer_best": 0.90, "bad": 0.20},
+        "maximize",
+    )
+
+    no_transfer = reliable_rank_fusion(
+        spectra,
+        transfer,
+        uncertainty_weight=0.0,
+        transfer_score_weight=0.0,
+        covariance_shrinkage=0.0,
+        calibration_temperature=1.0,
+        selector_name="spectra_reliable_sa",
+        fusion_mode="support_adaptive",
+    )
+    with_transfer = reliable_rank_fusion(
+        spectra,
+        transfer,
+        uncertainty_weight=0.0,
+        transfer_score_weight=1.0,
+        covariance_shrinkage=0.0,
+        calibration_temperature=1.0,
+        selector_name="spectra_reliable_sa",
+        fusion_mode="support_adaptive",
+    )
+
+    assert no_transfer["candidate_scores"] != with_transfer["candidate_scores"]
+    assert no_transfer["selected_candidate_id"] == "spectra_best"
+    assert with_transfer["selected_candidate_id"] == "transfer_best"
 
 
 def test_reliable_rank_fusion_rejects_misaligned_selection_files() -> None:

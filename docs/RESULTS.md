@@ -11,6 +11,24 @@ mean normalized regret versus `0.2560` for SPECTRA-DA). The main empirical
 conclusion is therefore that covariance correction is useful when calibrated,
 but transport reliability under real shift is unresolved.
 
+## 675-candidate open-development update
+
+The current open-development evidence is based on the four pre-registered
+Gate-1 tasks with 675 candidates per task. It is not a sealed-final result.
+
+| Selector | Mean NRegret | Worst NRegret | CVaR-20% | Mean selected Micro-F1 | Top-10% hit |
+|---|---:|---:|---:|---:|---:|
+| Transfer Score | 0.216807 | 0.641791 | 0.641791 | 0.575664 | 0.500 |
+| Agreement Reference | 0.163016 | 0.222591 | 0.222591 | 0.594958 | 0.250 |
+| SPECTRA shortlist -> Transfer Score rerank @20% | 0.087507 | 0.223881 | 0.223881 | 0.623427 | 0.750 |
+
+The repaired shortlist/rerank selector is a strong open-development
+near-miss: it improves mean normalized regret by `59.64%` relative to Transfer
+Score and improves selected Micro-F1 by `0.04776`, but it is not promotion-ready
+because only `2/4` tasks are no worse than Transfer Score and oracle
+recall@20% is `0.50`, below the registered `0.75` shortlist guardrail. It must
+not be treated as the frozen "ours" selector for sealed evaluation.
+
 ## Final metrics
 
 | Metric | Value |

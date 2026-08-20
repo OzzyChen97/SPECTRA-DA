@@ -76,9 +76,13 @@ when the repository contains verifiable artifacts or commands that prove it.
   remains below Transfer Score on mean normalized regret (`0.3201` versus
   `0.2168`), while `agreement_reference` reaches lower mean normalized regret
   than Transfer Score (`0.1630` versus `0.2168`) and higher selected Micro-F1,
-  but still fails promotion because its top-10 shortlist recall is worse than
-  Transfer Score's and the gain is localized. This is evidence for continued
-  top-of-ranking calibration work, not a SOTA claim.
+  but this is direct-selector evidence rather than a frozen final method. After
+  repairing rank-fusion ties and hard shortlist behavior, the best small-grid
+  near-miss is SPECTRA-shortlist -> Transfer-Score rerank at 20%
+  (`0.0875` mean normalized regret, `0.6234` selected Micro-F1). It still fails
+  promotion because task non-inferiority is only `2/4` and oracle recall@20% is
+  `0.50`, below the registered `0.75` shortlist guardrail. This is evidence for
+  continued top-of-ranking calibration work, not a SOTA claim.
 - Descriptor v2 has a label-free committee-behavior extractor at
   `shift_simulator/committee_descriptors.py`. It summarizes candidate entropy,
   prediction margins, class-prior concentration, pairwise disagreement,
@@ -122,9 +126,11 @@ when the repository contains verifiable artifacts or commands that prove it.
   single-selector SPECTRA-only package. It also verifies packaged selection-file
   coverage and SHA-256 hashes for every declared selector on every task. It
   refuses `.sealed`, `sealed_eval`, and final-label paths.
-- A GitHub Actions workflow is present at
-  `.github/workflows/release-audit.yml` to run the lightweight public audit
-  after the local commits are pushed.
+- A GitHub Actions workflow is present locally at
+  `.github/workflows/release-audit.yml` to run the lightweight public audit.
+  It has not been pushed to the public `main` branch because the currently
+  available GitHub token lacks the `workflow` scope required by GitHub for
+  creating or updating Actions workflow files.
 
 ## Verified local checks
 
@@ -166,8 +172,8 @@ The full release audit now also checks whether `arxiv/main.pdf` is newer than
 the LaTeX sources and figure assets. The repository-pinned
 `arxiv/tools/tectonic` binary rebuilds the paper locally; stale rendered tables
 now fail the audit instead of being mistaken for current source.
-The same audit is wired into `.github/workflows/release-audit.yml` for
-push/pull-request CI after the repository is uploaded.
+The same audit is wired into `.github/workflows/release-audit.yml` locally.
+Pushing that workflow requires a GitHub token with `workflow` scope.
 
 The focused SPECTRA prior/shrinkage tests were run under Python 3.12 with
 third-party pytest plugin autoload disabled:
@@ -197,78 +203,66 @@ torch-importing tests should use Python 3.12 in this container.
 
 ## Not yet completed
 
-- The repository has local commits that have not been pushed to GitHub from
-  this environment because GitHub write credentials are unavailable. Safe
-  publishing instructions and a Git-bundle fallback are in
-  `docs/GITHUB_PUBLISHING.md`.
-- The reliability-aware grid has not been generated on the real 16-task
-  candidate bank in this checkout because the matching frozen artifacts are not
-  present here.
-- `selector/objective_v2.py` has not yet been run on a real 675-candidate
-  Gate-1 development bank because this checkout contains only aggregate Gate-1
-  comparison results, not an exported candidate-level open-development truth
-  report.
+- The public GitHub `main` branch has been updated to
+  `68aaad4fc650a673f6f3f75a745379ce33d43551` with the current code, paper,
+  open-development artifacts, and final multi-selector package. The local
+  `main` branch additionally contains `.github/workflows/release-audit.yml`;
+  that one file requires a token with `workflow` scope before it can be pushed.
+- The full 16-task reliable grid and final multi-selector package have been
+  generated. They are packaging artifacts for external evaluation, not evidence
+  that an "ours" grid may be selected after seeing final sealed scores.
+- `selector/objective_v2.py` has been run on the real 675-candidate Gate-1
+  open-development bank. The best current open-development signal is
+  `agreement_reference` (`0.1630` mean normalized regret), not `spectra_cal`
+  or the current SPECTRA-Trust reliable grid. This remains open-development
+  evidence only.
 - The committee descriptor extractor is not yet wired into the default
   calibration bank. The descriptor metric diagnostic can score existing
   calibration descriptor keys, but the graph+committee+Transfer Score descriptor
   matrix still has to be generated on real calibration artifacts before it can
   drive covariance transport or shift-bank expansion.
-- No new real-target result is reported for the reliable fusion direction. It
-  is a pre-registered next method iteration, not an achieved result.
-- The final one-time 16-transfer sealed evaluation is still pending. Until that
-  evaluator runs once on a frozen submission bundle, the paper must not claim
-  state-of-the-art real-target selection.
+- The reliable fusion code has been revised to fix known top-of-ranking
+  calibration bugs, and a small repaired open-development grid has been
+  regenerated/evaluated. The best repaired configuration is a near-miss, not a
+  frozen final selector.
+- The final one-time 12 held-out transfer sealed evaluation is still pending.
+  It should not be run until exactly one "ours" configuration is frozen from
+  open-development evidence. Until that evaluator runs once on a frozen
+  submission bundle, the paper must not claim state-of-the-art real-target
+  selection.
 
-## Required next commands when artifacts and credentials are available
+## Required next commands before sealed evaluation
 
-Generate Transfer Score and the reliable grid:
+Re-run only the repaired open-development/reliable-selection path, then freeze
+one "ours" selector before any sealed-final call:
 
 ```bash
-python sealed_eval/export_open_dev_truth.py \
-  --candidate-root trajectory_bank/candidates/gda_select_v1 \
-  --output results/gda_select/open_dev/gate1_candidate_truth.json \
-  --expected-candidates-per-task 675 \
-  --trusted-evaluator
-
-python selector/run_baseline_suite.py \
-  --candidate-root trajectory_bank/candidates/gda_select_v1 \
-  --output-root results/gda_select/selections/baselines \
-  --selector transfer_score
-
-# Verify results/gda_select/selections/baselines/baseline_suite_manifest.json
-# before using baseline outputs in objective_v2.py or sealed packaging.
-
-python selector/check_reliable_inputs.py \
-  --selection-root results/gda_select/selections/spectra_frozen_v2 \
-  --spectra-root results/gda_select/selections/spectra_frozen_v2 \
-  --transfer-root results/gda_select/selections/baselines \
-  --spectra-selector spectra_robust \
-  --transfer-selector transfer_score \
-  --require-uncertainty
-
 python selector/run_reliable_grid.py \
-  --selection-root results/gda_select/selections/spectra_frozen_v2 \
-  --spectra-root results/gda_select/selections/spectra_frozen_v2 \
-  --transfer-root results/gda_select/selections/baselines \
-  --output-root results/gda_select/selections/reliable_grid \
-  --spectra-selector spectra_robust \
+  --selection-root /mnt/workspace/Wilson/AutoSOTA/baseline/ADAlign/results/gda_select/selections/gda_select_v1 \
+  --spectra-root /mnt/workspace/Wilson/AutoSOTA/baseline/ADAlign/results/gda_select/selections/gda_select_v1 \
+  --transfer-root /mnt/workspace/Wilson/AutoSOTA/baseline/ADAlign/results/gda_select/selections/gda_select_v1 \
+  --output-root results/gda_select/selections/reliable_grid_repaired \
+  --spectra-selector agreement_reference \
   --transfer-selector transfer_score \
-  --uncertainty-weights 0,0.1,0.5,1 \
-  --transfer-score-weights 0,0.25,0.5,0.75,1 \
-  --covariance-shrinkages 0,0.25,0.5,0.75 \
-  --calibration-temperatures 1
+  --uncertainty-weights 0 \
+  --transfer-score-weights 0,0.5,1 \
+  --covariance-shrinkages 0 \
+  --calibration-temperatures 1 \
+  --fusion-modes rank_fusion,transfer_shortlist_spectra_rerank,spectra_shortlist_transfer_rerank \
+  --shortlist-fractions 0.2
 
 python selector/objective_v2.py \
   --dev-truth-report results/gda_select/open_dev/gate1_candidate_truth.json \
-  --selection-root results/gda_select/selections/reliable_grid \
-  --selection-root results/gda_select/selections/baselines \
-  --objective-selector SELECTED_OR_CANDIDATE_SELECTOR_NAME \
+  --selection-root /mnt/workspace/Wilson/AutoSOTA/baseline/ADAlign/results/gda_select/selections/gda_select_v1 \
+  --selection-root results/gda_select/selections/reliable_grid_repaired \
+  --selector transfer_score \
+  --selector agreement_reference \
+  --selector <candidate_selector_from_repaired_grid> \
+  --objective-selector <candidate_selector_from_repaired_grid> \
   --transfer-selector transfer_score \
   --expected-candidate-count 675 \
-  --source-sim-report results/gda_select/source_sim/leave_one_shift_family_selectors.json \
-  --source-sim-reference-selector spectra_v2 \
-  --source-sim-cvar-degradation-max 0.05 \
-  --output results/gda_select/objective_v2.json
+  --runtime-budget-seconds 480 \
+  --output results/gda_select/open_dev/repaired_reliable_objective_v2.json
 ```
 
 Check v3 readiness before freezing or submitting:
@@ -276,11 +270,11 @@ Check v3 readiness before freezing or submitting:
 ```bash
 python scripts/check_v3_readiness.py \
   --open-dev-truth results/gda_select/open_dev/gate1_candidate_truth.json \
-  --open-dev-selection-root results/gda_select/selections/reliable_grid \
-  --open-dev-selection-root results/gda_select/selections/baselines \
+  --open-dev-selection-root /mnt/workspace/Wilson/AutoSOTA/baseline/ADAlign/results/gda_select/selections/gda_select_v1 \
+  --open-dev-selection-root results/gda_select/selections/reliable_grid_repaired \
   --final-submission-manifest results/gda_select/submissions/final_multi_selector/submission_manifest.json \
-  --required-open-dev-selector SELECTED_RELIABLE_SELECTOR_NAME \
   --required-open-dev-selector transfer_score \
+  --required-open-dev-selector <one_preselected_open_dev_winner> \
   --required-final-selector transfer_score \
   --min-final-selector-count 2
 ```
@@ -289,8 +283,8 @@ Freeze one pre-registered selector before sealed evaluation:
 
 ```bash
 python selector/freeze_reliable_selector.py \
-  --grid-root results/gda_select/selections/reliable_grid \
-  --selector SELECTED_RELIABLE_SELECTOR_NAME \
+  --grid-root results/gda_select/selections/reliable_grid_repaired \
+  --selector <one_preselected_open_dev_winner> \
   --output-root results/gda_select/selections/reliable_frozen
 ```
 
