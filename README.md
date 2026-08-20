@@ -127,7 +127,9 @@ CUDA_VISIBLE_DEVICES=7 python shift_simulator/build_calibration_suite.py \
 CUDA_VISIBLE_DEVICES=7 python selector/run_spectra_suite.py \
   --candidate-root trajectory_bank/candidates/gda_select_v1 \
   --calibration-root trajectory_bank/calibration/gda_select_v1 \
-  --output results/spectra.json
+  --sidecar-manifest configs/spectra_sidecars_16.json \
+  --output-root results/gda_select/selections/spectra_frozen_v2 \
+  --device cuda:0
 ```
 
 See [docs/REPRODUCIBILITY.md](docs/REPRODUCIBILITY.md) for artifact contracts,

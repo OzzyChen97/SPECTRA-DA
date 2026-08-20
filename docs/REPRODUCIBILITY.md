@@ -24,12 +24,28 @@ because they are large and machine-specific. Generate them locally, copy
 `configs/refinement_sidecars.example.json` to
 `configs/refinement_sidecars_v1.json`, then replace each path and hash.
 
-The manifest must:
+The four-task refinement manifest must:
 
 - cover all four frozen development tasks;
 - report zero target-label access and zero protocol violations;
 - match the candidate-bank ordering and spectral configuration;
 - pass the source-node rank gate for feature-mask grids.
+
+For frozen deployment, combine the development sidecars with the remaining
+task sidecars and validate them against all 16 base calibration artifacts:
+
+```bash
+python scripts/build_sidecar_manifest.py \
+  --calibration-root trajectory_bank/calibration/gda_select_v1 \
+  --base-manifest configs/refinement_sidecars_v1.json \
+  --sidecar-root /path/to/remaining/combined_sidecars \
+  --sidecar-root /path/to/remaining/lifted_sidecars \
+  --output configs/spectra_sidecars_16.json
+```
+
+The builder rejects incomplete task coverage, stale candidate ordering,
+spectral-config or parent-calibration mismatches, artifact-hash mismatches,
+target-label access, and protocol violations.
 
 ## Frozen refinement command
 
@@ -52,6 +68,30 @@ varies by host; the frozen rerun was `327.394s`, with a hard guardrail of
 `480s`. All non-runtime values should match the release metrics when the same
 candidate bank, calibration arrays, sidecars, package versions, and random
 seeds are used.
+
+## Frozen 16-task selector generation
+
+After freezing the sidecar manifest and selector configuration, generate a new
+immutable selection root. This step uses public target predictions and
+source-only calibration artifacts, but never target labels:
+
+```bash
+CUDA_VISIBLE_DEVICES=7 python selector/run_spectra_suite.py \
+  --candidate-root trajectory_bank/candidates/gda_select_v1 \
+  --calibration-root trajectory_bank/calibration/gda_select_v1 \
+  --sidecar-manifest configs/spectra_sidecars_16.json \
+  --config configs/search_space.yaml \
+  --output-root results/gda_select/selections/spectra_frozen_v2 \
+  --device cuda:0
+```
+
+If public graph artifacts live outside the release checkout, set
+`SPECTRA_PUBLIC_ROOT=/absolute/path/to/trajectory_bank/public`. The loader still
+rejects any public graph containing a label field.
+
+Do not overwrite earlier selector outputs. Hash and submit the complete frozen
+selection root to a separately operated evaluator; the local development
+boundary is not sufficient evidence for a final sealed result.
 
 ## Hidden evaluation
 

@@ -44,6 +44,12 @@ otherwise it falls back to covariance-corrected disagreement recovery. This
 two-sigma gate is observable without target labels and prevents unsupported
 shift extrapolation from dominating model selection.
 
+The deployment selector optionally accepts a frozen source-only sidecar
+manifest. Every sidecar is hash-checked against the base candidate ordering,
+spectral configuration, and parent calibration before its simulated risks and
+covariances are merged. `scripts/build_sidecar_manifest.py` validates complete
+16-task coverage; it does not read target labels.
+
 For attribution, `spectra_cal.py --spectral-mode global` collapses the same
 tight-frame disagreements, simulated band risks, and simulated band
 covariances into one global energy channel before transport and recovery.  It
@@ -60,3 +66,10 @@ and conditional-structure shifts. It compares the original recovery, an
 always-on curvature prior, a continuous match-adaptive prior, and the two-sigma
 support gate. The diagnostic reads only frozen source-simulated calibration
 artifacts and enforces GPU 7 plus zero target-label access.
+
+`core_ablation.py` evaluates the frozen four-task source-simulated folds under
+equal-information controls. It verifies global/spectral linear equivalence and
+separately removes covariance correction, band conditioning, robust refitting,
+and bootstrap uncertainty. The frozen aggregate is stored in
+`results/core_ablation.json`; it shows that covariance correction is the main
+gain, while the spectral top-1 increment is modest on the current folds.

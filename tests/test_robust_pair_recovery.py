@@ -60,3 +60,32 @@ def test_exact_pair_system_is_preserved_when_residual_scale_is_zero() -> None:
     np.testing.assert_allclose(recovered[:, 0], true_risk, atol=1e-10, rtol=0.0)
     assert diagnostics[0]["min_pair_weight"] == 1.0
     assert diagnostics[0]["max_pair_weight"] == 1.0
+
+
+def test_robust_flag_disables_tail_clipping_and_refit() -> None:
+    model_count = 8
+    true_risk = np.linspace(0.1, 0.8, model_count)
+    _, first, second = pair_design(model_count)
+    observations = true_risk[first] + true_risk[second]
+    observations[0] += 2.0
+    matrix = disagreement_matrix(observations, model_count)
+    covariance = np.zeros((1, model_count, model_count), dtype=np.float64)
+
+    plain, _ = corrected_band_risk_recovery(
+        matrix,
+        true_risk[:, None],
+        covariance,
+        ridge=0.0,
+        pair_weight_power=0.0,
+        robust=False,
+    )
+    robust, _ = corrected_band_risk_recovery(
+        matrix,
+        true_risk[:, None],
+        covariance,
+        ridge=0.0,
+        pair_weight_power=0.0,
+        robust=True,
+    )
+
+    assert not np.allclose(plain, robust)

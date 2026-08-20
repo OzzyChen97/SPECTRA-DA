@@ -22,6 +22,7 @@ results/**/*.npz
 results/**/*.pt
 results/**/*.pth
 results/**/*.ckpt
+results/submissions/*.tar.gz
 
 # Local manifests may contain machine-specific artifact paths
 configs/refinement_sidecars_v1.json
@@ -30,3 +31,14 @@ configs/refinement_sidecars_v1.json
 .DS_Store
 .idea/
 .vscode/
+
+# Local paper build/cache artifacts
+arxiv/.matplotlib/
+arxiv/preview/
+arxiv/tools/
+arxiv/*.aux
+arxiv/*.bbl
+arxiv/*.blg
+arxiv/*.log
+arxiv/*.out
+arxiv/*.xdv

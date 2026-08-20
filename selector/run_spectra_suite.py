@@ -47,6 +47,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--calibration-root", type=Path, required=True)
     parser.add_argument("--output-root", type=Path, required=True)
     parser.add_argument("--config", type=Path, default=REPO / "configs" / "search_space.yaml")
+    parser.add_argument(
+        "--sidecar-manifest",
+        type=Path,
+        help="frozen source-only calibration sidecars shared across tasks",
+    )
     parser.add_argument("--task", action="append", dest="tasks")
     parser.add_argument("--device", default="cuda:0")
     parser.add_argument("--skip-static", action="store_true")
@@ -100,6 +105,11 @@ def main() -> None:
                     bootstrap_samples=int(active["bootstrap_samples"]),
                     bootstrap_seed=8801,
                     uncertainty_beta=float(active["uncertainty_beta"]),
+                    sidecar_manifest=(
+                        args.sidecar_manifest.resolve()
+                        if args.sidecar_manifest is not None
+                        else None
+                    ),
                     spectral_mode=spectral_mode,
                 )
                 result = select_calibrated(namespace)

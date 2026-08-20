@@ -240,6 +240,7 @@ def corrected_band_risk_recovery(
     ridge: float,
     pair_weight_power: float,
     prior_strength: float = 0.0,
+    robust: bool = True,
     correlation_epsilon: float = 0.05,
     max_pair_weight: float = 20.0,
 ) -> tuple[np.ndarray, list[dict[str, Any]]]:
@@ -283,19 +284,20 @@ def corrected_band_risk_recovery(
         # unlabeled pair-observation distribution itself; this keeps the
         # covariance-corrected signal while preventing a single extreme pair
         # from setting the NNLS scale.
-        observation_center = float(np.median(observations))
-        observation_scale = float(
-            1.4826 * np.median(np.abs(observations - observation_center))
-        )
-        if observation_scale > 1e-10:
-            observation_cutoff = 4.685 * observation_scale
-            observations = np.clip(
-                observations,
-                max(0.0, observation_center - observation_cutoff),
-                observation_center + observation_cutoff,
+        if robust:
+            observation_center = float(np.median(observations))
+            observation_scale = float(
+                1.4826 * np.median(np.abs(observations - observation_center))
             )
-        else:
-            observations = np.maximum(observations, 0.0)
+            if observation_scale > 1e-10:
+                observation_cutoff = 4.685 * observation_scale
+                observations = np.clip(
+                    observations,
+                    max(0.0, observation_center - observation_cutoff),
+                    observation_center + observation_cutoff,
+                )
+            else:
+                observations = np.maximum(observations, 0.0)
         denominator = np.sqrt(
             np.maximum(prior_risk[first, band], 1e-12)
             * np.maximum(prior_risk[second, band], 1e-12)
@@ -341,7 +343,7 @@ def corrected_band_risk_recovery(
         residual_scale = float(
             1.4826 * np.median(np.abs(initial_residual - residual_center))
         )
-        if residual_scale > 1e-10:
+        if robust and residual_scale > 1e-10:
             standardized = np.abs(initial_residual - residual_center) / residual_scale
             # Tukey's bounded redescending M-estimator suppresses pair
             # identities that are incompatible with the consensus fit while

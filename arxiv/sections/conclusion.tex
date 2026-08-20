@@ -1,0 +1,26 @@
+\section{Conclusion}
+
+This paper reframes UGDA evaluation around a deployment requirement: selecting
+an algorithm, configuration, seed, and checkpoint without reading target
+labels. \benchmark makes this requirement auditable through immutable
+trajectories and sealed labels, while \method estimates target risk from a
+tight graph-spectral decomposition of candidate disagreement. The resulting
+analysis identifies cross-model error covariance as the central hidden term
+and quantifies how covariance transport error affects recovered risk. In the
+current frozen development scope, the method lowers mean normalized regret by
+$37.9\%$, ranks the candidate bank accurately near its optimum, and satisfies
+the zero-access protocol on source-simulated folds. On the separately sealed
+real-target Gate-1 comparison, however, Transfer Score remains stronger in
+top-1 regret ($0.1467$ versus $0.2560$), so the current evidence does not
+support a state-of-the-art claim.
+
+The core ablation sharpens the technical conclusion. Covariance correction is
+essential on source-simulated folds, while spectral band conditioning provides
+only a modest, statistically inconclusive improvement over an equal-information
+global covariance control. Robust refitting and bootstrap uncertainty do not
+drive the result and are therefore implementation details, not contributions.
+
+The central limitation is transportability: current unlabeled descriptors do
+not reliably predict risk-correction geometry for unseen shift families. This
+must be addressed before the frozen 16-transfer evaluation, without additional
+target-specific tuning.

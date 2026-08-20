@@ -38,6 +38,11 @@ from spectral_filters import apply_tight_frame, frame_approximation_diagnostics 
 
 TASK_BY_ID = {task.id: task for task in TASKS}
 PRIOR_DESCRIPTOR_RMSE_THRESHOLD = 2.0
+SIDECAR_ARRAY_NAMES = (
+    "shift_deltas",
+    "band_risks",
+    "band_covariances",
+)
 
 
 def curvature_prior_strength(
@@ -69,6 +74,145 @@ def load_calibration(directory: Path) -> tuple[dict[str, Any], dict[str, np.ndar
     with np.load(arrays_path, allow_pickle=False) as artifact:
         arrays = {key: artifact[key] for key in artifact.files}
     return metadata, arrays
+
+
+def _is_feature_mask_grid(metadata: dict[str, Any]) -> bool:
+    selected = metadata.get("selected_shifts") or []
+    return bool(selected) and all(
+        shift.get("calibration_family") == "feature_mask_grid"
+        for shift in selected
+    )
+
+
+def _source_node_count(metadata: dict[str, Any]) -> int | None:
+    selected = metadata.get("selected_shifts") or []
+    counts = {
+        int(shift["node_count"])
+        for shift in selected
+        if "node_count" in shift
+    }
+    return next(iter(counts)) if len(counts) == 1 else None
+
+
+def _sidecar_rank_gate_allows(metadata: dict[str, Any]) -> bool:
+    if not _is_feature_mask_grid(metadata):
+        return True
+    source_nodes = _source_node_count(metadata)
+    if source_nodes is None:
+        raise ValueError("feature-mask sidecar has inconsistent source node counts")
+    return source_nodes >= int(metadata["candidate_count"])
+
+
+def load_calibration_sidecars(
+    manifest_path: Path,
+    *,
+    task: str,
+    base_metadata: dict[str, Any],
+) -> tuple[dict[str, np.ndarray], list[str], list[dict[str, Any]], list[dict[str, Any]]]:
+    """Load a frozen task's source-only calibration sidecars.
+
+    The manifest is deliberately task-generic so the same audited loader can
+    serve both the four development tasks and the final 16-task deployment.
+    Every artifact is bound to the base candidate ordering, spectral config,
+    and parent calibration hash before any arrays are exposed to the selector.
+    """
+
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    if manifest.get("schema_version") != 1:
+        raise ValueError("unsupported calibration-sidecar manifest schema")
+    if manifest.get("target_label_access_count") != 0:
+        raise RuntimeError("sidecar manifest reports target-label access")
+    if manifest.get("protocol_violation_count") != 0:
+        raise RuntimeError("sidecar manifest reports a protocol violation")
+    if (
+        manifest.get("rank_gate")
+        != "source_nodes_gte_candidate_count_for_feature_mask_grid"
+    ):
+        raise ValueError("unexpected covariance rank gate")
+    task_entries = manifest.get("tasks", {}).get(task)
+    if not isinstance(task_entries, list) or not task_entries:
+        raise ValueError(f"sidecar manifest does not freeze task {task}")
+
+    parts: list[dict[str, np.ndarray]] = []
+    shift_names: list[str] = []
+    accepted: list[dict[str, Any]] = []
+    skipped: list[dict[str, Any]] = []
+    for entry_index, entry in enumerate(task_entries):
+        directory = Path(entry["path"]).resolve()
+        metadata_path = directory / "metadata.json"
+        arrays_path = directory / "calibration_sidecar.npz"
+        metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+        expected_hash = str(entry["artifact_sha256"])
+        if metadata.get("artifact_sha256", {}).get(arrays_path.name) != expected_hash:
+            raise ValueError(f"sidecar metadata hash mismatch: {directory}")
+        if sha256_file(arrays_path) != expected_hash:
+            raise ValueError(f"sidecar artifact hash mismatch: {directory}")
+        if metadata.get("target_label_access_count") != 0:
+            raise RuntimeError(f"sidecar reports target-label access: {directory}")
+        if metadata.get("protocol_violation_count") != 0:
+            raise RuntimeError(f"sidecar reports a protocol violation: {directory}")
+        if metadata.get("task") != task:
+            raise ValueError(f"sidecar task mismatch: {directory}")
+        if metadata.get("candidate_bank_sha256") != base_metadata.get(
+            "candidate_bank_sha256"
+        ):
+            raise ValueError(f"sidecar candidate-bank mismatch: {directory}")
+        if metadata.get("candidate_ids") != base_metadata.get("candidate_ids"):
+            raise ValueError(f"sidecar candidate ordering mismatch: {directory}")
+        if metadata.get("spectral_config") != base_metadata.get("spectral_config"):
+            raise ValueError(f"sidecar spectral configuration mismatch: {directory}")
+        parent_hash = base_metadata.get("artifact_sha256", {}).get("calibration.npz")
+        if metadata.get("parent_calibration_sha256") != parent_hash:
+            raise ValueError(f"sidecar parent calibration mismatch: {directory}")
+        if not _sidecar_rank_gate_allows(metadata):
+            skipped.append(
+                {
+                    "task": task,
+                    "path": str(directory),
+                    "reason": "source_nodes_below_candidate_count",
+                    "source_nodes": _source_node_count(metadata),
+                    "candidate_count": int(metadata["candidate_count"]),
+                }
+            )
+            continue
+        with np.load(arrays_path, allow_pickle=False) as artifact:
+            if not set(SIDECAR_ARRAY_NAMES).issubset(artifact.files):
+                raise ValueError(f"sidecar arrays are incomplete: {directory}")
+            arrays = {
+                name: np.asarray(artifact[name])
+                for name in SIDECAR_ARRAY_NAMES
+            }
+        shift_count = int(arrays["shift_deltas"].shape[0])
+        if any(arrays[name].shape[0] != shift_count for name in SIDECAR_ARRAY_NAMES):
+            raise ValueError(f"sidecar shift dimensions do not align: {directory}")
+        selected = metadata.get("selected_shifts") or []
+        if selected and len(selected) != shift_count:
+            raise ValueError(f"sidecar shift metadata count mismatch: {directory}")
+        for shift_index in range(shift_count):
+            shift = selected[shift_index] if selected else {}
+            family = str(shift.get("calibration_family", "source_sidecar"))
+            candidate_index = shift.get("candidate_index", shift_index)
+            shift_names.append(
+                f"sidecar{entry_index}:{family}:{candidate_index}"
+            )
+        parts.append(arrays)
+        accepted.append(
+            {
+                "task": task,
+                "path": str(directory),
+                "artifact_sha256": expected_hash,
+                "shift_count": shift_count,
+                "feature_mask_grid": _is_feature_mask_grid(metadata),
+                "source_nodes": _source_node_count(metadata),
+            }
+        )
+    if not parts:
+        raise ValueError(f"no sidecar survived the frozen gate for task {task}")
+    combined = {
+        name: np.concatenate([part[name] for part in parts], axis=0)
+        for name in SIDECAR_ARRAY_NAMES
+    }
+    return combined, shift_names, accepted, skipped
 
 
 def target_disagreement(
@@ -242,6 +386,28 @@ def select(args: argparse.Namespace) -> dict[str, Any]:
     if calibration_metadata["candidate_ids"] != identifiers:
         raise ValueError("calibration candidate ordering mismatch")
 
+    shift_names = [spec["name"] for spec in calibration_metadata["shift_specs"]]
+    sidecar_manifest = getattr(args, "sidecar_manifest", None)
+    accepted_sidecars: list[dict[str, Any]] = []
+    skipped_sidecars: list[dict[str, Any]] = []
+    sidecar_manifest_hash: str | None = None
+    if sidecar_manifest is not None:
+        sidecar_manifest = Path(sidecar_manifest).resolve()
+        sidecar_arrays, sidecar_shift_names, accepted_sidecars, skipped_sidecars = (
+            load_calibration_sidecars(
+                sidecar_manifest,
+                task=args.task,
+                base_metadata=calibration_metadata,
+            )
+        )
+        arrays = dict(arrays)
+        for name in SIDECAR_ARRAY_NAMES:
+            arrays[name] = np.concatenate(
+                [np.asarray(arrays[name]), sidecar_arrays[name]], axis=0
+            )
+        shift_names.extend(sidecar_shift_names)
+        sidecar_manifest_hash = sha256_file(sidecar_manifest)
+
     spectral_config = calibration_metadata["spectral_config"]
     disagreements, _, frame_diagnostics = target_disagreement(
         records,
@@ -283,7 +449,6 @@ def select(args: argparse.Namespace) -> dict[str, Any]:
     }
     optimum = float(robust_score.min())
     selected = min(identifier for identifier, score in scores.items() if score == optimum)
-    shift_names = [spec["name"] for spec in calibration_metadata["shift_specs"]]
     robust = args.bootstrap_samples > 1 and args.uncertainty_beta > 0
     if spectral_mode == "global":
         selector_name = "spectra_global_robust" if robust else "spectra_global_cal"
@@ -316,6 +481,12 @@ def select(args: argparse.Namespace) -> dict[str, Any]:
         },
         "frame_diagnostics": frame_diagnostics,
         "transport_diagnostics": diagnostics,
+        "calibration_sidecars": {
+            "manifest": str(sidecar_manifest) if sidecar_manifest is not None else None,
+            "manifest_sha256": sidecar_manifest_hash,
+            "accepted": accepted_sidecars,
+            "skipped": skipped_sidecars,
+        },
         "shift_weights": {
             name: float(alpha[index]) for index, name in enumerate(shift_names)
         },
@@ -348,6 +519,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--bootstrap-samples", type=int, default=0)
     parser.add_argument("--bootstrap-seed", type=int, default=8801)
     parser.add_argument("--uncertainty-beta", type=float, default=0.0)
+    parser.add_argument(
+        "--sidecar-manifest",
+        type=Path,
+        help="frozen source-only calibration sidecars for this task",
+    )
     parser.add_argument(
         "--spectral-mode",
         choices=("banded", "global"),

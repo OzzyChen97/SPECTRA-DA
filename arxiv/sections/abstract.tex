@@ -1,0 +1,28 @@
+\begin{abstract}
+Unsupervised graph domain adaptation (UGDA) is usually evaluated as a training
+problem, yet deployment also requires choosing an algorithm, hyperparameter,
+seed, and checkpoint without target labels. This selection problem is obscured
+when public training loops report the best target-domain score. We introduce
+\benchmark, a sealed-label trajectory protocol for target-label-free UGDA
+model selection, and \method, a selector based on graph-spectral prediction
+agreement. Our key observation is that a tight target-graph spectral frame
+decomposes hard classification error exactly, while observable pairwise
+disagreement equals the sum of individual risks minus cross-model error
+covariance. We derive covariance-controlled recovery bounds and estimate the
+missing covariance from labeled source-simulated graph shifts matched to the
+target through unlabeled descriptors. Nonnegative recovery produces a
+target-label-free risk score, with source-only bootstrap uncertainty as an
+optional refinement. On a frozen development evaluation with four tasks, 44 held-out
+source-simulated shift folds, and 675 candidates per task, \method reduces mean
+normalized regret from $0.02278$ to $0.01415$ ($37.9\%$ relative), reaches
+median Kendall $\tau=0.933$ and a $95.5\%$ top-$5\%$ hit rate, and records zero
+label accesses or protocol violations. Ablation identifies covariance
+correction as the main empirical driver; the incremental top-1 benefit of
+spectral conditioning is modest and statistically inconclusive. A separate one-time real-target
+development comparison shows that Transfer Score remains stronger in top-1
+selection ($0.1467$ versus $0.2560$ normalized regret), even though our method
+has higher rank correlation. This result exposes top-of-ranking calibration
+and cross-family covariance transport as unresolved limitations; we therefore
+make no state-of-the-art claim before the pending sealed 16-transfer
+evaluation.
+\end{abstract}

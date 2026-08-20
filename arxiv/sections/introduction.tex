@@ -1,0 +1,82 @@
+\section{Introduction}
+\label{sec:introduction}
+
+Unsupervised graph domain adaptation (UGDA) transfers a node classifier from a
+labeled source graph to an unlabeled target graph whose attributes and topology
+may follow a different distribution~\citep{wu2020unsupervised,dai2022graph,liu2023structural}.
+Recent methods address propagation mismatch, conditional structure shift,
+homophily shift, and composite feature--structure shift with increasingly
+specialized adaptation objectives~\citep{liu2023structural,liu2024rethinking,liu2024pairwisealignmentimprovesgraph,fang2025attribute, yang2025disentangled,pmlr-v267-fang25g,chen2026learningadaptivedistributionalignment}.
+These advances answer how a candidate model should be trained, but leave a
+separate deployment question unresolved: without any target label, which
+algorithm, hyperparameter setting, random seed, and checkpoint should be used?
+
+This question is obscured when target labels are used after training to select
+the best checkpoint. For example, our audit of the public ADAlign
+implementation\footnote{\url{https://github.com/gxingyu/ADAlign}, audited on
+August 20, 2026.} finds that the training loop computes target Micro- and
+Macro-F1 at every epoch and reports the maximum target score. This procedure
+does not leak target labels into gradient updates, but it does implement a
+\emph{target-label oracle selector}; consequently, the reported model is not
+available in the intended unlabeled deployment setting. Existing UGDA
+benchmarks standardize training and transfer tasks~\citep{liu2024revisitingbenchmarkingunderstandingunsupervised},
+whereas general-domain label-free selectors based on embedded validation,
+neighborhood density, transfer scores, or cross-model agreement do not
+explicitly model target graph structure~\citep{you2019dev,saito2021tunerightwayunsupervised,
+yang2023transferscore,jiang2021disagreement,baek2022agreement}.
+
+Target-label-free UGDA selection is technically difficult because observable
+model agreement is not individual model accuracy. Given candidate errors
+$E_m$ and $E_n$, their pairwise disagreement contains the sum of individual
+risks minus twice their error covariance. Classical unsupervised classifier
+evaluation therefore relies on restrictive structure in cross-classifier
+errors~\citep{parisi2014ranking,pmlr-v38-jaffe15}. The difficulty is amplified in trajectory
+banks: adjacent checkpoints and related GNN backbones share errors, while graph
+shifts change which shared errors appear at local, community, and global
+scales. A useful selector must exploit graph structure without assuming that
+candidate errors are independent.
+
+We propose \method, a model-selection layer for a frozen UGDA candidate bank.
+As illustrated in Figure~\ref{fig:pipeline}, \method first decomposes hard or
+soft candidate predictions using a tight spectral frame on the unlabeled
+target graph. It then converts band-wise pair disagreement into individual
+risk through a covariance-corrected pair-sum system. Because target error
+covariance is unobservable, the method estimates it from labeled
+source-simulated feature, topology, homophily, label-prior, and conditional
+structure shifts, matched to the target with unlabeled graph and committee
+descriptors. Nonnegative recovery produces the label-free selection score;
+the robust refit and source-only bootstrap term are implementation refinements
+rather than core contributions.
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=0.96\textwidth]{figures/gpt-image-2-candidates/pipeline-gpt2-b.png}
+  \caption{\textbf{SPECTRA-DA pipeline.} Frozen candidate predictions are
+  decomposed over a tight target-graph spectral frame. Observable band-wise
+  disagreement is combined with error covariance transported from labeled
+  source simulations, yielding covariance-corrected target-risk estimates
+  without exposing target labels to the selector. The hidden labels are used only by the
+  isolated evaluator after the selector is frozen.}
+  \label{fig:pipeline}
+\end{figure*}
+
+The current evidence supports three contributions. First, we formalize
+\benchmark, a sealed-label protocol that jointly evaluates algorithm,
+hyperparameter, seed, and checkpoint selection over immutable candidate
+trajectories. Second, we derive an exact tight-frame decomposition of hard
+classification error and a covariance-controlled recovery bound from
+pairwise spectral disagreement. The analysis also identifies an attribution
+boundary: without band-conditioned calibration or nonlinear recovery,
+spectral and global linear disagreement estimators are equivalent. Third, on a
+frozen development evaluation containing four transfer tasks, 44 held-out
+source-simulated shift folds, and 675 candidates per task, the final selector
+reduces mean normalized regret from $0.02278$ to $0.01415$ ($37.9\%$ relative),
+with median Kendall $\tau=0.933$, a $95.5\%$ top-$5\%$ hit rate, and zero
+target-label accesses or protocol violations. A separate equal-protocol
+real-target development comparison also exposes the present boundary:
+Transfer Score attains lower top-1 regret ($0.1467$ versus $0.2560$), whereas
+our selector attains higher Kendall correlation. We therefore do not claim
+full 16-transfer state of the art; top-of-ranking calibration and cross-family
+covariance transport remain unresolved. A controlled ablation further shows
+that covariance correction supplies the dominant gain, whereas the incremental
+selection benefit from spectral conditioning is modest on the current folds.

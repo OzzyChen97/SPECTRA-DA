@@ -1,0 +1,235 @@
+\section{SPECTRA-DA}
+\label{sec:method}
+
+\subsection{Problem setting and sealed selection}
+
+We study model selection after UGDA training. Let
+$\mathcal G_S=(A_S,X_S,Y_S)$ be a labeled source graph and
+$\mathcal G_T=(A_T,X_T)$ an unlabeled target graph. A frozen candidate bank
+$\mathcal H=\{h_m\}_{m=1}^M$ contains different adaptation algorithms,
+hyperparameters, random seeds, and checkpoints. The selector may access source
+labels, both public graphs, and candidate probabilities $P_m$ and embeddings
+$Z_m$, but never target labels $Y_T$. It outputs
+\begin{equation}
+  \widehat m=\arg\min_{m\in[M]}\widehat R_T(h_m).
+  \label{eq:selection}
+\end{equation}
+For single-label node classification, Micro-F1 equals accuracy, so true risk is
+$R_T(h_m)=1-\operatorname{MicroF1}_T(h_m)$. Evaluation measures the regret of
+$h_{\widehat m}$ relative to the best candidate in the same immutable bank.
+
+\benchmark enforces this information boundary operationally. Public trajectory
+artifacts contain source-validation and unlabeled target outputs but no target
+label field. Candidate-bank hashes bind every score vector to a fixed ordering.
+The selector process cannot import the sealed evaluator, and access counters
+record attempted label reads. Only after code, candidates, and scores are
+frozen does an isolated evaluator load $Y_T$ to compute aggregate metrics. This
+protocol prevents direct target-oracle selection and repeated feedback from a
+hidden target leaderboard.
+
+\subsection{Tight spectral risk decomposition}
+
+Global disagreement cannot distinguish graph-smooth errors from locally
+oscillatory errors. We therefore decompose predictions over the target graph,
+following the graph-signal-processing view of Laplacian spectral filters
+~\citep{shuman2013emerging,hammond2011wavelets}.
+Let
+\begin{equation}
+  L_T=I-D_T^{-1/2}A_TD_T^{-1/2}
+\end{equation}
+be the symmetric normalized Laplacian. We define $B$ Gaussian spectral windows
+$\widetilde g_b$ and normalize them pointwise,
+\begin{equation}
+  \widetilde g_b(\lambda)
+  =\exp\!\left(-\frac{(\lambda-\mu_b)^2}{2\sigma^2}\right),
+  \qquad
+  g_b(\lambda)
+  =\frac{\widetilde g_b(\lambda)}
+  {\sqrt{\sum_j\widetilde g_j(\lambda)^2}}.
+  \label{eq:tight_windows}
+\end{equation}
+The resulting filters $G_b=g_b(L_T)$ satisfy
+$\sum_bG_b^\top G_b=I$. A Chebyshev approximation applies all filters jointly
+without eigendecomposition~\citep{defferrard2016convolutional}; the implementation rejects configurations whose
+maximum frame error exceeds the frozen tolerance.
+
+Let $H_m\in\{0,1\}^{n_T\times C}$ be the hard one-hot prediction of candidate
+$m$, and define the unknown error signal $E_m=H_m-Y_T$. Its band risk is
+\begin{equation}
+  r_{m,b}=\frac{1}{n_T}\lVert G_bE_m\rVert_F^2.
+  \label{eq:band_risk}
+\end{equation}
+
+\begin{lemma}[Exact hard-error decomposition]
+If the spectral filter bank is tight, then
+\begin{equation}
+  \operatorname{Err}_T(h_m)=\frac{1}{2}\sum_{b=1}^{B}r_{m,b}.
+  \label{eq:exact_decomposition}
+\end{equation}
+\end{lemma}
+\begin{proof}
+Tightness gives
+$\sum_b r_{m,b}=n_T^{-1}\operatorname{tr}
+(E_m^\top(\sum_bG_b^\top G_b)E_m)
+=n_T^{-1}\lVert E_m\rVert_F^2$.
+Two one-hot class vectors have squared distance zero when correct and two when
+incorrect, hence $\lVert E_m\rVert_F^2=2n_T\operatorname{Err}_T(h_m)$.
+\end{proof}
+
+The same frame identity decomposes Brier risk for soft probabilities $P_m$,
+but not classification error exactly. We use hard predictions for the theorem
+and soft predictions as a smoother empirical signal. An approximate-frame
+bound is given in Appendix~\ref{app:frame_error}.
+
+\subsection{Recovering individual risk from pair disagreement}
+
+Although $r_{m,b}$ is hidden, pairwise spectral disagreement is observable:
+\begin{equation}
+  d_{mn,b}=\frac{1}{n_T}
+  \lVert G_b(H_m-H_n)\rVert_F^2.
+  \label{eq:disagreement}
+\end{equation}
+Since $H_m-H_n=E_m-E_n$, expansion yields the exact relation
+\begin{equation}
+  d_{mn,b}=r_{m,b}+r_{n,b}-2c_{mn,b},
+  \qquad
+  c_{mn,b}=\frac{1}{n_T}
+  \langle G_bE_m,G_bE_n\rangle_F.
+  \label{eq:pair_identity}
+\end{equation}
+Thus disagreement fails to identify individual risk only through the
+cross-model error covariance $c_{mn,b}$.
+
+Let $A_{\mathrm{pair}}\in\mathbb R^{\binom M2\times M}$ have one row
+$e_m+e_n$ per unordered candidate pair. Stacking Equation~\eqref{eq:pair_identity}
+within a band gives
+\begin{equation}
+  \mathbf d_b=A_{\mathrm{pair}}\mathbf r_b-2\mathbf c_b.
+  \label{eq:pair_system}
+\end{equation}
+For zero covariance, the untruncated complete-pair solution has the closed
+form
+\begin{equation}
+  \widetilde r_{m,b}
+  =\frac{s_{m,b}-S_b/(M-1)}{M-2},
+\end{equation}
+where $s_{m,b}=\sum_{n\neq m}d_{mn,b}$ and
+$S_b=\sum_{i<j}d_{ij,b}$. The practical estimator uses nonnegative least
+squares because finite-sample and covariance errors can otherwise yield
+negative risks.
+
+\begin{theorem}[Covariance-controlled recovery]
+For a complete pair graph,
+$A_{\mathrm{pair}}^\top A_{\mathrm{pair}}=(M-2)I+\mathbf 1\mathbf 1^\top$.
+The unconstrained zero-covariance least-squares estimator satisfies
+\begin{equation}
+  \lVert\widehat{\mathbf r}_b-\mathbf r_b\rVert_2
+  \leq \frac{2}{\sqrt{M-2}}\lVert\mathbf c_b\rVert_2.
+  \label{eq:cov_bound}
+\end{equation}
+\end{theorem}
+\begin{proof}
+Equation~\eqref{eq:pair_system} gives
+$\widehat{\mathbf r}_b-\mathbf r_b=-2A_{\mathrm{pair}}^+\mathbf c_b$.
+The stated Gram matrix has eigenvalue $M-2$ orthogonal to $\mathbf 1$ and
+$2(M-1)$ along $\mathbf 1$, so
+$\lVert A_{\mathrm{pair}}^+\rVert_2=1/\sqrt{M-2}$.
+\end{proof}
+
+The theorem separates conditioning from systematic shared error. A larger,
+more diverse committee improves the $1/\sqrt{M-2}$ factor, but adding many
+correlated checkpoints does not make $\mathbf c_b$ vanish.
+
+\subsection{Shift-conditioned covariance transport}
+
+Target covariance cannot be measured without $Y_T$, so \method estimates it
+from labeled source simulations. We construct pseudo-target graphs
+\begin{equation}
+  \widetilde{\mathcal G}_S^{(k)}
+  =\mathcal T_{\xi_k}(\mathcal G_S,Y_S)
+\end{equation}
+that perturb features, topology, homophily, class prior, and conditional
+structure. Frozen candidates run inference on each graph. Since $Y_S$ remains
+known, we measure its band risks $r_{m,b}^{(k)}$ and error covariances
+$c_{mn,b}^{(k)}$ without touching real target labels.
+
+Each simulated graph and the real target is represented by an unlabeled shift
+descriptor $\delta$ containing degree, spectral-moment, feature-smoothness,
+embedding, and committee-prediction statistics. We match the target to the
+simulation bank with simplex weights
+\begin{equation}
+  \alpha_T=\arg\min_{\alpha\in\Delta^K}
+  \left\lVert\Sigma^{-1/2}
+  \left(\sum_k\alpha_k\delta_k-\delta_T\right)\right\rVert_2^2
+  +\lambda_\alpha\lVert\alpha\rVert_2^2,
+  \label{eq:descriptor_match}
+\end{equation}
+where $\Delta^K=\{\alpha\geq0:\sum_k\alpha_k=1\}$ and descriptor variances
+are floored. The transported prior risk and covariance are
+\begin{equation}
+  \widetilde r_{m,b}=\sum_k\alpha_{T,k}r_{m,b}^{(k)},
+  \qquad
+  \widehat c_{mn,b}=\sum_k\alpha_{T,k}c_{mn,b}^{(k)}.
+  \label{eq:transport}
+\end{equation}
+
+\begin{corollary}[Transport error]
+If Equation~\eqref{eq:pair_system} is corrected with
+$\widehat{\mathbf c}_b$, its unconstrained least-squares solution satisfies
+\begin{equation}
+  \lVert\widehat{\mathbf r}_b-\mathbf r_b\rVert_2
+  \leq\frac{2}{\sqrt{M-2}}
+  \lVert\widehat{\mathbf c}_b-\mathbf c_b\rVert_2.
+  \label{eq:transport_bound}
+\end{equation}
+\end{corollary}
+
+Equation~\eqref{eq:transport_bound} states the empirical requirement plainly:
+the unlabeled descriptor geometry must predict the covariance components that
+matter for recovery. The assumption is testable and can fail under an unseen
+shift family; Section~\ref{sec:experiments} reports this limitation rather than
+hiding it behind aggregate selection performance.
+
+\subsection{Practical recovery and optional uncertainty}
+
+The practical solver combines transported covariance with reliability weights
+and a support-aware prior:
+\begin{align}
+  \widehat{\mathbf r}_b
+  =\arg\min_{\mathbf r_b\geq0}\;&
+  \left\lVert W_b^{1/2}
+  \left[A_{\mathrm{pair}}\mathbf r_b-
+  (\mathbf d_b+2\widehat{\mathbf c}_b)\right]
+  \right\rVert_2^2 \\
+  &+\lambda_r\lVert\mathbf r_b\rVert_2^2
+  +\lambda_p\lVert\mathbf r_b-\widetilde{\mathbf r}_b\rVert_2^2.
+  \label{eq:practical_recovery}
+\end{align}
+Pairs with high transported error correlation receive less weight, and the
+prior is disabled when the target descriptor falls outside the frozen
+source-simulation support. The frozen implementation additionally winsorizes
+extreme pair observations and performs one Tukey/endpoint-reliability refit.
+We treat this as a solver detail: Table~\ref{tab:core_ablation} shows that it
+does not explain the aggregate gain.
+
+Optionally, bootstrap resampling of simulated shifts yields risk estimates
+$\widehat R_T^{(q)}(h_m)$ and uncertainty
+$u_m=\operatorname{Std}_q[\widehat R_T^{(q)}(h_m)]$. The final selector uses
+\begin{equation}
+  \widehat m=\arg\min_m
+  \left[\frac{1}{2}\sum_b\widehat r_{m,b}+\beta u_m\right].
+  \label{eq:ucb}
+\end{equation}
+All resampling operates on source-simulated calibration data, so the score
+remains target-label-free. Its empirical contribution is reported separately
+from covariance transport in Table~\ref{tab:core_ablation}.
+
+\paragraph{Attribution boundary and complexity.}
+With an exact tight frame, identical linear recovery in every band, and no
+band-dependent calibration, summing spectral estimates equals applying the
+same recovery operator to global disagreement. Therefore spectral value must
+be attributed to band-conditioned covariance, weights, constraints, or
+uncertainty---not to decomposition alone. Joint Chebyshev filtering costs
+$O(BK|E_T|MC)$, while band-wise Gram matrices form all pair disagreements in
+$O(BM^2n_TC)$. Recovery designs are cached by committee size; source-shift
+calibration requires candidate inference but no GNN retraining.

@@ -1,0 +1,217 @@
+\section{Experiments}
+\label{sec:experiments}
+
+The experiments ask three questions: whether the frozen selector improves
+label-free model selection, whether graph frequencies expose distinct
+covariance regimes, and which limitations remain after controlled refinement.
+Because the one-time 16-transfer sealed evaluation is not yet complete, all
+numbers in this section are explicitly development or source-simulated
+results.
+
+\subsection{Experimental setup}
+
+\paragraph{Candidate banks and evaluation scope.}
+The four pre-registered development tasks are ACMv9$\rightarrow$Citationv1,
+Citationv1$\rightarrow$ACMv9, USA$\rightarrow$BRAZIL, and
+BRAZIL$\rightarrow$USA. We report two deliberately separated evaluations.
+The equal-protocol real-target comparison uses the pre-registered Gate-1 bank
+of 140 frozen candidates per task and is evaluated once by the trusted sealed
+process. The source-simulated refinement study uses 675 candidates per task:
+five method families (SourceOnly, A2GNN, GRADE, PairAlign, and ADAlign), three
+configurations, three seeds, and 15 checkpoints. Its development objective
+contains 44 leave-one-source-simulated-shift-out folds and cannot invoke the
+sealed evaluator. Candidate trajectories store source-validation outputs,
+unlabeled target outputs, embeddings, losses, runtime, and memory metadata.
+Frozen implementation values and the source-only sidecar rank gate are listed
+in Appendix~\ref{app:implementation}.
+
+\paragraph{Baselines.}
+The pre-registered selector suite includes last and best source-validation
+selection, target entropy, information maximization, agreement reference,
+global committee disagreement, GDE, SND, DEV with source-validation features,
+Transfer Score, and ALine-S/ALine-D. All selectors receive the same candidate
+bank and public artifacts~\citep{jiang2021disagreement,saito2021tunerightwayunsupervised,
+you2019dev,yang2023transferscore,baek2022agreement}. The $0.02278$ reference
+reported below is the original frozen SPECTRA selector used to start
+controlled source-simulated refinement, not a competing method.
+Table~\ref{tab:selector_comparison} supplies the missing equal-protocol
+comparison on the four real-target development tasks. The complete
+16-transfer sealed comparison remains pending.
+
+\paragraph{Metrics and guardrails.}
+For fold $t$, normalized regret is
+\begin{equation}
+  \nregret_t=
+  \frac{R_t(h_{\widehat m})-\min_m R_t(h_m)}
+  {\max_m R_t(h_m)-\min_m R_t(h_m)+10^{-12}}.
+  \label{eq:nregret}
+\end{equation}
+Mean normalized regret is primary. We additionally report $\cvar_{20\%}$,
+worst-fold regret, median Kendall $\tau$, mean Spearman $\rho$, top-weighted
+Kendall, risk-estimation MAE, oracle-F1 gap, top-$5\%$ hit rate, bootstrap
+selection stability, localized-gain share, runtime, and protocol audits. A
+variant is rejected if it improves the mean by concentrating gains in one fold,
+worsens the regret tail, drops Kendall below $0.925$, exceeds 480 seconds, or
+accesses target labels.
+
+\subsection{Equal-protocol selector comparison}
+
+\begin{table*}[t]
+  \caption{One-time trusted development evaluation on the pre-registered
+  Gate-1 real-target bank (four tasks, 140 frozen candidates per task). All
+  selectors receive identical public artifacts. This scope is distinct from
+  the 675-candidate source-simulated refinement study in
+  Table~\ref{tab:core_ablation}. Best values are bold.}
+  \label{tab:selector_comparison}
+  \centering
+  \small
+  \setlength{\tabcolsep}{6pt}
+  \resizebox{\textwidth}{!}{%
+  \begin{tabular}{lrrrrr}
+    \toprule
+    Selector & Mean $\nregret$ $\downarrow$ & F1 gap (pt) $\downarrow$ &
+    Median $\tau$ $\uparrow$ & Top-$5\%$ hit $\uparrow$ & Micro-F1 (\%) $\uparrow$ \\
+    \midrule
+    Source validation & 0.2638 & 11.56 & \textbf{0.761} & 0\% & 53.40 \\
+    Last source validation & 0.2388 & 10.93 & 0.683 & 0\% & 54.03 \\
+    Entropy & 0.2153 & 8.80 & 0.526 & \textbf{50\%} & 56.17 \\
+    Infomax & 0.1984 & 7.84 & 0.577 & \textbf{50\%} & 57.12 \\
+    DEV & 0.5013 & 27.10 & 0.405 & 0\% & 37.86 \\
+    SND & 0.8780 & 47.12 & $-0.582$ & 0\% & 17.84 \\
+    Transfer Score & \textbf{0.1467} & \textbf{6.33} & 0.356 & \textbf{50\%} & \textbf{58.64} \\
+    GDE & 0.7539 & 38.73 & 0.001 & 0\% & 26.24 \\
+    ALine-S & 0.2638 & 11.56 & \textbf{0.761} & 0\% & 53.40 \\
+    ALine-D & 0.4737 & 26.07 & 0.274 & 0\% & 38.89 \\
+    Agreement reference & 0.5365 & 28.81 & $-0.094$ & 0\% & 36.15 \\
+    Global disagreement & 0.5414 & 29.14 & $-0.050$ & 0\% & 35.82 \\
+    \midrule
+    SPECTRA-Static & 0.5414 & 29.14 & $-0.048$ & 0\% & 35.82 \\
+    \method & 0.2560 & 12.16 & 0.695 & 0\% & 52.81 \\
+    \bottomrule
+  \end{tabular}%
+  }
+\end{table*}
+
+Transfer Score is the strongest selector in this real-target development
+comparison, attaining mean normalized regret $0.1467$ and selected Micro-F1
+$58.64\%$. In contrast, \method obtains $0.2560$ regret and $52.81\%$
+Micro-F1, so the present evidence does not support superiority over existing
+label-free selectors. The diagnostic is nevertheless informative: \method
+reaches median Kendall $\tau=0.695$, substantially above Transfer Score's
+$0.356$, but fails to convert this global ranking quality into a competitive
+top choice. This gap localizes the main empirical weakness to top-of-ranking
+calibration rather than wholesale failure of the recovered ordering.
+
+\subsection{Source-simulated refinement and core attribution}
+
+Table~\ref{tab:core_ablation} evaluates one controlled change at a time over
+the same four development tasks, 44 held-out shift folds, and 675 candidates
+per task. The pre-frozen full selector lowers mean normalized regret from the
+original selector's $0.02278$ to $0.01415$, a $37.915\%$ relative reduction.
+It reaches $\cvar_{20\%}=0.04793$, worst-fold regret $0.08388$, top-weighted
+Kendall $0.99462$, and a $95.45\%$ top-$5\%$ hit rate in 327.39 seconds, with
+zero target-label accesses and zero protocol violations. This is a
+source-simulated refinement result, not a comparison against the real-target
+selectors in Table~\ref{tab:selector_comparison}.
+
+\begin{table*}[t]
+  \caption{Core source-simulated attribution study (four development tasks,
+  44 held-out shifts). ``Cov.'' denotes transported covariance; ``UCB'' is
+  bootstrap uncertainty. The frozen full row was fixed before this ablation.
+  Lower regret and higher rank/hit metrics are better.}
+  \label{tab:core_ablation}
+  \centering
+  \small
+  \setlength{\tabcolsep}{7pt}
+  \resizebox{\textwidth}{!}{%
+  \begin{tabular}{lrrrr}
+    \toprule
+    Variant & Mean $\nregret$ $\downarrow$ & $\cvar_{20\%}$ $\downarrow$ &
+    Median $\tau$ $\uparrow$ & Top-$5\%$ hit $\uparrow$ \\
+    \midrule
+    Global linear recovery & 0.27767 & 0.62134 & 0.4814 & 0.0\% \\
+    Spectral linear recovery & 0.27767 & 0.62134 & 0.4813 & 0.0\% \\
+    Spectral + prior + UCB, no cov. & 0.05057 & 0.18877 & 0.8550 & 72.7\% \\
+    Global + cov. + UCB (no band conditioning) & 0.01471 & 0.04886 &
+    \textbf{0.9442} & \textbf{95.5\%} \\
+    Spectral + cov. + UCB, no robust refit & \textbf{0.01397} &
+    \textbf{0.04758} & 0.9398 & \textbf{95.5\%} \\
+    Spectral + cov., no UCB & 0.01452 & 0.04941 & 0.9434 &
+    \textbf{95.5\%} \\
+    \method{} (frozen full) & 0.01415 & 0.04793 & 0.9424 &
+    \textbf{95.5\%} \\
+    \bottomrule
+  \end{tabular}%
+  }
+\end{table*}
+
+The ablation identifies covariance correction, rather than spectral
+decomposition by itself, as the main empirical driver. Removing covariance
+raises mean regret from $0.01415$ to $0.05057$; the paired mean difference has
+a $95\%$ bootstrap interval $[0.01583,0.06026]$. Global and spectral linear
+recovery are identical in selection regret, matching the equivalence result in
+Appendix~\ref{app:global_equivalence}. Band-conditioned covariance improves the
+frozen full row by $3.83\%$ relative to its equal-information global control,
+but only four of 44 selections change and the paired interval
+$[-0.00073,0.00265]$ crosses zero. The present evidence therefore supports
+band-wise heterogeneity, but not a strong claim that spectral conditioning
+alone consistently improves top-1 selection.
+
+The solver refinements are secondary. Removing the robust refit slightly
+improves mean regret to $0.01397$, while removing UCB changes the frozen mean
+from $0.01415$ to $0.01452$; in each comparison at most four folds select a
+different candidate. We retain the pre-frozen full row for protocol
+consistency, but treat robust fitting and bootstrap uncertainty as
+implementation details rather than contributions.
+
+\subsection{Do spectral bands expose different error regimes?}
+
+The source-only preflight evaluates 176 leave-one-simulated-shift-out
+comparisons over the planned 16-task calibration bank, with 675 candidates per
+task. Table~\ref{tab:covariance_band} rejects a simplistic explanation that
+every graph frequency decorrelates model errors. The low-frequency band has
+lower absolute error correlation than the global statistic in $98.9\%$ of
+task-shift comparisons, but the middle and high bands are more correlated on
+average. Conversely, the middle band has the lowest covariance-transport NMAE.
+The supported mechanism is therefore \emph{band-wise heterogeneity}: different
+frequencies expose different correlation and transportability regimes that a
+band-conditioned recovery rule can treat differently.
+
+\begin{table}[t]
+  \caption{Source-simulated covariance diagnostics. ``Below global'' is the
+  fraction of task-shift comparisons whose band correlation is below the
+  corresponding global correlation.}
+  \label{tab:covariance_band}
+  \centering
+  \small
+  \begin{tabular}{lrrrr}
+    \toprule
+    Statistic & Global & Low & Mid & High \\
+    \midrule
+    Mean $|$error correlation$|$ & 0.487 & \textbf{0.381} & 0.573 & 0.617 \\
+    Transport NMAE & 0.092 & 0.227 & \textbf{0.069} & 0.186 \\
+    Below global & -- & 98.9\% & 0.0\% & 5.1\% \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Failure analysis and scope}
+
+The dominant unresolved issue is cross-family covariance transport. A
+low-rank risk-correction variant (SARC) performs poorly under shift-family
+holdout, with mean regret $0.06977$; moreover, descriptor distance has
+Spearman correlation $-0.04954$ with risk-correction distance. Thus the
+current unlabeled descriptor geometry does not reliably identify which source
+simulation has a transferable error-covariance correction. Full covariance
+interactions remain selection-relevant, but predicting them for an unseen
+shift family is not solved by the current model.
+
+The source-simulated results support covariance-aware risk recovery and expose
+band-wise covariance heterogeneity, whereas the real-target comparison shows
+that the operational selector is not yet competitive with Transfer Score.
+The evidence therefore does not establish full UGDA state of the art, broad
+method-ranking reversals, or generalization to all 16 ADAlign transfers. Those
+claims require a frozen one-time target evaluation across Citation, Airport,
+Blog, and Twitch families, paired task-level uncertainty, and equal-information
+comparison to global calibration. We preserve this boundary throughout the
+paper.

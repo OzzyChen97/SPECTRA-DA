@@ -1,0 +1,67 @@
+\section{Related Work}
+\label{sec:related_work}
+
+\paragraph{Unsupervised graph domain adaptation.}
+Early graph-transfer systems learn domain-invariant node representations with
+adversarial alignment or shared encoders~\citep{zhang2019dane,wu2020unsupervised,dai2022graph}.
+Later work makes the shift model more graph-specific: StruRW corrects
+conditional structure, GRADE measures subtree discrepancy, A2GNN revisits
+propagation, and PairAlign separates label and conditional-structure effects
+~\citep{liu2023structural,wu2023non,liu2024rethinking,liu2024pairwisealignmentimprovesgraph}.
+Recent methods additionally target smoothing, attribute-driven mismatch,
+disentangled spectral shift, homophily, or composite distributions
+~\citep{chen2025smoothness,fang2025attribute,yang2025disentangled,
+pmlr-v267-fang25g,chen2026learningadaptivedistributionalignment}.
+GDABench consolidates 16 algorithms and 74 transfers for systematic
+comparison~\citep{liu2024revisitingbenchmarkingunderstandingunsupervised}.
+These methods optimize the adapted predictor; \method instead holds all
+candidate predictors fixed and studies how to choose among them without target
+labels.
+
+\paragraph{Label-free model selection under domain shift.}
+Unsupervised domain adaptation has developed proxy criteria based on target
+entropy, feature geometry, neighborhood density, transferability, and
+cross-model agreement. DEV estimates target risk by embedding adapted features
+into importance-weighted validation~\citep{you2019dev}; SND scores the density
+of target features in a model-induced neighborhood graph
+~\citep{saito2021tunerightwayunsupervised}; and Transfer Score combines
+transferability and discriminability without target labels
+~\citep{yang2023transferscore}. Agreement-based criteria exploit empirical
+relations between classifier agreement and accuracy under shift
+~\citep{jiang2021disagreement,baek2022agreement}, while recent work combines
+multiple unsupervised signals for practical algorithm selection
+~\citep{xiong2026practicalalgorithmselectionunsupervised}.
+Such criteria are relevant baselines, but they treat the target examples as a
+generic sample set and do not use the observed target adjacency to localize
+agreement errors by graph frequency. \benchmark further evaluates one joint
+candidate bank spanning algorithms, hyperparameters, seeds, and checkpoints
+under an auditable sealed-label protocol.
+
+\paragraph{Unsupervised classifier accuracy estimation.}
+A complementary literature estimates classifier accuracy from unlabeled
+prediction agreement. Spectral meta-learning ranks predictors when their
+off-diagonal covariance has rank-one structure~\citep{parisi2014ranking}, and
+moment-based estimators recover classifier accuracies under related low-rank or
+conditional-independence assumptions~\citep{pmlr-v38-jaffe15}. UGDA trajectory
+banks violate the spirit of these
+assumptions because checkpoints from one run and methods sharing a GNN backbone
+produce strongly correlated errors. Our disagreement identity makes this
+dependence explicit through a band-wise error covariance term, and our recovery
+bound quantifies how covariance misspecification propagates to risk error.
+
+\paragraph{Graph spectral representations.}
+Graph spectral methods decompose signals with functions of the graph
+Laplacian~\citep{shuman2013emerging}. Spectral graph wavelets provide localized
+multiscale atoms~\citep{hammond2011wavelets}; tight graph frames preserve signal
+energy~\citep{shuman2013spectrumadaptedtightgraphwavelet}; and Chebyshev
+polynomials enable localized filtering without eigendecomposition
+~\citep{defferrard2016convolutional}.
+Spectral ideas have also been used inside adaptation algorithms to align graph
+bases, regularize transfer, or augment graph signals
+~\citep{xiao2023spa,pang2023sa,yang2025disentangled}. In contrast, \method uses a tight
+spectral frame after training: it decomposes candidate prediction errors,
+recovers individual target risk from pairwise disagreement, and calibrates the
+otherwise hidden covariance separately in each band. This distinction is
+important because a tight frame alone cannot improve a linear selector; the
+gain must arise from band-conditioned calibration, reliability, constraints,
+or uncertainty.

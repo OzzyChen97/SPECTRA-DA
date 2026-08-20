@@ -1,0 +1,70 @@
+\section{Additional Theory and Protocol Details}
+
+\subsection{Approximate tight-frame error}
+\label{app:frame_error}
+
+Let $F=\sum_bG_b^\top G_b$ and suppose
+$\lVert F-I\rVert_2\leq\epsilon_{\mathrm{frame}}$. Then
+\begin{equation}
+\left|
+\sum_b r_{m,b}-\frac{1}{n_T}\lVert E_m\rVert_F^2
+\right|
+\leq
+\epsilon_{\mathrm{frame}}
+\frac{\lVert E_m\rVert_F^2}{n_T}.
+\end{equation}
+For hard one-hot predictions,
+\begin{equation}
+\left|
+\frac12\sum_b r_{m,b}-\operatorname{Err}_T(h_m)
+\right|
+\leq
+\epsilon_{\mathrm{frame}}\operatorname{Err}_T(h_m).
+\end{equation}
+This follows by bounding
+$n_T^{-1}\operatorname{tr}(E_m^\top(F-I)E_m)$ with the spectral norm.
+
+\subsection{Global equivalence of uncorrected linear recovery}
+\label{app:global_equivalence}
+
+Suppose each band uses the same unconstrained linear operator
+$A_{\mathrm{pair}}^+$, with no band weights, constraints, or calibration. Then
+\begin{equation}
+\sum_b\widehat{\mathbf r}_b
+=A_{\mathrm{pair}}^+\sum_b\mathbf d_b.
+\end{equation}
+Tightness gives
+$\sum_bd_{mn,b}=n_T^{-1}\lVert H_m-H_n\rVert_F^2$, which is global
+prediction disagreement. This establishes the equal-information global
+control required for causal attribution.
+
+\subsection{Sealed-label audit checklist}
+
+The frozen protocol verifies: (i) candidate-bank hashes and candidate counts;
+(ii) absence of target-label fields in public artifacts; (iii) zero selector
+imports from the sealed evaluator; (iv) complete score coverage and selected
+index consistency; (v) zero label-access and protocol-violation counters; and
+(vi) an immutable selector commit before hidden evaluation.
+
+\subsection{Frozen implementation details}
+\label{app:implementation}
+
+The development configuration uses three Gaussian spectral bands with
+$\sigma=0.55$, Chebyshev order 8, and hard predictions. Descriptor matching
+uses regularization $0.1$ and a per-coordinate scale floor of $0.05$. Recovery
+uses ridge $10^{-6}$ and pair-weight power 1. Bootstrap uses 16 samples with
+uncertainty coefficient $\beta=0.25$.
+
+The controlled refinement augments each base calibration bank with pre-frozen,
+source-labeled sidecar shifts. Feature-mask sidecars are admitted only when
+the source node count is at least the candidate count,
+$n_S\geq M$, a source-only identifiability gate that does not depend on the
+task name or target score. Sidecar manifests record the task, candidate-bank
+hash, candidate ordering, spectral configuration, parent-calibration hash,
+and zero target-label/protocol counters.
+
+The four development tasks are ACMv9$\rightarrow$Citationv1,
+Citationv1$\rightarrow$ACMv9, USA$\rightarrow$BRAZIL, and
+BRAZIL$\rightarrow$USA. Consequently, the present quantitative evidence covers
+Citation and Airport graphs but not Blog or Twitch; the latter remain part of
+the planned 16-transfer sealed evaluation.

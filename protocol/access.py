@@ -15,7 +15,9 @@ from .tasks import DOMAINS, task_id
 
 REPO = Path(__file__).resolve().parents[1]
 WORKSPACE = REPO.parents[1]
-PUBLIC_ROOT = REPO / "trajectory_bank" / "public"
+PUBLIC_ROOT = Path(
+    os.environ.get("SPECTRA_PUBLIC_ROOT", REPO / "trajectory_bank" / "public")
+).resolve()
 SEALED_ROOT = WORKSPACE / ".sealed" / "spectra_da"
 
 
