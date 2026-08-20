@@ -224,9 +224,21 @@ python selector/run_reliable_grid.py \
 
 The grid writer produces one selector JSON per task and configuration plus a
 `reliable_grid_manifest.json` recording the allowed search space.
-After choosing one configuration with source-family-holdout validation, freeze
-that single selector with `selector/freeze_reliable_selector.py` before sealed
-evaluation; do not submit the entire grid.
+Before freezing, run the open-development leave-one-task-out selector-choice
+diagnostic so a four-task average cannot silently pick a configuration using
+the same task on which it is reported:
+
+```bash
+python selector/loto_open_dev_selection.py \
+  --objective-report results/gda_select/open_dev/repaired_reliable_grid_objective_v2.json \
+  --transfer-selector transfer_score \
+  --output results/gda_select/open_dev/repaired_reliable_loto_objective_v2.json
+```
+
+Only after one configuration passes the open-development and leave-one-task-out
+guards should that single selector be frozen with
+`selector/freeze_reliable_selector.py` before sealed evaluation. Do not submit
+the entire grid.
 
 For the one-shot sealed comparison, package the frozen selector and baselines
 together so the evaluator compares all selectors on the same candidate bank:

@@ -29,6 +29,14 @@ because only `2/4` tasks are no worse than Transfer Score and oracle
 recall@20% is `0.50`, below the registered `0.75` shortlist guardrail. It must
 not be treated as the frozen "ours" selector for sealed evaluation.
 
+The leave-one-task-out selector-choice diagnostic reaches the same conclusion:
+when each fold selects a configuration using only the other three open-dev
+tasks, it repeatedly selects the same SPECTRA-shortlist -> Transfer-Score
+rerank variant. Validation mean normalized regret remains `0.087507`, but the
+held-out task non-inferiority rate is still `0.50` and oracle recall@20% is
+still `0.50`. The gain is therefore real but family-localized rather than a
+stable four-task promotion signal.
+
 ## Final metrics
 
 | Metric | Value |

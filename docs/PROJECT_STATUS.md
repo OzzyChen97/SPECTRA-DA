@@ -31,6 +31,11 @@ when the repository contains verifiable artifacts or commands that prove it.
 - The reliable fusion workflow supports separate SPECTRA and Transfer Score
   output roots, so baseline JSON files do not need to be copied into the frozen
   SPECTRA root.
+- Leave-one-task-out open-development selector-choice auditing is available at
+  `selector/loto_open_dev_selection.py`. It chooses reliable-selector
+  configurations from three open-dev tasks and validates on the held-out task,
+  so a four-task average cannot silently select a configuration using the same
+  task on which it is reported.
 - The reliable fusion workflow now includes the v3 top-1 repair modes:
   fixed rank fusion, Transfer Score shortlist -> SPECTRA rerank, SPECTRA
   shortlist -> Transfer Score rerank, and support-adaptive mixture using
@@ -81,8 +86,10 @@ when the repository contains verifiable artifacts or commands that prove it.
   near-miss is SPECTRA-shortlist -> Transfer-Score rerank at 20%
   (`0.0875` mean normalized regret, `0.6234` selected Micro-F1). It still fails
   promotion because task non-inferiority is only `2/4` and oracle recall@20% is
-  `0.50`, below the registered `0.75` shortlist guardrail. This is evidence for
-  continued top-of-ranking calibration work, not a SOTA claim.
+  `0.50`, below the registered `0.75` shortlist guardrail. The leave-one-task-
+  out diagnostic reaches the same conclusion: validation mean normalized regret
+  is `0.0875`, but held-out task non-inferiority remains `0.50`. This is
+  evidence for continued top-of-ranking calibration work, not a SOTA claim.
 - Descriptor v2 has a label-free committee-behavior extractor at
   `shift_simulator/committee_descriptors.py`. It summarizes candidate entropy,
   prediction margins, class-prior concentration, pairwise disagreement,
@@ -145,12 +152,14 @@ python -m py_compile \
   sealed_eval/export_open_dev_truth.py \
   shift_simulator/committee_descriptors.py \
   selector/freeze_reliable_selector.py \
+  selector/loto_open_dev_selection.py \
   selector/check_reliable_inputs.py \
   selector/reliable_selection.py \
   selector/run_reliable_suite.py \
   selector/run_reliable_grid.py \
   tests/test_spectra_prior.py \
   tests/selector/test_objective_v2.py \
+  tests/selector/test_loto_open_dev_selection.py \
   tests/sealed_eval/test_export_open_dev_truth.py \
   tests/test_committee_descriptors.py \
   tests/test_descriptor_metric.py \
