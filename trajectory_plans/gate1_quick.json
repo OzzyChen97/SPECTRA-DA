@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "name": "gate1_quick",
+  "description": "Pipeline and early-evidence pilot; not a paper result.",
+  "epochs": 10,
+  "checkpoint_interval": 5,
+  "seeds": [2026],
+  "tasks": [
+    ["ACMv9", "Citationv1"],
+    ["Citationv1", "ACMv9"],
+    ["USA", "BRAZIL"],
+    ["BRAZIL", "USA"]
+  ],
+  "methods": {
+    "source_only": [
+      {
+        "name": "gcn_default",
+        "params": {
+          "nhid": 128,
+          "num_layers": 2,
+          "dropout": 0.25,
+          "source_only_pnums": 1,
+          "lr": 0.001,
+          "weight_decay": 0.001
+        }
+      }
+    ],
+    "a2gnn": [
+      {
+        "name": "paper_default",
+        "params": {
+          "nhid": 128,
+          "num_layers": 2,
+          "dropout": 0.25,
+          "s_pnums": 0,
+          "t_pnums": 30,
+          "weight": 5.0,
+          "lr": 0.001,
+          "weight_decay": 0.001
+        }
+      }
+    ],
+    "grade": [
+      {
+        "name": "js_default",
+        "params": {
+          "nhid": 128,
+          "num_layers": 2,
+          "dropout": 0.25,
+          "grade_disc": "JS",
+          "grade_weight": 0.01,
+          "lr": 0.001,
+          "weight_decay": 0.01
+        }
+      }
+    ],
+    "pairalign": [
+      {
+        "name": "pseudo_pair",
+        "params": {
+          "nhid": 128,
+          "num_layers": 2,
+          "dropout": 0.25,
+          "pair_cls_dim": 128,
+          "pair_cls_layers": 2,
+          "pair_backbone": "GS",
+          "pair_edge_rw": true,
+          "pair_label_rw": true,
+          "pair_ew_start": 10,
+          "pair_ew_freq": 10,
+          "pair_lw_start": 10,
+          "pair_lw_freq": 10,
+          "lr": 0.001,
+          "weight_decay": 0.0001
+        }
+      }
+    ],
+    "adalign": [
+      {
+        "name": "paper_default",
+        "params": {
+          "nhid": 128,
+          "num_layers": 2,
+          "dropout": 0.25,
+          "s_pnums": 0,
+          "t_pnums": 10,
+          "weight": 0.4,
+          "weight_decay": 0.001,
+          "lr": 0.001,
+          "t_batchsize": 2048,
+          "alpha": 0.5
+        }
+      }
+    ]
+  }
+}

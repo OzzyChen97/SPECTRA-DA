@@ -1,0 +1,8 @@
+numpy==1.26.4
+scipy>=1.11,<2
+scikit-learn==1.6.1
+pandas>=2.0
+PyYAML>=6.0
+torch-geometric==2.6.1
+pygda==1.2.0
+pytest>=8.0

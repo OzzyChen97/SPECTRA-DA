@@ -1,0 +1,71 @@
+schema_version: 1
+objective: mean_normalized_regret_dev
+direction: minimize
+objective_source: leave-one-simulated-shift-out
+selector_entrypoint: selector/objective.py
+# Informational mirror only. The protected objective entrypoint freezes these
+# tasks and validates every active value against its own registered domain.
+development_tasks:
+  - ACMv9_to_Citationv1
+  - Citationv1_to_ACMv9
+  - USA_to_BRAZIL
+  - BRAZIL_to_USA
+active_parameters:
+  transport_regularization: 0.1
+  descriptor_floor: 0.05
+  risk_ridge: 1.0e-6
+  pair_weight_power: 1.0
+  bootstrap_samples: 16
+  uncertainty_beta: 0.25
+parameters:
+  # The current formal calibration freezes num_bands=3, sigma=0.55,
+  # cheb_order=8, and hard predictions. New spectral choices require a new,
+  # separately frozen calibration bank and are not part of this first run.
+  num_bands:
+    type: categorical
+    values: [2, 3, 4]
+  sigma:
+    type: categorical
+    values: [0.35, 0.45, 0.55, 0.7, 0.9]
+  cheb_order:
+    type: categorical
+    values: [4, 6, 8, 10]
+  prediction_kind:
+    type: categorical
+    values: [hard, soft]
+  estimator:
+    type: categorical
+    values: [closed_form, nnls]
+  ridge:
+    type: categorical
+    values: [0.0, 1.0e-8, 1.0e-6, 1.0e-4, 1.0e-2]
+  transport_regularization:
+    type: categorical
+    values: [0.0, 0.01, 0.1, 1.0, 10.0]
+  descriptor_floor:
+    type: categorical
+    values: [0.01, 0.05, 0.1, 0.25]
+  pair_weight_power:
+    type: categorical
+    values: [0.0, 0.5, 1.0, 2.0]
+  uncertainty_beta:
+    type: categorical
+    values: [0.0, 0.25, 0.5, 1.0, 2.0]
+  bootstrap_samples:
+    type: categorical
+    values: [0, 8, 16, 32]
+guardrails:
+  label_access_count: 0
+  protocol_violation_count: 0
+  physical_gpu: 7
+  max_frame_error: 0.05
+frozen_paths:
+  - sealed_eval/
+  - hidden_labels/
+  - metrics/
+  - splits/
+  - trajectory_bank/raw/
+  - protocol/
+  - model/
+  - utils/
+  - configs.py

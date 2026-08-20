@@ -1,0 +1,12 @@
+[
+  {"iteration": 0, "idea": "Reproduced refinement baseline", "mean_regret": 0.014145866001662693, "runtime_seconds": 451.9995490810834, "decision": "baseline"},
+  {"iteration": 1, "idea": "Gauge-anchored bootstrap recovery", "mean_regret": 0.014756191205243107, "runtime_seconds": 508.28800033801235, "decision": "rejected"},
+  {"iteration": 2, "idea": "Cache immutable recovery structures", "mean_regret": 0.014145866001662693, "runtime_seconds": 327.43529412918724, "decision": "accepted"},
+  {"iteration": 3, "idea": "Candidate-additive covariance projection", "mean_regret": 0.018848975255629372, "runtime_seconds": 327.9259424479678, "decision": "rejected"},
+  {"iteration": 4, "idea": "Cross-band shared reliability graph", "mean_regret": 0.014145866001662693, "runtime_seconds": 356.30781827983446, "decision": "rejected"},
+  {"iteration": 5, "idea": "Rank-gated sidecar SARC diagnostic", "mean_regret": 0.014145866001662693, "runtime_seconds": 337.59460545610636, "decision": "diagnostic_rejected"},
+  {"iteration": 6, "idea": "Delete-one-donor transport consensus", "mean_regret": 0.013940775865108924, "runtime_seconds": 373.30870941095054, "decision": "rejected_guardrail"},
+  {"iteration": 7, "idea": "Contrast-first final robust recovery", "mean_regret": 0.014145866001662693, "runtime_seconds": 338.7762884439435, "decision": "rejected"},
+  {"iteration": 8, "idea": "Reuse local augmented recovery workspace", "mean_regret": 0.014145866001662693, "runtime_seconds": 320.69502495904453, "decision": "accepted"},
+  {"iteration": "final", "idea": "Frozen final rerun", "mean_regret": 0.014145866001662693, "runtime_seconds": 327.3940224831458, "decision": "final"}
+]

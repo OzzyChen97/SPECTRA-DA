@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "name": "spectra_da_rank_gated_calibration_v1",
+  "description": "Portable template. Replace paths and hashes with locally generated source-labelled sidecars.",
+  "rank_gate": "source_nodes_gte_candidate_count_for_feature_mask_grid",
+  "target_label_access_count": 0,
+  "protocol_violation_count": 0,
+  "tasks": {
+    "ACMv9_to_Citationv1": [
+      {
+        "path": "artifacts/sidecars/ACMv9_to_Citationv1",
+        "artifact_sha256": "REPLACE_WITH_SHA256"
+      }
+    ],
+    "Citationv1_to_ACMv9": [
+      {
+        "path": "artifacts/sidecars/Citationv1_to_ACMv9",
+        "artifact_sha256": "REPLACE_WITH_SHA256"
+      }
+    ],
+    "USA_to_BRAZIL": [
+      {
+        "path": "artifacts/sidecars/USA_to_BRAZIL",
+        "artifact_sha256": "REPLACE_WITH_SHA256"
+      }
+    ],
+    "BRAZIL_to_USA": [
+      {
+        "path": "artifacts/sidecars/BRAZIL_to_USA",
+        "artifact_sha256": "REPLACE_WITH_SHA256"
+      }
+    ]
+  }
+}

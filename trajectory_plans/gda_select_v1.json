@@ -1,0 +1,249 @@
+{
+  "schema_version": 1,
+  "name": "gda_select_v1",
+  "description": "Pre-registered full 16-transfer GDA-Select trajectory benchmark.",
+  "task_scope": "all",
+  "epochs": 140,
+  "checkpoint_interval": 10,
+  "seeds": [2026, 2027, 2028],
+  "tasks": [
+    ["ACMv9", "Citationv1"],
+    ["ACMv9", "DBLPv7"],
+    ["Citationv1", "ACMv9"],
+    ["Citationv1", "DBLPv7"],
+    ["DBLPv7", "ACMv9"],
+    ["DBLPv7", "Citationv1"],
+    ["USA", "BRAZIL"],
+    ["USA", "EUROPE"],
+    ["BRAZIL", "USA"],
+    ["BRAZIL", "EUROPE"],
+    ["EUROPE", "USA"],
+    ["EUROPE", "BRAZIL"],
+    ["Blog1", "Blog2"],
+    ["Blog2", "Blog1"],
+    ["DE", "EN"],
+    ["EN", "DE"]
+  ],
+  "methods": {
+    "source_only": [
+      {
+        "name": "propagation_0",
+        "params": {
+          "nhid": 128,
+          "num_layers": 2,
+          "dropout": 0.5,
+          "source_only_pnums": 0,
+          "lr": 0.005,
+          "weight_decay": 0.001
+        }
+      },
+      {
+        "name": "propagation_1",
+        "params": {
+          "nhid": 128,
+          "num_layers": 2,
+          "dropout": 0.25,
+          "source_only_pnums": 1,
+          "lr": 0.001,
+          "weight_decay": 0.001
+        }
+      },
+      {
+        "name": "propagation_2",
+        "params": {
+          "nhid": 128,
+          "num_layers": 2,
+          "dropout": 0.1,
+          "source_only_pnums": 2,
+          "lr": 0.0005,
+          "weight_decay": 0.0005
+        }
+      }
+    ],
+    "a2gnn": [
+      {
+        "name": "target_prop_5",
+        "params": {
+          "nhid": 128,
+          "num_layers": 2,
+          "dropout": 0.5,
+          "s_pnums": 0,
+          "t_pnums": 5,
+          "weight": 0.5,
+          "lr": 0.005,
+          "weight_decay": 0.001
+        }
+      },
+      {
+        "name": "target_prop_10",
+        "params": {
+          "nhid": 128,
+          "num_layers": 2,
+          "dropout": 0.25,
+          "s_pnums": 0,
+          "t_pnums": 10,
+          "weight": 1.0,
+          "lr": 0.001,
+          "weight_decay": 0.001
+        }
+      },
+      {
+        "name": "target_prop_30",
+        "params": {
+          "nhid": 128,
+          "num_layers": 2,
+          "dropout": 0.25,
+          "s_pnums": 0,
+          "t_pnums": 30,
+          "weight": 5.0,
+          "lr": 0.001,
+          "weight_decay": 0.001
+        }
+      }
+    ],
+    "grade": [
+      {
+        "name": "js_low",
+        "params": {
+          "nhid": 128,
+          "num_layers": 2,
+          "dropout": 0.5,
+          "grade_disc": "JS",
+          "grade_weight": 0.001,
+          "lr": 0.005,
+          "weight_decay": 0.01
+        }
+      },
+      {
+        "name": "js_default",
+        "params": {
+          "nhid": 128,
+          "num_layers": 2,
+          "dropout": 0.25,
+          "grade_disc": "JS",
+          "grade_weight": 0.01,
+          "lr": 0.001,
+          "weight_decay": 0.01
+        }
+      },
+      {
+        "name": "mmd",
+        "params": {
+          "nhid": 128,
+          "num_layers": 2,
+          "dropout": 0.25,
+          "grade_disc": "MMD",
+          "grade_weight": 0.01,
+          "lr": 0.001,
+          "weight_decay": 0.01
+        }
+      }
+    ],
+    "pairalign": [
+      {
+        "name": "no_reweight",
+        "params": {
+          "nhid": 128,
+          "num_layers": 2,
+          "dropout": 0.5,
+          "pair_cls_dim": 128,
+          "pair_cls_layers": 2,
+          "pair_backbone": "GS",
+          "pair_edge_rw": false,
+          "pair_label_rw": false,
+          "pair_ew_start": 10,
+          "pair_ew_freq": 10,
+          "pair_lw_start": 10,
+          "pair_lw_freq": 10,
+          "lr": 0.005,
+          "weight_decay": 0.0001
+        }
+      },
+      {
+        "name": "edge_only",
+        "params": {
+          "nhid": 128,
+          "num_layers": 2,
+          "dropout": 0.25,
+          "pair_cls_dim": 128,
+          "pair_cls_layers": 2,
+          "pair_backbone": "GS",
+          "pair_edge_rw": true,
+          "pair_label_rw": false,
+          "pair_ew_start": 10,
+          "pair_ew_freq": 10,
+          "pair_lw_start": 10,
+          "pair_lw_freq": 10,
+          "lr": 0.001,
+          "weight_decay": 0.0001
+        }
+      },
+      {
+        "name": "edge_and_label",
+        "params": {
+          "nhid": 128,
+          "num_layers": 2,
+          "dropout": 0.25,
+          "pair_cls_dim": 128,
+          "pair_cls_layers": 2,
+          "pair_backbone": "GS",
+          "pair_edge_rw": true,
+          "pair_label_rw": true,
+          "pair_ew_start": 10,
+          "pair_ew_freq": 10,
+          "pair_lw_start": 10,
+          "pair_lw_freq": 10,
+          "lr": 0.001,
+          "weight_decay": 0.0001
+        }
+      }
+    ],
+    "adalign": [
+      {
+        "name": "low_alignment",
+        "params": {
+          "nhid": 128,
+          "num_layers": 2,
+          "dropout": 0.5,
+          "s_pnums": 0,
+          "t_pnums": 1,
+          "weight": 0.2,
+          "weight_decay": 0.001,
+          "lr": 0.005,
+          "t_batchsize": 1024,
+          "alpha": 0.5
+        }
+      },
+      {
+        "name": "paper_default",
+        "params": {
+          "nhid": 128,
+          "num_layers": 2,
+          "dropout": 0.25,
+          "s_pnums": 0,
+          "t_pnums": 10,
+          "weight": 0.4,
+          "weight_decay": 0.001,
+          "lr": 0.001,
+          "t_batchsize": 2048,
+          "alpha": 0.5
+        }
+      },
+      {
+        "name": "high_alignment",
+        "params": {
+          "nhid": 128,
+          "num_layers": 2,
+          "dropout": 0.1,
+          "s_pnums": 0,
+          "t_pnums": 30,
+          "weight": 0.8,
+          "weight_decay": 0.0005,
+          "lr": 0.001,
+          "t_batchsize": 2048,
+          "alpha": 0.75
+        }
+      }
+    ]
+  }
+}

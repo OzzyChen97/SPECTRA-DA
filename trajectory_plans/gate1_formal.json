@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "name": "gate1_formal",
+  "description": "Pre-registered Gate-1 candidate-diversity pilot.",
+  "epochs": 30,
+  "checkpoint_interval": 5,
+  "seeds": [2026, 2027],
+  "tasks": [
+    ["ACMv9", "Citationv1"],
+    ["Citationv1", "ACMv9"],
+    ["USA", "BRAZIL"],
+    ["BRAZIL", "USA"]
+  ],
+  "methods": {
+    "source_only": [
+      {
+        "name": "propagation_1",
+        "params": {
+          "nhid": 128,
+          "num_layers": 2,
+          "dropout": 0.25,
+          "source_only_pnums": 1,
+          "lr": 0.001,
+          "weight_decay": 0.001
+        }
+      },
+      {
+        "name": "propagation_0",
+        "params": {
+          "nhid": 128,
+          "num_layers": 2,
+          "dropout": 0.5,
+          "source_only_pnums": 0,
+          "lr": 0.005,
+          "weight_decay": 0.001
+        }
+      }
+    ],
+    "a2gnn": [
+      {
+        "name": "target_prop_30",
+        "params": {
+          "nhid": 128,
+          "num_layers": 2,
+          "dropout": 0.25,
+          "s_pnums": 0,
+          "t_pnums": 30,
+          "weight": 5.0,
+          "lr": 0.001,
+          "weight_decay": 0.001
+        }
+      },
+      {
+        "name": "target_prop_10",
+        "params": {
+          "nhid": 128,
+          "num_layers": 2,
+          "dropout": 0.5,
+          "s_pnums": 0,
+          "t_pnums": 10,
+          "weight": 1.0,
+          "lr": 0.005,
+          "weight_decay": 0.001
+        }
+      }
+    ],
+    "grade": [
+      {
+        "name": "js",
+        "params": {
+          "nhid": 128,
+          "num_layers": 2,
+          "dropout": 0.25,
+          "grade_disc": "JS",
+          "grade_weight": 0.01,
+          "lr": 0.001,
+          "weight_decay": 0.01
+        }
+      },
+      {
+        "name": "mmd",
+        "params": {
+          "nhid": 128,
+          "num_layers": 2,
+          "dropout": 0.5,
+          "grade_disc": "MMD",
+          "grade_weight": 0.01,
+          "lr": 0.005,
+          "weight_decay": 0.01
+        }
+      }
+    ],
+    "pairalign": [
+      {
+        "name": "edge_and_label",
+        "params": {
+          "nhid": 128,
+          "num_layers": 2,
+          "dropout": 0.25,
+          "pair_cls_dim": 128,
+          "pair_cls_layers": 2,
+          "pair_backbone": "GS",
+          "pair_edge_rw": true,
+          "pair_label_rw": true,
+          "pair_ew_start": 10,
+          "pair_ew_freq": 10,
+          "pair_lw_start": 10,
+          "pair_lw_freq": 10,
+          "lr": 0.001,
+          "weight_decay": 0.0001
+        }
+      },
+      {
+        "name": "edge_only",
+        "params": {
+          "nhid": 128,
+          "num_layers": 2,
+          "dropout": 0.5,
+          "pair_cls_dim": 128,
+          "pair_cls_layers": 2,
+          "pair_backbone": "GS",
+          "pair_edge_rw": true,
+          "pair_label_rw": false,
+          "pair_ew_start": 5,
+          "pair_ew_freq": 5,
+          "pair_lw_start": 10,
+          "pair_lw_freq": 10,
+          "lr": 0.005,
+          "weight_decay": 0.0001
+        }
+      }
+    ],
+    "adalign": [
+      {
+        "name": "paper_default",
+        "params": {
+          "nhid": 128,
+          "num_layers": 2,
+          "dropout": 0.25,
+          "s_pnums": 0,
+          "t_pnums": 10,
+          "weight": 0.4,
+          "weight_decay": 0.001,
+          "lr": 0.001,
+          "t_batchsize": 2048,
+          "alpha": 0.5
+        }
+      },
+      {
+        "name": "low_alignment",
+        "params": {
+          "nhid": 128,
+          "num_layers": 2,
+          "dropout": 0.5,
+          "s_pnums": 0,
+          "t_pnums": 1,
+          "weight": 0.2,
+          "weight_decay": 0.001,
+          "lr": 0.005,
+          "t_batchsize": 1024,
+          "alpha": 0.5
+        }
+      }
+    ]
+  }
+}

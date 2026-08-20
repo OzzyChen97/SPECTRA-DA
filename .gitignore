@@ -1,0 +1,32 @@
+__pycache__/
+*.py[cod]
+*.so
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+dist/
+build/
+*.egg-info/
+
+# Large or sealed experiment artifacts
+data/*/
+trajectory_bank/
+.sealed/
+calibration/
+checkpoints/
+results/logs/
+results/search/
+results/**/*.npz
+results/**/*.pt
+results/**/*.pth
+results/**/*.ckpt
+
+# Local manifests may contain machine-specific artifact paths
+configs/refinement_sidecars_v1.json
+
+# Editors and operating systems
+.DS_Store
+.idea/
+.vscode/

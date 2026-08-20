@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "evaluation_scope": {
+    "development_tasks": 4,
+    "heldout_shift_folds": 44,
+    "candidate_models_per_task": 675
+  },
+  "metrics": {
+    "mean_normalized_regret_dev": 0.014145866001662693,
+    "cvar20_dev": 0.04792755559250101,
+    "worst_fold_regret_dev": 0.08387753450471878,
+    "median_kendall_tau_dev": 0.9331080050372516,
+    "mean_spearman_rho_dev": 0.9820032712157349,
+    "mean_top_weighted_kendall_dev": 0.9946191238906714,
+    "risk_estimation_mae_dev": 0.01865554817091324,
+    "mean_oracle_f1_gap_dev": 0.0088023776400157,
+    "top_5pct_hit_rate_dev": 0.9545454545454546,
+    "selection_stability_dev": 0.6292613636363636,
+    "localized_gain_share_dev": 0.4465211862598076,
+    "positive_gain_fold_count_dev": 15,
+    "selector_runtime_seconds": 327.3940224831458,
+    "max_frame_error": 0.006028936855162925,
+    "label_access_count": 0,
+    "protocol_violation_count": 0
+  },
+  "comparisons": {
+    "original_baseline_mean_regret": 0.0227846777,
+    "relative_regret_reduction_percent": 37.91500504015164,
+    "internal_target_mean_regret": 0.0134,
+    "target_reached": false
+  }
+}
