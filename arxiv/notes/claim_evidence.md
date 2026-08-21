@@ -2,42 +2,36 @@
 
 | Claim | Evidence | Status / wording boundary |
 |---|---|---|
-| Target-label-free algorithm, hyperparameter, and checkpoint selection is a distinct UGDA problem. | Formal selector protocol and audited candidate schema. | Supported as a problem formulation; do not claim first without literature audit. |
-| Tight graph spectral frames exactly decompose hard classification error. | Lemma 1 and unit tests in `tests/test_spectral_risk_recovery.py` and `tests/selector/test_spectra_theory_guarantees.py`. | Supported analytically for hard one-hot predictions. |
-| Pairwise spectral disagreement determines individual band risks up to cross-model error covariance. | Exact identity and Theorem 1. | Supported analytically. |
-| Covariance misspecification controls recovery error. | Theorems 1--2 and theory tests. | Supported for the stated unconstrained least-squares core; practical NNLS/Tukey behavior is empirical. |
-| The main technical contribution is covariance-aware risk recovery, not a proven spectral top-1 selector gain. | Core ablation: removing covariance raises mean regret to 0.05057; spectral+covariance versus global+covariance differs by only 0.00056 with interval crossing zero. | Supported; use this framing in Abstract/Introduction/Conclusion. |
-| Spectral bands expose heterogeneous covariance regimes. | 176 source-simulated leave-one-shift-out comparisons: absolute error correlation 0.381/0.573/0.617 in low/mid/high bands versus 0.487 global. | Supported on the source-simulated calibration bank; do not claim every band decorrelates errors. |
-| The frozen refinement selector improves normalized regret over its original frozen selector baseline. | Mean 0.014145866 versus 0.022784678, a 37.915% relative reduction, on four development tasks and 44 folds. | Supported only in this development scope; this is not yet the complete comparison against all label-free selectors. |
-| Covariance correction is the main empirical source of the source-simulated gain. | Strict core ablation: full 0.01415 versus 0.05057 without covariance; paired mean-difference bootstrap interval [0.01583, 0.06026]. | Supported on four tasks and 44 source-simulated folds. |
-| Band-conditioned covariance improves selection over an equal-information global covariance control. | Full 0.01415 versus global 0.01471 (3.83% relative), but only 4/44 selections differ, paired interval [-0.00073, 0.00265], Wilcoxon p=1.0. | Directionally positive but statistically inconclusive; claim only modest incremental evidence. |
-| Robust refitting or bootstrap uncertainty drives the result. | No-robust+UCB obtains 0.01397; no-UCB obtains 0.01452; each changes at most four selections versus full. | Not supported as a contribution; retain only as frozen implementation details. |
-| The selector ranks candidates accurately. | Median Kendall 0.9331, mean Spearman 0.9820, top-weighted Kendall 0.9946, top-5% hit 95.45%. | Supported on the same development scope. |
-| SPECTRA-DA beats strong label-free selectors on real targets. | Gate-1 four-task comparison: Transfer Score 0.1467 mean normalized regret versus SPECTRA-Cal 0.2560; SPECTRA-Cal has higher median Kendall (0.695 versus 0.356). | Not supported for top-1 selection; report Transfer Score as stronger and localize the failure to top-of-ranking calibration. |
-| The deployment selector does not access target labels. | `label_access_count=0`, `protocol_violation_count=0`. | Supported by the frozen audit for the reported development run. |
-| Runtime optimization preserves scientific output. | Iterations 2 and 8 preserve mean regret exactly while reducing runtime from 452.0 s to 320.7 s; frozen rerun is 327.4 s. | Supported. |
-| Descriptor-conditioned risk-correction transport generalizes across shift families. | SARC family-out mean regret 0.06977 and descriptor/correction Spearman -0.04954. | Not supported; present as a failure/limitation. |
-| A conservative reliability-aware selector with transport uncertainty and Transfer Score rank fusion beats Transfer Score. | Proposed by the current failure analysis, but not yet run. | Not supported as a result; mention only as the next method iteration or future design implication. |
-| SPECTRA-DA is SOTA over 16 real transfers. | Requires a frozen comparison against all strong selectors on all 16 transfers. | Not yet supported; must not appear as a factual claim. |
-| Target-label oracle selection changes UGDA method rankings broadly. | Requires Gate-1 oracle gap and ranking reversal results across the full task set. | Pending; motivate using the ADAlign implementation audit without generalizing prevalence. |
-| The cited literature is authentic and claim-aligned. | `notes/citation_audit.md`: 27 cited entries checked against arXiv where available and official proceedings/DOI pages; one wrong arXiv ID corrected and one unverified inherited title removed. | Supported for the current bibliography. Google Scholar endpoints were attempted but timed out from this environment, which is recorded explicitly rather than treated as a successful check. |
+| Target-label-free algorithm, configuration, seed, and checkpoint selection is a distinct UGDA deployment problem. | Formal selector protocol, candidate schema, and ADAlign implementation audit. | Supported as a problem formulation; do not claim universal prevalence or priority without a broader audit. |
+| GDA-Select enforces an auditable information boundary. | Candidate-bank hashes, isolated evaluator, public artifact schema, and zero access/violation counters. | Supported for the released protocol and reported runs. |
+| Tight graph spectral frames exactly decompose hard classification error. | Lemma 1 and theory tests. | Supported analytically for hard one-hot predictions. |
+| Pairwise spectral disagreement determines individual risks up to cross-model error covariance. | Exact identity and recovery theorem. | Supported analytically. |
+| Covariance misspecification controls recovery error. | Recovery bounds and theory tests. | Supported for the stated linear core; practical constrained recovery is empirical. |
+| Covariance correction is the main source-simulated recovery component. | Full 0.01415 versus 0.05057 without covariance; paired interval [0.01583, 0.06026]. | Supported on four tasks and 44 source-simulated folds. |
+| Spectral conditioning consistently improves top-1 selection. | Full 0.01415 versus global-covariance 0.01471; only 4/44 choices differ and interval [-0.00073, 0.00265] crosses zero. | Not supported; describe the increment as modest and statistically inconclusive. |
+| Spectral bands expose heterogeneous covariance regimes. | Absolute error correlation 0.381/0.573/0.617 in low/mid/high bands versus 0.487 globally. | Supported on the source-simulated calibration bank. |
+| SPECTRA-DA is the best real-target selector. | SPECTRA-Cal mean NRegret 0.320062 on four 675-candidate open-development tasks. | Contradicted; do not make this claim. |
+| Agreement@20% followed by Transfer Score is the strongest open-development diagnostic. | Mean NRegret 0.087507 versus Transfer Score 0.216807; selected Micro-F1 0.623427. | Supported only as open-development evidence; it is not SPECTRA and was not promoted. |
+| The diagnostic is robust enough for final evaluation. | Worst NRegret 0.223881, non-inferior on 2/4 tasks, missing source-sim family-out CVaR guard. | Not supported; the audit correctly rejects promotion. |
+| Candidate or trajectory coverage is the dominant remaining error. | Method and trajectory coverage gaps are both zero; checkpoint coverage is 20.5% of total. | Contradicted. |
+| Shortlist-internal reranking is the dominant remaining error. | Mean normalized reranking gap 0.069580, or 79.5% of total 0.087507; USA-to-BRAZIL regret is entirely reranking. | Supported on the four open-development tasks. |
+| Cross-fitting, coverage floors, trajectory evidence, gamma auxiliaries, or bootstrap stability repair the failure. | Every registered Stage-C control has worse mean regret than 0.087507; router qualifies on only 2/4 tasks. | Not supported; report as negative controls. |
+| No target-label or protocol access occurred. | label_access_count=0 and protocol_violation_count=0 across released Stage-C outputs. | Supported. |
+| A final selector was frozen and evaluated on all transfers. | Stage-C audit records freeze_allowed=false and sealed_final_evaluation_allowed=false. | Contradicted; final twelve transfers remain unqueried. |
+| The paper establishes real-target SOTA. | No final sealed evaluation and no promoted selector. | Not supported; must not appear. |
+| The cited literature is authentic and claim-aligned. | Citation audit checks arXiv and official proceedings/DOI records where available. | Supported for the current bibliography; preserve the audit boundary. |
 
 ## Reviewer-facing claim policy
 
-- Use “development evaluation” whenever reporting the current 37.915% gain.
-- Use “source-simulated” for covariance-by-band and shift-family diagnostics.
-- Reserve “final sealed target evaluation” for the future externally operated
-  one-time 16-transfer run; call the existing four-task result Gate-1
-  development evaluation.
-- Attribute the dominant source-simulated gain to covariance correction, not
-  spectral decomposition, robust fitting, or uncertainty.
-- Describe spectral conditioning as modest and statistically inconclusive for
-  top-1 selection on the current folds.
-- Frame the next scientific problem as reliability of covariance correction
-  under unseen real shifts; do not imply the current transport descriptors solve
-  it.
-- Transfer Score is a strong baseline and useful prior, not a defeated method.
-- Describe SARC and delete-one donor variants as rejected diagnostics, not parts
-  of the final method.
-- Do not restore the removed unverified SpecReg title or the incorrect SPA
-  arXiv identifier.
+- Use \emph{open-development} for the four real-target tasks.
+- Use \emph{source-simulated} for the 44-fold recovery and covariance results.
+- Attribute the 0.087507 diagnostic to Agreement screening and Transfer Score
+  reranking, never to SPECTRA-DA.
+- Treat SPECTRA-DA as a covariance-aware recovery theory and diagnostic module.
+- State that spectral top-1 gains over global covariance are inconclusive.
+- State the final audit decision explicitly: no freeze and no query of the
+  remaining twelve transfers.
+- Present 79.5% reranking error as the final failure localization.
+- Do not describe additional tuning on the same four tasks as future evidence;
+  future work requires a pre-registered protocol change or a new label-free
+  signal.

@@ -1,9 +1,11 @@
-\section{SPECTRA-DA}
+\section{Covariance-Aware Spectral Risk Recovery}
 \label{sec:method}
 
 \subsection{Problem setting and sealed selection}
 
-We study model selection after UGDA training. Let
+We study model selection after UGDA training. \method is the paper's
+risk-recovery research module within the broader \benchmark protocol; it is
+not the promoted outcome of the final audit. Let
 $\mathcal G_S=(A_S,X_S,Y_S)$ be a labeled source graph and
 $\mathcal G_T=(A_T,X_T)$ an unlabeled target graph. A frozen candidate bank
 $\mathcal H=\{h_m\}_{m=1}^M$ contains different adaptation algorithms,
@@ -209,17 +211,17 @@ and a support-aware prior:
   \label{eq:practical_recovery}
 \end{align}
 Pairs with high transported error correlation receive less weight, and the
-prior is disabled when the target descriptor falls outside the frozen
-source-simulation support. The frozen implementation additionally winsorizes
+prior is disabled when the target descriptor falls outside the pre-registered
+source-simulation support. The research implementation additionally winsorizes
 extreme pair observations and performs one Tukey/endpoint-reliability refit.
 We treat this as a solver detail: Table~\ref{tab:core_ablation} shows that it
 does not explain the aggregate gain.
 
-The frozen selector uses a conservative source-only uncertainty term rather
-than treating transported covariance as always trustworthy. Bootstrap
+The source-simulated configuration uses a conservative source-only uncertainty
+term rather than treating transported covariance as always trustworthy. Bootstrap
 resampling of simulated shifts yields risk estimates
 $\widehat R_T^{(q)}(h_m)$ and uncertainty
-$u_m=\operatorname{Std}_q[\widehat R_T^{(q)}(h_m)]$. The final selector uses
+$u_m=\operatorname{Std}_q[\widehat R_T^{(q)}(h_m)]$. The research score uses
 \begin{equation}
   \widehat m=\arg\min_m
   \left[\frac{1}{2}\sum_b\widehat r_{m,b}+\beta u_m\right].
@@ -227,33 +229,13 @@ $u_m=\operatorname{Std}_q[\widehat R_T^{(q)}(h_m)]$. The final selector uses
 \end{equation}
 All resampling operates on source-simulated calibration data, so the score
 remains target-label-free. Its empirical contribution is reported separately
-from covariance transport in Table~\ref{tab:core_ablation}; in the current
-frozen run it is a guardrail, not the dominant source of gain.
-
-The failure mode suggests a stronger reliability criterion for future
-selectors. Let $U_m^{\mathrm{tr}}$ measure disagreement among plausible
-transported covariance corrections or their induced risk-correction vectors,
-and let $T_m$ be an independent transferability score such as Transfer Score.
-The underlying conservative principle is
-\begin{equation}
-  \operatorname{score}_m
-  = \widehat R_m+\lambda U_m^{\mathrm{tr}}-\gamma T_m,
-  \label{eq:reliable_selection}
-\end{equation}
-where aggressive covariance correction is penalized when transport is
-unstable and an independent transferability prior can veto an overconfident
-top prediction. The released evaluation scaffold uses the rank-normalized
-pre-registered version of this rule,
-\begin{equation}
-  s_m=(1-\eta)\operatorname{rank}(\widehat R_m)/\tau
-  +\lambda\operatorname{rank}(U_m^{\mathrm{tr}})
-  +\gamma\operatorname{rank}(-T_m),
-  \label{eq:rank_reliable_selection}
-\end{equation}
-with only $\lambda,\gamma,\eta,\tau$ allowed to vary under source-family
-holdout. We do not report this as a completed result; it is the direct design
-implication of the real-target failure analysis in
-Section~\ref{sec:experiments}.
+from covariance transport in Table~\ref{tab:core_ablation}; it is a guardrail,
+not the dominant source of gain. The subsequent audit tests fixed covariance
+shrinkage, pair-consistency trust, rank consensus, and bootstrap stability as
+ways to decide whether this correction should influence real-target
+selection. None passes all registered promotion conditions. Consequently,
+\method remains a recovery and diagnostic module rather than a frozen
+deployment selector.
 
 \paragraph{Attribution boundary and complexity.}
 With an exact tight frame, identical linear recovery in every band, and no

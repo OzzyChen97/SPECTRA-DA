@@ -1,32 +1,37 @@
 \section{Conclusion}
 
-This paper reframes UGDA evaluation around a deployment requirement: selecting
-an algorithm, configuration, seed, and checkpoint without reading target
-labels. \benchmark makes this requirement auditable through immutable
-trajectories and sealed labels, while \method estimates target risk with a
-covariance-aware recovery system built on candidate disagreement. The tight
-graph-spectral frame supplies an exact decomposition and exposes band-wise
-heterogeneity, but the resulting analysis identifies cross-model error
-covariance as the central hidden term and quantifies how covariance transport
-error affects recovered risk. In the
-current frozen development scope, the method lowers mean normalized regret by
-$37.9\%$, ranks the candidate bank accurately near its optimum, and satisfies
-the zero-access protocol on source-simulated folds. On the separately sealed
-real-target Gate-1 comparison, however, Transfer Score remains stronger in
-top-1 regret ($0.1467$ versus $0.2560$), so the current evidence does not
-support a state-of-the-art claim.
+This paper separates target-label-free model selection from UGDA training.
+\benchmark makes algorithm, configuration, seed, and checkpoint selection
+auditable through immutable candidate trajectories, sealed labels, and
+pre-registered stopping rules. Within this protocol, \method provides a
+covariance-aware account of what candidate disagreement can reveal about
+target risk. Its tight graph-spectral frame preserves total hard-label risk,
+while the recovery analysis identifies cross-model error covariance as the
+hidden quantity governing identifiability and misspecification.
 
-The core ablation sharpens the technical conclusion. Covariance correction is
-essential on source-simulated folds, while spectral band conditioning provides
-only a modest, statistically inconclusive improvement over an equal-information
-global covariance control. Robust refitting and bootstrap uncertainty do not
-drive the result and are therefore implementation details, not contributions.
+The experiments support the theory more strongly than they support a
+deployable selector. On matched source-simulated folds, covariance correction
+reduces mean normalized regret from $0.05057$ to $0.01415$, whereas the
+increment from spectral conditioning over global covariance is modest and
+statistically inconclusive. On four real-target open-development tasks, the
+best diagnostic pipeline is Agreement top-$20\%$ followed by Transfer Score,
+with mean regret $0.087507$. This gain is not attributable to \method and does
+not satisfy the robustness requirements for promotion.
 
-The central limitation is transportability: current unlabeled descriptors do
-not reliably predict risk-correction geometry for unseen shift families. The
-next method iteration should therefore be conservative rather than more
-expressive: penalize transport uncertainty, fuse the recovered risk with an
-independent transferability prior such as Transfer Score, and choose all
-weights by leave-one-shift-family-out validation. This reliability question
-must be addressed before the frozen 16-transfer evaluation, without additional
-target-specific tuning.
+The audited negative result provides the main empirical insight. The successful
+shortlist already represents the oracle method and trajectory on every
+development task; $79.5\%$ of its remaining regret arises from reranking
+within that shortlist. Cross-fitting, trajectory aggregation, coverage floors,
+fixed covariance auxiliaries, bootstrap stability, and a parameter-free router
+all fail to repair this top-of-ranking error. The registered audit therefore
+records \texttt{stop\_no\_freeze\_no\_sealed\_evaluation}: no selector is
+declared as a frozen main method, and the final twelve transfers remain sealed.
+
+The present scope covers Citation and Airport development tasks but not Blog
+or Twitch targets. Any continuation must change the evidence base before
+changing the claim: either pre-register additional graph families as
+development data, reducing the final sealed set accordingly, or retain all
+twelve sealed tasks and develop a shortlist-internal calibration signal using
+only source-simulated and unlabeled evidence. In either case, the benchmark's
+stopping rule should remain part of the method, because reliable model
+selection requires knowing when not to query the next label.

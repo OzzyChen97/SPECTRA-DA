@@ -1,5 +1,11 @@
 # Reliable selection next steps
 
+> **Historical note, superseded by the completed Stage A/B/C audit.** The
+> reliability, fusion, covariance-shrinkage, trajectory, coverage, and
+> stability experiments proposed below were subsequently executed or replaced
+> by stricter structural controls. The authoritative outcome is
+> stop-no-freeze-no-sealed-evaluation.
+
 This note records the next experimental direction after the current paper
 repositioning. The current evidence does not support a SPECTRA-DA
 state-of-the-art claim on real target selection: Transfer Score is stronger in
@@ -78,5 +84,6 @@ one of:
 - source-family-holdout regret improvement with no degradation against
   Transfer Score rank fusion.
 
-It must not be described as state of the art unless it beats the strongest
-label-free baselines under the frozen 16-transfer sealed evaluation.
+It must not be described as state of the art. The completed audit did not
+freeze a selector, and the remaining twelve transfers were deliberately left
+sealed.

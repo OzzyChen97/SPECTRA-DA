@@ -124,12 +124,23 @@ PYTHON_SYNTAX_FILES = [
 
 CLAIM_BOUNDARY_PATTERNS = {
     "no_sota_claim": r"no state-of-the-art claim|not a state-of-the-art",
-    "transfer_score_stronger": r"Transfer Score remains stronger",
-    "gate1_transfer_score_value": r"0\.1467",
-    "gate1_spectra_value": r"0\.2560",
-    "source_simulated_gain_start": r"0\.02278",
+    "diagnostic_not_spectra": (
+        r"not a \\method result|not attributable to \\method|"
+        r"not a spectra-da result|not to spectra-da"
+    ),
+    "open_dev_transfer_score_value": r"0\.216807",
+    "open_dev_diagnostic_value": r"0\.087507",
+    "source_simulated_no_cov_value": r"0\.05057",
     "source_simulated_gain_end": r"0\.01415",
-    "reliable_not_completed_result": r"not (?:yet )?completed|not an achieved result|not report this as a completed",
+    "no_frozen_selector": (
+        r"without freezing a selector|no selector (?:is|was) frozen|"
+        r"freeze_allowed[=: ]+false"
+    ),
+    "sealed_final_not_queried": (
+        r"final twelve .*?(?:unqueried|not queried|remain sealed)|"
+        r"remaining twelve .*?(?:unqueried|not queried|remain sealed)"
+    ),
+    "stage_c_stop_decision": r"stop[_\\-]no[_\\-]freeze[_\\-]no[_\\-]sealed[_\\-]evaluation",
 }
 
 FORBIDDEN_SECRET_PATTERNS = {
@@ -193,7 +204,7 @@ def check_table_highlights() -> list[dict[str, str]]:
         "ours_background": r"\\colorbox\{spectragreenbg\}",
         "oursbest_background": r"\\colorbox\{spectraorangebg\}",
         "highlight_bold": r"\\textbf\{\\textcolor",
-        "ours_values": r"\\ours\{0\.2560\}.*\\ours\{12\.16\}.*\\ours\{0\.695\}",
+        "ours_values": r"\\ours\{0\.3201\}.*\\ours\{0\.5373\}.*\\ours\{0\.3967\}",
     }
     text = main + "\n" + experiments.replace("\n", " ")
     failures = []

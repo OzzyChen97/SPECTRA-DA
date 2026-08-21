@@ -1,4 +1,4 @@
-# SPECTRA-DA paper draft
+# GDA-Select paper draft
 
 This directory uses the official ICLR 2027 style files.
 
@@ -17,13 +17,12 @@ metrics:
 MPLCONFIGDIR="$PWD/.matplotlib" python scripts/make_figures.py
 ```
 
-The current draft is intentionally conservative. It contains (i) an
-equal-protocol Gate-1 real-target comparison on four tasks and 140 candidates
-per task, where Transfer Score remains stronger in top-1 selection, and (ii) a
-source-simulated refinement/ablation study on four tasks, 44 held-out shifts,
-and 675 candidates per task. The pending externally operated 16-transfer
-sealed evaluation is described as future evidence rather than a completed
-result.
+The current draft is benchmark-first and intentionally conservative. It
+contains (i) an equal-protocol real-target open-development comparison on four
+tasks and 675 candidates per task, (ii) a source-simulated recovery/ablation
+study over 44 held-out shifts, and (iii) the complete Stage A/B/C stopping
+audit. No selector passed every promotion guard, so no method was frozen and
+the final twelve transfers remain sealed.
 
 ## Architecture figure
 

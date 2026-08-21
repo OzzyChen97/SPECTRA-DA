@@ -7,9 +7,10 @@ may follow a different distribution~\citep{wu2020unsupervised,dai2022graph,liu20
 Recent methods address propagation mismatch, conditional structure shift,
 homophily shift, and composite feature--structure shift with increasingly
 specialized adaptation objectives~\citep{liu2023structural,liu2024rethinking,liu2024pairwisealignmentimprovesgraph,fang2025attribute, yang2025disentangled,pmlr-v267-fang25g,chen2026learningadaptivedistributionalignment}.
-These advances answer how a candidate model should be trained, but leave a
-separate deployment question unresolved: without any target label, which
-algorithm, hyperparameter setting, random seed, and checkpoint should be used?
+These advances primarily answer how a candidate model should be trained.
+Deployment poses a distinct question: without target labels, which algorithm,
+hyperparameter setting, random seed, and checkpoint should be used? This paper
+studies that selection problem rather than proposing another adaptation loss.
 
 This question is obscured when target labels are used after training to select
 the best checkpoint. For example, our audit of the public ADAlign
@@ -25,58 +26,65 @@ neighborhood density, transfer scores, or cross-model agreement do not
 explicitly model target graph structure~\citep{you2019dev,saito2021tunerightwayunsupervised,
 yang2023transferscore,jiang2021disagreement,baek2022agreement}.
 
-Target-label-free UGDA selection is technically difficult because observable
-model agreement is not individual model accuracy. Given candidate errors
-$E_m$ and $E_n$, their pairwise disagreement contains the sum of individual
-risks minus twice their error covariance. Classical unsupervised classifier
-evaluation therefore relies on restrictive structure in cross-classifier
-errors~\citep{parisi2014ranking,pmlr-v38-jaffe15}. The difficulty is amplified in trajectory
-banks: adjacent checkpoints and related GNN backbones share errors, while graph
-shifts change which shared errors appear at local, community, and global
-scales. A useful selector must exploit graph structure without assuming that
-candidate errors are independent.
+Target-label-free UGDA selection is difficult for three reasons. First,
+agreement is not accuracy: for candidate errors $E_m$ and $E_n$, observable
+pairwise disagreement contains the sum of their individual risks minus twice
+their error covariance. Classical unsupervised classifier evaluation therefore
+requires identifiable structure in cross-classifier errors
+~\citep{parisi2014ranking,pmlr-v38-jaffe15}. Second, trajectory banks violate
+simple independence intuitions because adjacent checkpoints, seeds, and
+related GNNs share mistakes. Third, model selection is a top-of-ranking
+problem: a selector can correlate well with risk over hundreds of candidates
+and still choose the wrong model among the few best candidates.
 
-We propose \method, a covariance-aware model-selection layer for a frozen UGDA
-candidate bank.
-As illustrated in Figure~\ref{fig:pipeline}, \method first decomposes hard or
-soft candidate predictions using a tight spectral frame on the unlabeled
-target graph. It then converts band-wise pair disagreement into individual
-risk through a covariance-corrected pair-sum system. Because target error
-covariance is unobservable, the method estimates it from labeled
-source-simulated feature, topology, homophily, label-prior, and conditional
-structure shifts, matched to the target with unlabeled graph and committee
-descriptors. Nonnegative recovery produces the label-free selection score;
-the robust refit and source-only bootstrap term are implementation refinements
-rather than core contributions.
+We address these issues as an audited study with two technical layers.
+\benchmark fixes the information boundary through immutable candidate
+trajectories, public artifact hashes, zero-access counters, and a sealed
+evaluator. Within this protocol, \method studies what can be recovered from
+unlabeled predictions. As illustrated in Figure~\ref{fig:pipeline}, it
+decomposes candidate predictions over a tight target-graph spectral frame,
+converts band-wise disagreement into individual risk through a pair-sum
+system, and estimates the missing covariance from labeled source-simulated
+graph shifts. The frame gives an exact risk decomposition; the covariance term
+exposes the assumption on which recovery succeeds or fails. We treat
+source-to-target covariance transport as a hypothesis to audit, not as a
+guaranteed deployment solution.
 
 \begin{figure*}[t]
   \centering
   \includegraphics[width=0.96\textwidth]{figures/figure1-gpt-image-2.png}
-  \caption{\textbf{SPECTRA-DA pipeline.} Frozen candidate predictions are
-  decomposed over a tight target-graph spectral frame. Observable band-wise
-  disagreement is combined with error covariance transported from labeled
-  source simulations, yielding covariance-corrected target-risk estimates
-  without exposing target labels to the selector. The hidden labels are used only by the
-  isolated evaluator after the selector is frozen.}
+  \caption{\textbf{\benchmark protocol and \method research module.} The
+  selector sees a frozen candidate bank and unlabeled target predictions.
+  \method combines graph-spectral disagreement with covariance estimated from
+  labeled source simulations. Target labels remain isolated in the evaluator.
+  Under the registered audit reported in this paper, no selector passed all
+  promotion guards, so the final twelve sealed transfers were not queried.}
   \label{fig:pipeline}
 \end{figure*}
 
-The current evidence supports three contributions, with a narrower scope than
-a state-of-the-art selector claim. First, we formalize \benchmark, a
-sealed-label protocol that jointly evaluates algorithm, hyperparameter, seed,
-and checkpoint selection over immutable candidate trajectories. Second, we
-derive covariance-aware risk recovery from pairwise disagreement: the tight
-spectral frame gives an exact error decomposition, the pair-sum system exposes
-cross-model error covariance as the hidden term, and the recovery bound shows
-how covariance misspecification propagates to risk error. Third, we identify
-calibration reliability as the central empirical bottleneck. On four
-source-simulated development tasks and 44 held-out shifts, covariance
-correction reduces mean normalized regret from $0.02278$ to $0.01415$, while
-spectral conditioning adds only a modest and statistically inconclusive
-increment over global covariance. On the separately sealed real-target
-development comparison, Transfer Score attains lower top-1 regret ($0.1467$
-versus $0.2560$), whereas our selector attains higher Kendall correlation.
-This split shows that source-simulated calibration can succeed while real-shift
-top-1 selection still fails; consequently, the paper studies the reliability
-of covariance correction rather than claiming full 16-transfer state of the
-art.
+The empirical study follows a pre-registered stopping rule. On 44
+source-simulated folds, covariance correction is the dominant source of
+recovery accuracy, whereas spectral conditioning contributes only a modest,
+statistically inconclusive increment over global covariance. On four
+real-target open-development tasks, Agreement top-$20\%$ followed by Transfer
+Score is the strongest diagnostic pipeline, reducing mean normalized regret
+from $0.216807$ to $0.087507$. However, this pipeline is not owned by
+\method, remains non-inferior on only $2/4$ tasks, and exceeds the worst-task
+threshold. Five subsequent structural iterations fail to repair these
+weaknesses. The registered audit therefore stops development without freezing
+a selector and leaves the final twelve transfers sealed.
+
+Our contributions are threefold:
+\begin{itemize}
+  \item \textbf{An auditable selection benchmark.} \benchmark jointly evaluates
+  algorithm, configuration, seed, and checkpoint selection under immutable
+  candidate-bank hashes, sealed target labels, and explicit stopping rules.
+  \item \textbf{Covariance-aware risk-recovery theory.} We derive an exact
+  graph-spectral disagreement identity and recovery bounds that make
+  cross-model error covariance, frame approximation, and covariance
+  misspecification explicit.
+  \item \textbf{A pre-registered negative audit with failure localization.}
+  We document which plausible trust, trajectory, coverage, and stability
+  mechanisms fail, and show that $79.5\%$ of the remaining regret arises from
+  shortlist-internal reranking after the oracle trajectory is already covered.
+\end{itemize}

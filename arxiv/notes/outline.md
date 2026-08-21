@@ -1,53 +1,51 @@
-# SPECTRA-DA Paper Outline
+# GDA-Select Paper Outline
 
 ## One-sentence story
 
-Unsupervised graph domain adaptation is not deployable when algorithms,
-hyperparameters, and checkpoints are chosen with target labels; SPECTRA-DA
-instead estimates candidate target risk from graph-spectral prediction
-agreement and source-simulated error covariance under a sealed-label protocol.
+Target-label-free UGDA selection requires both a mathematical account of what
+unlabeled model disagreement can reveal and an evaluation protocol that stops
+when the evidence is not robust; GDA-Select provides both, and the resulting
+audit localizes the unresolved error to shortlist-internal reranking.
 
 ## Introduction
 
-- Define target-label-free model selection over a frozen UGDA candidate bank.
-- Show why target-label oracle checkpoint selection is a distinct evaluation
-  problem rather than a training-label leak.
-- Identify the technical obstacle: pairwise disagreement determines individual
-  risk only up to cross-model error covariance.
-- Present the SPECTRA-DA pipeline: tight spectral decomposition, covariance
-  transport from source-simulated shifts, robust risk recovery, and sealed
-  evaluation.
-- State only development-scope evidence: four tasks, 44 held-out simulated
-  shifts, 675 candidates per task, and zero label/protocol violations.
-
-## Related work
-
-- Unsupervised graph domain adaptation and benchmark protocols.
-- Label-free model selection in domain adaptation.
-- Agreement-based classifier accuracy estimation.
-- Graph spectral frames and graph signal decomposition.
+- Separate adaptation training from algorithm/configuration/seed/checkpoint
+  selection.
+- Audit target-oracle checkpoint reporting as a deployment mismatch.
+- Explain the core obstacle: disagreement determines risk only up to
+  cross-model error covariance.
+- Present GDA-Select as the protocol and SPECTRA-DA as the recovery research
+  module.
+- State the evidence boundary: source-simulated recovery succeeds, real-target
+  covariance transport does not.
+- State three contributions: benchmark, theory, and pre-registered negative
+  audit with failure localization.
 
 ## Method
 
-- Problem definition and GDA-Select sealed-label protocol.
+- Formal target-label-free selection and sealed information boundary.
 - Tight graph spectral frame and exact hard-error decomposition.
-- Pairwise disagreement identity and covariance-controlled recovery bound.
-- Shift-conditioned covariance transport.
-- Robust weighted nonnegative recovery and uncertainty-aware selection.
-- Complexity and attribution boundary versus global calibration.
+- Pairwise disagreement identity and covariance misspecification bounds.
+- Source-simulated covariance transport.
+- Practical weighted recovery and uncertainty accounting.
+- Attribution boundary: decomposition alone is equivalent to global recovery.
 
 ## Experiments
 
-- Development evaluation scope and frozen candidate bank.
-- Baselines and metrics.
-- Main development result and runtime.
-- Source-only covariance-by-band diagnostic.
-- Controlled refinement study and rejected variants.
-- Failure analysis: cross-family covariance transport and SARC.
-- Limitations and remaining 16-task sealed evaluation.
+- Four open-development transfers, 675 candidates per task, twelve final
+  transfers still sealed.
+- Equal-protocol comparison against strong label-free selectors.
+- Source-simulated covariance attribution and spectral heterogeneity.
+- Simulation-to-real transport failure.
+- Stage A/B/C no-go audit.
+- Shortlist decomposition: 20.5% checkpoint coverage, 79.5% reranking.
+- Promotion audit and no-freeze/no-query decision.
 
 ## Conclusion
 
-- Reiterate model selection as a missing deployment layer for UGDA.
-- Summarize the exact algebraic contribution and the current empirical evidence.
-- State the generalization boundary and the required next evaluation.
+- The benchmark and recovery theory are supported.
+- A deployable SPECTRA selector is not supported.
+- The remaining scientific problem is shortlist-internal top-ranking
+  calibration under cross-family shift.
+- Further work requires a pre-registered change to the evidence base, not more
+  tuning on the same four tasks.

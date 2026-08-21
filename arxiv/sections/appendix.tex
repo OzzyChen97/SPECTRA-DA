@@ -40,11 +40,13 @@ control required for causal attribution.
 
 \subsection{Sealed-label audit checklist}
 
-The frozen protocol verifies: (i) candidate-bank hashes and candidate counts;
+The protocol verifies: (i) candidate-bank hashes and candidate counts;
 (ii) absence of target-label fields in public artifacts; (iii) zero selector
 imports from the sealed evaluator; (iv) complete score coverage and selected
 index consistency; (v) zero label-access and protocol-violation counters; and
-(vi) an immutable selector commit before hidden evaluation.
+(vi) an immutable selector commit before hidden evaluation. Stage-C did not
+satisfy the promotion conditions, so no final selector was frozen and the
+remaining sealed labels were not loaded.
 
 \subsection{Frozen implementation details}
 \label{app:implementation}
@@ -63,8 +65,9 @@ task name or target score. Sidecar manifests record the task, candidate-bank
 hash, candidate ordering, spectral configuration, parent-calibration hash,
 and zero target-label/protocol counters.
 
-The four development tasks are ACMv9$\rightarrow$Citationv1,
+The four open-development tasks are ACMv9$\rightarrow$Citationv1,
 Citationv1$\rightarrow$ACMv9, USA$\rightarrow$BRAZIL, and
 BRAZIL$\rightarrow$USA. Consequently, the present quantitative evidence covers
-Citation and Airport graphs but not Blog or Twitch; the latter remain part of
-the planned 16-transfer sealed evaluation.
+Citation and Airport graphs but not Blog or Twitch. The latter are among the
+final twelve sealed transfers, which remain unqueried under the recorded
+\texttt{stop\_no\_freeze\_no\_sealed\_evaluation} decision.
