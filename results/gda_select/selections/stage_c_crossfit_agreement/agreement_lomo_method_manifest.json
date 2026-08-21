@@ -1,0 +1,38 @@
+{
+  "candidate_root": "/mnt/workspace/Wilson/AutoSOTA/baseline/ADAlign/trajectory_bank/candidates/gda_select_v1",
+  "created_at": "2026-08-21T03:01:19.983221+00:00",
+  "label_access_count": 0,
+  "mode": "method",
+  "output_root": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/selections/stage_c_crossfit_agreement",
+  "outputs": [
+    {
+      "output": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/selections/stage_c_crossfit_agreement/ACMv9_to_Citationv1/agreement_lomo_method.json",
+      "selector_runtime_seconds": 10.867911987006664,
+      "task": "ACMv9_to_Citationv1"
+    },
+    {
+      "output": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/selections/stage_c_crossfit_agreement/Citationv1_to_ACMv9/agreement_lomo_method.json",
+      "selector_runtime_seconds": 11.30037312512286,
+      "task": "Citationv1_to_ACMv9"
+    },
+    {
+      "output": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/selections/stage_c_crossfit_agreement/USA_to_BRAZIL/agreement_lomo_method.json",
+      "selector_runtime_seconds": 0.8940257090143859,
+      "task": "USA_to_BRAZIL"
+    },
+    {
+      "output": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/selections/stage_c_crossfit_agreement/BRAZIL_to_USA/agreement_lomo_method.json",
+      "selector_runtime_seconds": 1.7488257358781993,
+      "task": "BRAZIL_to_USA"
+    }
+  ],
+  "protocol_violation_count": 0,
+  "schema_version": 1,
+  "selector": "agreement_lomo_method",
+  "tasks": [
+    "ACMv9_to_Citationv1",
+    "Citationv1_to_ACMv9",
+    "USA_to_BRAZIL",
+    "BRAZIL_to_USA"
+  ]
+}

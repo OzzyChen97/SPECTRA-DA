@@ -103,6 +103,24 @@ when the repository contains verifiable artifacts or commands that prove it.
   Agreement/SPECTRA trajectory midrank reaches `0.164165`, both worse than the
   candidate-level `0.087507`. This control is frozen as a no-go result rather
   than tuned further.
+- Stage-C now includes an exact shortlist-specific decomposition at
+  `selector/shortlist_error_decomposition.py`. For Agreement@20% -> Transfer
+  Score, the shortlist represents the global-oracle method and trajectory on
+  all four open tasks: trajectory and method coverage gaps are both zero.
+  Checkpoint coverage contributes `0.017927` mean normalized regret (`20.5%`),
+  while shortlist-internal Transfer Score reranking contributes `0.069580`
+  (`79.5%`). The authoritative artifact is
+  `results/gda_select/open_dev/stage_c_shortlist_error_decomposition.json`.
+- `selector/crossfit_agreement.py` implements label-free majority references
+  that exclude each candidate's entire trajectory (LOTO) or method (LOMO).
+  Their Agreement@20% -> Transfer Score results are `0.113626` and `0.141500`
+  mean NRegret, respectively, both worse than the unmodified `0.087507`
+  selector. `selector/trajectory_aware_rerank.py` then tests repeated Transfer
+  Score evidence without expanding the candidate shortlist: k=1 exactly
+  reproduces `0.087507`, while k=2 and k=3 degrade to `0.201845` and
+  `0.295129`. All Stage-C outputs report zero label access and zero protocol
+  violations. These controls are recorded as no-go results; no selector is
+  frozen and no sealed-final evaluation has been run.
 - The v3 AutoSOTA objective scaffold is available at
   `selector/objective_v2.py` with configuration in
   `configs/v3_search_space.yaml`. It consumes an exported open-development

@@ -198,6 +198,61 @@ not promoted or tuned further on these four tasks. The next viable direction
 is a stability/coverage diagnostic that preserves the successful candidate
 shortlist while testing temporal thinning and trajectory coverage.
 
+## Stage-C shortlist diagnosis and structural controls
+
+`shortlist_error_decomposition.py` gives a more precise diagnosis than the
+selected-trajectory factorization above. It expands every trajectory or method
+represented by the fixed Agreement top-20% candidate shortlist and exactly
+decomposes the final regret into shortlist coverage, checkpoint coverage, and
+within-shortlist reranking terms:
+
+| Agreement@20% -> TS component | Mean normalized gap | Share |
+|---|---:|---:|
+| Trajectory coverage | 0.000000 | 0.0% |
+| Method coverage | 0.000000 | 0.0% |
+| Checkpoint coverage inside represented trajectories | 0.017927 | 20.5% |
+| Transfer Score reranking inside the shortlist | 0.069580 | 79.5% |
+| Total | 0.087507 | 100.0% |
+
+The shortlist already represents the global-oracle method and trajectory on
+all four tasks. The dominant problem is therefore not trajectory coverage but
+choosing among the shortlisted checkpoints, especially on
+`USA_to_BRAZIL`. This exact report is stored in
+`results/gda_select/open_dev/stage_c_shortlist_error_decomposition.json`.
+
+Two registered cross-fitted Agreement controls remove a candidate's entire
+trajectory (LOTO) or method (LOMO) before constructing the node-wise majority
+reference. Both remain strictly target-label-free, but neither improves the
+current candidate-level shortlist:
+
+| Stage-C shortlist -> TS control | Mean NRegret | Worst NRegret | Mean selected Micro-F1 |
+|---|---:|---:|---:|
+| Agreement@20% -> TS | **0.087507** | **0.223881** | **0.623427** |
+| Trajectory-cross-fitted Agreement@20% -> TS | 0.113626 | 0.328358 | 0.610068 |
+| Method-cross-fitted Agreement@20% -> TS | 0.141500 | 0.343284 | 0.602002 |
+
+The corresponding four-task Agreement score construction takes `26.71s`
+(LOTO) and `24.81s` (LOMO) on CPU. These are diagnostic no-go controls, not
+promotion candidates.
+
+Finally, `trajectory_aware_rerank.py` preserves the successful candidate
+shortlist but scores each represented trajectory by the mean of its best
+`k` Transfer Score ranks, with worst-rank padding for missing checkpoints. It
+then selects the best Transfer Score checkpoint within the chosen trajectory.
+`k=1` exactly reproduces the candidate-level TS reranker; repeated trajectory
+evidence with `k=2` or `k=3` is harmful:
+
+| Trajectory-aware TS evidence | Mean NRegret | Worst NRegret | Mean selected Micro-F1 |
+|---|---:|---:|---:|
+| k=1 control | **0.087507** | **0.223881** | **0.623427** |
+| k=2 | 0.201845 | 0.438538 | 0.592411 |
+| k=3 | 0.295129 | 0.597015 | 0.544701 |
+
+The Stage-C evidence rejects both self-vote removal and naive repeated-TS
+trajectory evidence as solutions. The next experiment should target the
+shortlist's top-of-ranking checkpoint calibration directly rather than add
+trajectory coverage or average more checkpoints.
+
 ## Final metrics
 
 | Metric | Value |
@@ -237,8 +292,9 @@ generalization; descriptor/correction-distance Spearman was `-0.04954`.
 The graph spectral risk decomposition is operational, and full covariance
 interactions contain selection-relevant information. The remaining bottleneck
 is deciding when covariance/risk correction from unlabeled shift descriptors
-should be trusted under unseen shifts—not solver speed, more spectral filters,
-or a scalar residual/regularization choice.
+should be trusted under unseen shifts and how to calibrate the final shortlist
+top—not solver speed, more spectral filters, more trajectory coverage, or a
+scalar residual/regularization choice.
 
 ## Audit
 
