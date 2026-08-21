@@ -20,7 +20,7 @@ Gate-1 tasks with 675 candidates per task. It is not a sealed-final result.
 |---|---:|---:|---:|---:|---:|
 | Transfer Score | 0.216807 | 0.641791 | 0.641791 | 0.575664 | 0.500 |
 | Agreement Reference | 0.163016 | 0.222591 | 0.222591 | 0.594958 | 0.250 |
-| SPECTRA shortlist -> Transfer Score rerank @20% | 0.087507 | 0.223881 | 0.223881 | 0.623427 | 0.750 |
+| Agreement shortlist -> Transfer Score rerank @20% | 0.087507 | 0.223881 | 0.223881 | 0.623427 | 0.750 |
 
 The repaired shortlist/rerank selector is a strong open-development
 near-miss: it improves mean normalized regret by `59.64%` relative to Transfer
@@ -31,11 +31,38 @@ not be treated as the frozen "ours" selector for sealed evaluation.
 
 The leave-one-task-out selector-choice diagnostic reaches the same conclusion:
 when each fold selects a configuration using only the other three open-dev
-tasks, it repeatedly selects the same SPECTRA-shortlist -> Transfer-Score
+tasks, it repeatedly selects the same Agreement-shortlist -> Transfer-Score
 rerank variant. Validation mean normalized regret remains `0.087507`, but the
 held-out task non-inferiority rate is still `0.50` and oracle recall@20% is
 still `0.50`. The gain is therefore real but family-localized rather than a
 stable four-task promotion signal.
+
+### Shortlist attribution correction
+
+The earlier `spectra_reliable_uw000_tw100_cs000_ct100_str_sf020` name was
+misleading: its frozen `fusion_config` identifies `agreement_reference` as the
+actual shortlist owner. The explicit semantic reconstruction
+`agreement20_transfer_rerank` has identical candidate-score maps and selects
+the identical candidate on all four open-development tasks. The strongest
+`0.087507` result must therefore be attributed to Agreement screening followed
+by Transfer Score reranking, not to SPECTRA screening.
+
+`results/gda_select/open_dev/shortlist_attribution_objective_v2.json` records
+the corrected controls:
+
+| Shortlist control | Mean NRegret | Worst NRegret | Mean selected Micro-F1 | Oracle recall@20% |
+|---|---:|---:|---:|---:|
+| Agreement@20% -> Transfer Score | 0.087507 | 0.223881 | 0.623427 | 0.500 |
+| SPECTRA-Cal@20% -> Transfer Score | 0.261692 | 0.641791 | 0.544321 | 0.000 |
+| Agreement/SPECTRA union@20% -> Transfer Score | 0.246890 | 0.641791 | 0.554043 | 0.250 |
+
+The Agreement/SPECTRA top-20% intersection is also not a viable universal
+control: it contains 26, 34, and 13 candidates on the first three open tasks,
+but is empty on `BRAZIL_to_USA`. The implementation rejects an empty
+intersection instead of silently falling back to another selector. These
+results materially narrow the claim boundary: the current best deployment
+heuristic is committee-screened Transfer Score, while a uniquely spectral
+shortlist benefit has not been demonstrated.
 
 ## Selector complementarity diagnostic
 

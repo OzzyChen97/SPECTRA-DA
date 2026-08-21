@@ -24,6 +24,13 @@ correlation. The supported positive result is source-simulated: covariance
 correction improves the frozen development objective, while real-shift
 calibration reliability remains unresolved.
 
+The latest 675-candidate open-development attribution also corrects an earlier
+naming ambiguity: the best shortlist/rerank near-miss (`0.087507` mean
+normalized regret) uses Agreement Reference, not SPECTRA-Cal, to construct the
+top-20% shortlist before Transfer Score reranking. A genuine SPECTRA-Cal
+shortlist reaches `0.261692`. This strengthens the evidence boundary rather
+than a SOTA claim; details are in [docs/RESULTS.md](docs/RESULTS.md).
+
 ## Final controlled result
 
 | Metric | Value |

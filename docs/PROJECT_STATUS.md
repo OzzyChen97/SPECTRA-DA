@@ -54,6 +54,17 @@ when the repository contains verifiable artifacts or commands that prove it.
   four-task mean over Agreement Reference (`0.1589` versus `0.1630`) but fails
   worst-task, task-non-inferiority, oracle-recall, localized-gain, and LOTO
   promotion checks.
+- Shortlist attribution has now been corrected with explicit semantic
+  controls. The legacy best-named
+  `spectra_reliable_uw000_tw100_cs000_ct100_str_sf020` file actually uses
+  `agreement_reference` as its shortlist owner. Its score maps and selected
+  candidates are exactly reproduced by `agreement20_transfer_rerank` on all
+  four open-development tasks. The corrected result remains `0.087507` mean
+  normalized regret and `0.623427` mean selected Micro-F1. A genuine
+  `spectra_cal` top-20% shortlist followed by Transfer Score is substantially
+  worse (`0.261692` mean regret), and the Agreement/SPECTRA union is also worse
+  (`0.246890`). The result artifact is
+  `results/gda_select/open_dev/shortlist_attribution_objective_v2.json`.
 - The reliable fusion workflow now includes the v3 top-1 repair modes:
   fixed rank fusion, Transfer Score shortlist -> SPECTRA rerank, SPECTRA
   shortlist -> Transfer Score rerank, and support-adaptive mixture using
@@ -103,13 +114,14 @@ when the repository contains verifiable artifacts or commands that prove it.
   than Transfer Score (`0.1630` versus `0.2168`) and higher selected Micro-F1,
   but this is direct-selector evidence rather than a frozen final method. After
   repairing rank-fusion ties and hard shortlist behavior, the best small-grid
-  near-miss is SPECTRA-shortlist -> Transfer-Score rerank at 20%
+  near-miss is Agreement-shortlist -> Transfer-Score rerank at 20%
   (`0.0875` mean normalized regret, `0.6234` selected Micro-F1). It still fails
   promotion because task non-inferiority is only `2/4` and oracle recall@20% is
   `0.50`, below the registered `0.75` shortlist guardrail. The leave-one-task-
   out diagnostic reaches the same conclusion: validation mean normalized regret
   is `0.0875`, but held-out task non-inferiority remains `0.50`. This is
   evidence for continued top-of-ranking calibration work, not a SOTA claim.
+  It is not evidence that SPECTRA owns the successful shortlist.
 - Descriptor v2 has a label-free committee-behavior extractor at
   `shift_simulator/committee_descriptors.py`. It summarizes candidate entropy,
   prediction margins, class-prior concentration, pairwise disagreement,
@@ -248,9 +260,11 @@ torch-importing tests should use Python 3.12 in this container.
 - `selector/objective_v2.py` has been run on the real 675-candidate Gate-1
   open-development bank. The best current open-development single baseline
   signal is `agreement_reference` (`0.1630` mean normalized regret), and the
-  best repaired reliable-selector near-miss is
+  best repaired reliable-selector near-miss is the misleadingly named
   `spectra_reliable_uw000_tw100_cs000_ct100_str_sf020` (`0.0875` mean
-  normalized regret). This remains open-development evidence only.
+  normalized regret), whose actual shortlist owner is Agreement Reference.
+  The semantic alias is `agreement20_transfer_rerank`. This remains
+  open-development evidence only.
 - The committee descriptor extractor is not yet wired into the default
   calibration bank. The descriptor metric diagnostic can score existing
   calibration descriptor keys, but the graph+committee+Transfer Score descriptor

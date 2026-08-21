@@ -3,7 +3,11 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from selector.consensus_selection import build_consensus, load_task_selection
+from selector.consensus_selection import (
+    build_combined_shortlist_consensus,
+    build_consensus,
+    load_task_selection,
+)
 
 
 def _selection(
@@ -53,7 +57,8 @@ def test_consensus_uses_transfer_shortlist_and_multiple_rerankers() -> None:
 
     assert result["selected_candidate_id"] == "inside"
     assert result["candidate_scores"]["outside"] > 1.0e11
-    assert result["fusion_config"]["shortlist_owner"] == "transfer_score"
+    assert result["fusion_config"]["shortlist_owners"] == ["transfer_score"]
+    assert result["fusion_config"]["shortlist_set_rule"] == "single"
     assert result["fusion_config"]["rerank_selectors"] == [
         "spectra_cal",
         "agreement_reference",
@@ -83,6 +88,63 @@ def test_consensus_single_reranker_matches_shortlist_rerank() -> None:
 
     assert result["selected_candidate_id"] == "inside"
     assert result["candidate_scores"]["outside"] > 1.0e11
+
+
+def test_combined_shortlist_supports_intersection_and_union() -> None:
+    first = _selection(
+        "agreement_reference",
+        {"both": 0.0, "first": 0.1, "second": 0.9, "outside": 1.0},
+    )
+    second = _selection(
+        "spectra_cal",
+        {"both": 0.0, "first": 0.9, "second": 0.1, "outside": 1.0},
+    )
+    reranker = _selection(
+        "transfer_score",
+        {"both": 0.2, "first": 0.0, "second": 0.1, "outside": 0.3},
+    )
+
+    intersection = build_combined_shortlist_consensus(
+        task="A_to_B",
+        shortlist_owners=[first, second],
+        rerankers=[reranker],
+        selector_name="intersection",
+        shortlist_fraction=0.5,
+        shortlist_set_rule="intersection",
+    )
+    union = build_combined_shortlist_consensus(
+        task="A_to_B",
+        shortlist_owners=[first, second],
+        rerankers=[reranker],
+        selector_name="union",
+        shortlist_fraction=0.5,
+        shortlist_set_rule="union",
+    )
+
+    assert intersection["selected_candidate_id"] == "both"
+    assert union["selected_candidate_id"] == "first"
+    assert intersection["fusion_config"]["shortlist_size"] == 1
+    assert union["fusion_config"]["shortlist_size"] == 3
+
+
+def test_combined_shortlist_rejects_empty_intersection() -> None:
+    first = _selection("first", {"a": 0.0, "b": 1.0})
+    second = _selection("second", {"a": 1.0, "b": 0.0})
+    reranker = _selection("reranker", {"a": 0.0, "b": 1.0})
+
+    try:
+        build_combined_shortlist_consensus(
+            task="A_to_B",
+            shortlist_owners=[first, second],
+            rerankers=[reranker],
+            selector_name="empty",
+            shortlist_fraction=0.5,
+            shortlist_set_rule="intersection",
+        )
+    except ValueError as exc:
+        assert "must not silently fall back" in str(exc)
+    else:
+        raise AssertionError("expected empty-intersection rejection")
 
 
 def test_load_task_selection_rejects_bad_protocol(tmp_path: Path) -> None:

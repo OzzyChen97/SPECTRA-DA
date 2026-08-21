@@ -2,10 +2,13 @@
 """Build explicit label-free shortlist/consensus selectors.
 
 This script is a small semantic wrapper around the v3 reliable-selection
-primitives.  It is intended for the compact Stage-B method set:
+primitives.  It is intended for compact shortlist attribution and consensus
+controls such as:
 
 * Transfer Score top-k -> Agreement Reference rerank;
 * Transfer Score top-k -> SPECTRA/Agreement midrank consensus.
+* Agreement Reference top-k -> Transfer Score rerank;
+* intersections or unions of multiple label-free shortlists -> reranker.
 
 It reads only precomputed selector JSON files for the same candidate bank and
 does not read candidate artifacts, target labels, ``sealed_eval``, or final
@@ -93,14 +96,57 @@ def build_consensus(
     selector_name: str,
     shortlist_fraction: float,
 ) -> dict[str, Any]:
+    return build_combined_shortlist_consensus(
+        task=task,
+        shortlist_owners=[shortlist_owner],
+        rerankers=rerankers,
+        selector_name=selector_name,
+        shortlist_fraction=shortlist_fraction,
+        shortlist_set_rule="single",
+    )
+
+
+def build_combined_shortlist_consensus(
+    *,
+    task: str,
+    shortlist_owners: list[dict[str, Any]],
+    rerankers: list[dict[str, Any]],
+    selector_name: str,
+    shortlist_fraction: float,
+    shortlist_set_rule: str,
+) -> dict[str, Any]:
     if not 0.0 < shortlist_fraction <= 1.0:
         raise ValueError("shortlist_fraction must lie in (0, 1]")
-    candidates = validate_aligned([shortlist_owner, *rerankers])
-    owner_rank = percentile_ranks(
-        shortlist_owner["candidate_scores"],
-        shortlist_owner["score_direction"],
-    )
-    shortlist = top_fraction_candidates(owner_rank, fraction=shortlist_fraction)
+    if not shortlist_owners:
+        raise ValueError("at least one shortlist owner is required")
+    if not rerankers:
+        raise ValueError("at least one reranker is required")
+    if shortlist_set_rule not in {"single", "intersection", "union"}:
+        raise ValueError("shortlist_set_rule must be single, intersection, or union")
+    if shortlist_set_rule == "single" and len(shortlist_owners) != 1:
+        raise ValueError("single shortlist_set_rule requires exactly one shortlist owner")
+
+    candidates = validate_aligned([*shortlist_owners, *rerankers])
+    owner_ranks = [
+        percentile_ranks(owner["candidate_scores"], owner["score_direction"])
+        for owner in shortlist_owners
+    ]
+    owner_shortlists = [
+        top_fraction_candidates(ranks, fraction=shortlist_fraction)
+        for ranks in owner_ranks
+    ]
+    if shortlist_set_rule == "single":
+        shortlist = set(owner_shortlists[0])
+    elif shortlist_set_rule == "intersection":
+        shortlist = set.intersection(*(set(values) for values in owner_shortlists))
+    else:
+        shortlist = set.union(*(set(values) for values in owner_shortlists))
+    if not shortlist:
+        raise ValueError(
+            f"{shortlist_set_rule} shortlist is empty for task {task}; "
+            "the control is undefined and must not silently fall back"
+        )
+
     reranker_ranks = [
         percentile_ranks(reranker["candidate_scores"], reranker["score_direction"])
         for reranker in rerankers
@@ -112,15 +158,20 @@ def build_consensus(
                 sum(ranks[candidate] for ranks in reranker_ranks) / len(reranker_ranks)
             )
         else:
-            fused_scores[candidate] = float(SHORTLIST_EXCLUSION_SCORE + owner_rank[candidate])
+            owner_exclusion_rank = sum(ranks[candidate] for ranks in owner_ranks) / len(
+                owner_ranks
+            )
+            fused_scores[candidate] = float(
+                SHORTLIST_EXCLUSION_SCORE + owner_exclusion_rank
+            )
     selected = choose(fused_scores, "minimize")
     return {
         "schema_version": 1,
         "created_at": datetime.now(timezone.utc).isoformat(),
         "task": task,
         "selector": selector_name,
-        "candidate_bank_sha256": shortlist_owner["candidate_bank_sha256"],
-        "candidate_count": shortlist_owner["candidate_count"],
+        "candidate_bank_sha256": shortlist_owners[0]["candidate_bank_sha256"],
+        "candidate_count": shortlist_owners[0]["candidate_count"],
         "candidate_scores": fused_scores,
         "score_direction": "minimize",
         "score_semantics": "ranking",
@@ -128,18 +179,26 @@ def build_consensus(
         "label_access_count": 0,
         "protocol_violation_count": 0,
         "fusion_config": {
-            "fusion_mode": "transfer_shortlist_consensus_rerank",
-            "shortlist_owner": shortlist_owner["selector"],
+            "fusion_mode": "shortlist_consensus_rerank",
+            "shortlist_set_rule": shortlist_set_rule,
+            "shortlist_owners": [owner["selector"] for owner in shortlist_owners],
             "shortlist_fraction": float(shortlist_fraction),
             "shortlist_size": len(shortlist),
+            "component_shortlist_sizes": {
+                owner["selector"]: len(values)
+                for owner, values in zip(shortlist_owners, owner_shortlists)
+            },
             "shortlist_exclusion_score": SHORTLIST_EXCLUSION_SCORE,
             "rerank_selectors": [reranker["selector"] for reranker in rerankers],
             "rerank_rule": "tie-aware percentile midrank mean",
         },
         "component_selected_candidate_id": {
-            "shortlist_owner": shortlist_owner["selected_candidate_id"],
             **{
-                reranker["selector"]: reranker["selected_candidate_id"]
+                f"shortlist_owner:{owner['selector']}": owner["selected_candidate_id"]
+                for owner in shortlist_owners
+            },
+            **{
+                f"reranker:{reranker['selector']}": reranker["selected_candidate_id"]
                 for reranker in rerankers
             },
         },
@@ -170,6 +229,13 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--shortlist-root", type=Path, required=True)
     parser.add_argument("--shortlist-selector", default="transfer_score")
+    parser.add_argument("--additional-shortlist-root", type=Path, action="append")
+    parser.add_argument("--additional-shortlist-selector", action="append")
+    parser.add_argument(
+        "--shortlist-set-rule",
+        choices=("single", "intersection", "union"),
+        default="single",
+    )
     parser.add_argument("--rerank-root", type=Path, action="append", required=True)
     parser.add_argument("--rerank-selector", action="append", required=True)
     parser.add_argument("--output-root", type=Path, required=True)
@@ -184,6 +250,17 @@ def main() -> None:
     if len(args.rerank_root) != len(args.rerank_selector):
         raise ValueError("--rerank-root and --rerank-selector must have the same count")
     shortlist_root = args.shortlist_root.resolve()
+    additional_shortlist_roots = [
+        path.resolve() for path in (args.additional_shortlist_root or [])
+    ]
+    additional_shortlist_selectors = args.additional_shortlist_selector or []
+    if len(additional_shortlist_roots) != len(additional_shortlist_selectors):
+        raise ValueError(
+            "--additional-shortlist-root and --additional-shortlist-selector "
+            "must have the same count"
+        )
+    if args.shortlist_set_rule == "single" and additional_shortlist_roots:
+        raise ValueError("additional shortlist owners require intersection or union")
     rerank_roots = [path.resolve() for path in args.rerank_root]
     output_root = args.output_root.resolve()
     tasks = args.tasks or discover_tasks_from_owner(
@@ -198,26 +275,40 @@ def main() -> None:
         "tasks": tasks,
         "shortlist_root": str(shortlist_root),
         "shortlist_selector": args.shortlist_selector,
+        "additional_shortlist_roots": [str(path) for path in additional_shortlist_roots],
+        "additional_shortlist_selectors": additional_shortlist_selectors,
+        "shortlist_set_rule": args.shortlist_set_rule,
         "shortlist_fraction": float(args.shortlist_fraction),
         "rerank_roots": [str(path) for path in rerank_roots],
         "rerank_selectors": args.rerank_selector,
-        "fusion_mode": "transfer_shortlist_consensus_rerank",
+        "fusion_mode": "shortlist_consensus_rerank",
         "label_access_count": 0,
         "protocol_violation_count": 0,
         "contains_target_labels": False,
     }
     for task in tasks:
         shortlist_owner = load_task_selection(shortlist_root, task, args.shortlist_selector)
+        shortlist_owners = [
+            shortlist_owner,
+            *[
+                load_task_selection(root, task, selector)
+                for root, selector in zip(
+                    additional_shortlist_roots,
+                    additional_shortlist_selectors,
+                )
+            ],
+        ]
         rerankers = [
             load_task_selection(root, task, selector)
             for root, selector in zip(rerank_roots, args.rerank_selector)
         ]
-        result = build_consensus(
+        result = build_combined_shortlist_consensus(
             task=task,
-            shortlist_owner=shortlist_owner,
+            shortlist_owners=shortlist_owners,
             rerankers=rerankers,
             selector_name=args.output_selector,
             shortlist_fraction=args.shortlist_fraction,
+            shortlist_set_rule=args.shortlist_set_rule,
         )
         atomic_json(result, output_root / task / f"{args.output_selector}.json")
     atomic_json(manifest, output_root / f"{args.output_selector}_manifest.json")

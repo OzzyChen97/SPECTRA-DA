@@ -40,6 +40,7 @@ SHORTLIST_RECALL_FRACTIONS = (0.05, 0.10, 0.20, 0.30, 0.50)
 SHORTLIST_FUSION_MODES = {
     "transfer_shortlist_spectra_rerank",
     "spectra_shortlist_transfer_rerank",
+    "shortlist_consensus_rerank",
 }
 SOURCE_SIM_CVAR_KEYS = (
     "source_sim_leave_one_shift_family_cvar",

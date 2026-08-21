@@ -182,8 +182,10 @@ python selector/selector_complementarity.py \
 
 `consensus_selection.py` builds the compact Stage-B shortlist controls with
 semantic selector names instead of overloading the `spectra_reliable_*` grid
-prefix. It supports a hard Transfer Score shortlist followed by one reranker
-or by a tie-aware midrank consensus of multiple rerankers:
+prefix. It supports a hard shortlist followed by one reranker or by a tie-aware
+midrank consensus of multiple rerankers. Multiple shortlist owners can be
+combined with an explicit intersection or union; an empty intersection is
+rejected rather than silently replaced:
 
 ```bash
 python selector/consensus_selection.py \
@@ -201,6 +203,24 @@ python selector/consensus_selection.py \
 The current open-development result is not promotion-ready; see
 `results/gda_select/open_dev/stage_b_consensus_objective_v2.json` and the LOTO
 report under the same directory.
+
+The corrected shortlist-owner attribution is reproducible as:
+
+```bash
+python selector/consensus_selection.py \
+  --shortlist-root results/gda_select/submissions/final_multi_selector/selections \
+  --shortlist-selector agreement_reference \
+  --rerank-root results/gda_select/submissions/final_multi_selector/selections \
+  --rerank-selector transfer_score \
+  --output-root results/gda_select/selections/shortlist_attribution \
+  --output-selector agreement20_transfer_rerank \
+  --shortlist-fraction 0.2
+```
+
+Its four-task score maps exactly match the previously misnamed repaired-grid
+winner. The true SPECTRA-Cal shortlist and Agreement/SPECTRA union controls are
+stored in the same output root and evaluated in
+`results/gda_select/open_dev/shortlist_attribution_objective_v2.json`.
 
 `core_ablation.py` evaluates the frozen four-task source-simulated folds under
 equal-information controls. It verifies global/spectral linear equivalence and
