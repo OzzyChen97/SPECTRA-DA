@@ -31,6 +31,15 @@ top-20% shortlist before Transfer Score reranking. A genuine SPECTRA-Cal
 shortlist reaches `0.261692`. This strengthens the evidence boundary rather
 than a SOTA claim; details are in [docs/RESULTS.md](docs/RESULTS.md).
 
+The complete covariance-shrinkage sweep is also now available. A fixed
+`gamma=.25` reaches `0.140279` mean open-dev regret but fails tail and
+non-inferiority guardrails; label-free pair consistency and its
+trajectory-balanced variant fail to predict the task-wise useful gamma. Regret
+factorization shows that `95.5%` of the best shortlist selector's remaining
+gap is trajectory-level, while the first explicit q=3 trajectory-screening
+control is worse than candidate-level screening. These are recorded as no-go
+results, not as post-hoc selector choices.
+
 ## Final controlled result
 
 | Metric | Value |

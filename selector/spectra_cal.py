@@ -41,7 +41,13 @@ PRIOR_DESCRIPTOR_RMSE_THRESHOLD = 2.0
 DEFAULT_COVARIANCE_SHRINKAGE_MODE = "none"
 DEFAULT_FIXED_COVARIANCE_GAMMA = 1.0
 DEFAULT_COVARIANCE_CONSISTENCY_GRID = (0.0, 0.25, 0.5, 0.75, 1.0)
-COVARIANCE_SHRINKAGE_MODES = ("none", "support_gate", "fixed", "pair_consistency")
+COVARIANCE_SHRINKAGE_MODES = (
+    "none",
+    "support_gate",
+    "fixed",
+    "pair_consistency",
+    "trajectory_pair_consistency",
+)
 SIDECAR_ARRAY_NAMES = (
     "shift_deltas",
     "band_risks",
@@ -103,7 +109,7 @@ def covariance_shrinkage_gamma(
         return 1.0
     if mode == "support_gate":
         return covariance_support_confidence(descriptor_rmse, threshold=threshold)
-    if mode == "pair_consistency":
+    if mode in {"pair_consistency", "trajectory_pair_consistency"}:
         raise ValueError("pair_consistency gamma requires target disagreements")
     if not np.isfinite(fixed_gamma) or not 0.0 <= fixed_gamma <= 1.0:
         raise ValueError("fixed covariance gamma must lie in [0, 1]")
@@ -133,9 +139,6 @@ def pair_sum_consistency_gamma(
         raise ValueError("covariance consistency grid values must lie in [0, 1]")
 
     first, second = np.triu_indices(model_count, k=1)
-    design = np.zeros((first.size, model_count), dtype=np.float64)
-    design[np.arange(first.size), first] = 1.0
-    design[np.arange(first.size), second] = 1.0
     reports: list[dict[str, float]] = []
     for gamma in grid:
         residual_energy = 0.0
@@ -145,8 +148,24 @@ def pair_sum_consistency_gamma(
                 disagreement[band, first, second]
                 + 2.0 * float(gamma) * covariance[band, first, second]
             )
-            fitted, *_ = np.linalg.lstsq(design, observations, rcond=None)
-            residual = observations - design @ fitted
+            # For the complete pair-sum design A, A^T A has diagonal M-1
+            # and off-diagonal 1, i.e. (M-2)I + 11^T.  Its inverse is
+            # analytic, avoiding an enormous dense least-squares solve for
+            # every gamma, band, and bootstrap replicate.
+            normal_rhs = np.bincount(
+                first,
+                weights=observations,
+                minlength=model_count,
+            ) + np.bincount(
+                second,
+                weights=observations,
+                minlength=model_count,
+            )
+            curvature = float(model_count - 2)
+            fitted = normal_rhs / curvature - float(normal_rhs.sum()) / (
+                curvature * 2.0 * float(model_count - 1)
+            )
+            residual = observations - fitted[first] - fitted[second]
             residual_energy += float(np.sum(residual**2))
             observation_energy += float(np.sum(observations**2))
         normalized = residual_energy / max(observation_energy, 1.0e-12)
@@ -161,11 +180,112 @@ def pair_sum_consistency_gamma(
     return float(best["gamma"]), reports
 
 
+def candidate_trajectory_group(candidate_id: str) -> str:
+    """Return the method/config/seed trajectory encoded in a candidate id."""
+
+    parts = str(candidate_id).split("__")
+    if len(parts) < 4:
+        raise ValueError(f"candidate id has no method/config trajectory: {candidate_id}")
+    seed = next((part for part in parts if part.startswith("seed-")), None)
+    if seed is None:
+        raise ValueError(f"candidate id has no seed trajectory: {candidate_id}")
+    return "__".join((parts[1], parts[2], seed))
+
+
+def trajectory_balanced_pair_sum_consistency_gamma(
+    disagreements: np.ndarray,
+    transported_covariances: np.ndarray,
+    trajectory_groups: list[str],
+    *,
+    grid: tuple[float, ...] = DEFAULT_COVARIANCE_CONSISTENCY_GRID,
+) -> tuple[float, list[dict[str, float]]]:
+    """Choose gamma with equal total mass for every trajectory pair.
+
+    Candidate-level pair consistency gives a pair of trajectories with
+    ``|g||h|`` checkpoints that many times more influence.  This control first
+    fits group risks to trajectory-pair mean observations, then averages the
+    squared residual within every trajectory pair.  Each method/config/seed
+    pair therefore contributes exactly one unit of mass per band.
+    """
+
+    disagreement = np.asarray(disagreements, dtype=np.float64)
+    covariance = np.asarray(transported_covariances, dtype=np.float64)
+    if disagreement.ndim != 3 or disagreement.shape != covariance.shape:
+        raise ValueError("disagreements and covariances must share [bands, models, models]")
+    band_count, model_count, second_count = disagreement.shape
+    if second_count != model_count:
+        raise ValueError("trajectory consistency expects square model-pair matrices")
+    if len(trajectory_groups) != model_count:
+        raise ValueError("trajectory group count must match model count")
+    if not grid:
+        raise ValueError("covariance consistency grid must be non-empty")
+    if any((not np.isfinite(gamma)) or gamma < 0.0 or gamma > 1.0 for gamma in grid):
+        raise ValueError("covariance consistency grid values must lie in [0, 1]")
+
+    group_names = sorted(set(trajectory_groups))
+    group_count = len(group_names)
+    if group_count < 3:
+        raise ValueError("at least three trajectories are required for balanced consistency")
+    members = [
+        np.asarray(
+            [index for index, group in enumerate(trajectory_groups) if group == name],
+            dtype=np.int64,
+        )
+        for name in group_names
+    ]
+    group_first, group_second = np.triu_indices(group_count, k=1)
+    reports: list[dict[str, float]] = []
+    for gamma in grid:
+        residual_energy = 0.0
+        observation_energy = 0.0
+        for band in range(band_count):
+            corrected = disagreement[band] + 2.0 * float(gamma) * covariance[band]
+            pair_means = np.empty(group_first.size, dtype=np.float64)
+            pair_blocks: list[np.ndarray] = []
+            for pair_index, (first_group, second_group) in enumerate(
+                zip(group_first, group_second)
+            ):
+                block = corrected[np.ix_(members[first_group], members[second_group])]
+                pair_blocks.append(block)
+                pair_means[pair_index] = float(np.mean(block))
+
+            normal_rhs = np.bincount(
+                group_first,
+                weights=pair_means,
+                minlength=group_count,
+            ) + np.bincount(
+                group_second,
+                weights=pair_means,
+                minlength=group_count,
+            )
+            curvature = float(group_count - 2)
+            fitted = normal_rhs / curvature - float(normal_rhs.sum()) / (
+                curvature * 2.0 * float(group_count - 1)
+            )
+            for pair_index, block in enumerate(pair_blocks):
+                fitted_pair = fitted[group_first[pair_index]] + fitted[group_second[pair_index]]
+                residual_energy += float(np.mean((block - fitted_pair) ** 2))
+                observation_energy += float(np.mean(block**2))
+
+        normalized = residual_energy / max(observation_energy, 1.0e-12)
+        reports.append(
+            {
+                "gamma": float(gamma),
+                "residual_energy": residual_energy,
+                "normalized_residual": float(normalized),
+                "trajectory_count": float(group_count),
+            }
+        )
+    best = min(reports, key=lambda report: (report["normalized_residual"], report["gamma"]))
+    return float(best["gamma"]), reports
+
+
 def shrink_transported_covariances(
     transported_covariances: np.ndarray,
     descriptor_rmse: float,
     *,
     disagreements: np.ndarray | None = None,
+    trajectory_groups: list[str] | None = None,
     mode: str = DEFAULT_COVARIANCE_SHRINKAGE_MODE,
     fixed_gamma: float = DEFAULT_FIXED_COVARIANCE_GAMMA,
     threshold: float = PRIOR_DESCRIPTOR_RMSE_THRESHOLD,
@@ -180,6 +300,16 @@ def shrink_transported_covariances(
         gamma, consistency_reports = pair_sum_consistency_gamma(
             disagreements,
             covariances,
+        )
+    elif mode == "trajectory_pair_consistency":
+        if disagreements is None or trajectory_groups is None:
+            raise ValueError(
+                "trajectory_pair_consistency requires disagreements and trajectory groups"
+            )
+        gamma, consistency_reports = trajectory_balanced_pair_sum_consistency_gamma(
+            disagreements,
+            covariances,
+            trajectory_groups,
         )
     else:
         gamma = covariance_shrinkage_gamma(
@@ -405,6 +535,7 @@ def recover_with_transport(
     covariance_shrinkage_mode: str = DEFAULT_COVARIANCE_SHRINKAGE_MODE,
     fixed_covariance_gamma: float = DEFAULT_FIXED_COVARIANCE_GAMMA,
     support_rmse_threshold: float = PRIOR_DESCRIPTOR_RMSE_THRESHOLD,
+    trajectory_groups: list[str] | None = None,
 ) -> tuple[np.ndarray, np.ndarray, dict[str, Any]]:
     alpha, match_diagnostics = match_shift_convex_combination(
         shift_deltas,
@@ -422,6 +553,7 @@ def recover_with_transport(
         transported_covariances,
         descriptor_rmse,
         disagreements=disagreements,
+        trajectory_groups=trajectory_groups,
         mode=covariance_shrinkage_mode,
         fixed_gamma=fixed_covariance_gamma,
         threshold=support_rmse_threshold,
@@ -497,6 +629,7 @@ def bootstrap_uncertainty(
     covariance_shrinkage_mode: str = DEFAULT_COVARIANCE_SHRINKAGE_MODE,
     fixed_covariance_gamma: float = DEFAULT_FIXED_COVARIANCE_GAMMA,
     support_rmse_threshold: float = PRIOR_DESCRIPTOR_RMSE_THRESHOLD,
+    trajectory_groups: list[str] | None = None,
 ) -> np.ndarray:
     if samples <= 1:
         return np.zeros(disagreements.shape[1], dtype=np.float64)
@@ -518,6 +651,7 @@ def bootstrap_uncertainty(
             covariance_shrinkage_mode=covariance_shrinkage_mode,
             fixed_covariance_gamma=fixed_covariance_gamma,
             support_rmse_threshold=support_rmse_threshold,
+            trajectory_groups=trajectory_groups,
         )
         estimates.append(0.5 * recovered.sum(axis=1))
     return np.std(np.stack(estimates), axis=0, ddof=1)
@@ -538,7 +672,15 @@ def calibrated_selector_name(
     raise ValueError(f"unknown spectral mode: {spectral_mode}")
 
 
-def select(args: argparse.Namespace) -> dict[str, Any]:
+def prepare_selection_context(args: argparse.Namespace) -> dict[str, Any]:
+    """Prepare task-level quantities shared by covariance-control variants.
+
+    Candidate discovery, calibration loading, target prediction filtering, and
+    disagreement construction do not depend on covariance gamma.  A sweep can
+    therefore compute them once per task and pass the in-memory context to
+    repeated ``select`` calls without changing any scientific quantity.
+    """
+
     if args.task not in TASK_BY_ID:
         raise KeyError(f"unknown GDA-Select task: {args.task}")
     if args.device.startswith("cuda"):
@@ -590,6 +732,47 @@ def select(args: argparse.Namespace) -> dict[str, Any]:
         arrays, disagreements = collapse_to_global(arrays, disagreements)
     elif spectral_mode != "banded":
         raise ValueError(f"unknown spectral mode: {spectral_mode}")
+    return {
+        "task": args.task,
+        "candidate_bank_sha256": bank_hash,
+        "candidate_ids": identifiers,
+        "candidate_count": len(records),
+        "arrays": arrays,
+        "shift_names": shift_names,
+        "spectral_config": spectral_config,
+        "spectral_mode": spectral_mode,
+        "disagreements": disagreements,
+        "frame_diagnostics": frame_diagnostics,
+        "accepted_sidecars": accepted_sidecars,
+        "skipped_sidecars": skipped_sidecars,
+        "sidecar_manifest": str(sidecar_manifest) if sidecar_manifest is not None else None,
+        "sidecar_manifest_sha256": sidecar_manifest_hash,
+        "preparation_seconds": time.perf_counter() - started,
+    }
+
+
+def select(args: argparse.Namespace) -> dict[str, Any]:
+    started = time.perf_counter()
+    context = getattr(args, "prepared_context", None)
+    if context is None:
+        context = prepare_selection_context(args)
+    if context.get("task") != args.task:
+        raise ValueError("prepared selection context task mismatch")
+
+    bank_hash = str(context["candidate_bank_sha256"])
+    identifiers = list(context["candidate_ids"])
+    trajectory_groups = [candidate_trajectory_group(identifier) for identifier in identifiers]
+    arrays = context["arrays"]
+    shift_names = list(context["shift_names"])
+    spectral_config = context["spectral_config"]
+    spectral_mode = str(context["spectral_mode"])
+    disagreements = context["disagreements"]
+    frame_diagnostics = context["frame_diagnostics"]
+    accepted_sidecars = list(context["accepted_sidecars"])
+    skipped_sidecars = list(context["skipped_sidecars"])
+    sidecar_manifest = context.get("sidecar_manifest")
+    sidecar_manifest_hash = context.get("sidecar_manifest_sha256")
+
     covariance_shrinkage_mode = getattr(
         args,
         "covariance_shrinkage_mode",
@@ -614,6 +797,7 @@ def select(args: argparse.Namespace) -> dict[str, Any]:
         covariance_shrinkage_mode=covariance_shrinkage_mode,
         fixed_covariance_gamma=fixed_covariance_gamma,
         support_rmse_threshold=support_rmse_threshold,
+        trajectory_groups=trajectory_groups,
     )
     point_estimate = 0.5 * recovered.sum(axis=1)
     uncertainty = bootstrap_uncertainty(
@@ -628,6 +812,7 @@ def select(args: argparse.Namespace) -> dict[str, Any]:
         covariance_shrinkage_mode=covariance_shrinkage_mode,
         fixed_covariance_gamma=fixed_covariance_gamma,
         support_rmse_threshold=support_rmse_threshold,
+        trajectory_groups=trajectory_groups,
     )
     robust_score = point_estimate + args.uncertainty_beta * uncertainty
     scores = {
@@ -648,7 +833,7 @@ def select(args: argparse.Namespace) -> dict[str, Any]:
         "task": args.task,
         "selector": selector_name,
         "candidate_bank_sha256": bank_hash,
-        "candidate_count": len(records),
+        "candidate_count": int(context["candidate_count"]),
         "candidate_scores": scores,
         "score_direction": "minimize",
         "score_semantics": "estimated_error",
@@ -673,7 +858,7 @@ def select(args: argparse.Namespace) -> dict[str, Any]:
         "frame_diagnostics": frame_diagnostics,
         "transport_diagnostics": diagnostics,
         "calibration_sidecars": {
-            "manifest": str(sidecar_manifest) if sidecar_manifest is not None else None,
+            "manifest": sidecar_manifest,
             "manifest_sha256": sidecar_manifest_hash,
             "accepted": accepted_sidecars,
             "skipped": skipped_sidecars,

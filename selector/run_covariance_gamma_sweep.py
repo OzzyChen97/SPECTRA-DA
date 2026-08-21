@@ -25,7 +25,10 @@ if str(REPO) not in sys.path:
 
 from scripts.trajectory_export.schema import atomic_json  # noqa: E402
 from selector.run_spectra_suite import calibration_directory, discover_tasks  # noqa: E402
-from selector.spectra_cal import select as select_calibrated  # noqa: E402
+from selector.spectra_cal import (  # noqa: E402
+    prepare_selection_context as prepare_calibrated_context,
+    select as select_calibrated,
+)
 
 
 def parse_float_list(text: str) -> list[float]:
@@ -57,12 +60,17 @@ def support_gate_selector_name(prefix: str) -> str:
     return f"{prefix}_support_gate"
 
 
+def trajectory_pair_consistency_selector_name(prefix: str) -> str:
+    return f"{prefix}_trajectory_pair_consistency"
+
+
 def build_selector_specs(
     *,
     output_prefix: str,
     fixed_gammas: list[float],
     include_pair_consistency: bool,
     include_support_gate: bool,
+    include_trajectory_pair_consistency: bool,
 ) -> list[dict[str, Any]]:
     specs = [
         {
@@ -85,6 +93,14 @@ def build_selector_specs(
             {
                 "selector": support_gate_selector_name(output_prefix),
                 "covariance_shrinkage_mode": "support_gate",
+                "fixed_covariance_gamma": 1.0,
+            }
+        )
+    if include_trajectory_pair_consistency:
+        specs.append(
+            {
+                "selector": trajectory_pair_consistency_selector_name(output_prefix),
+                "covariance_shrinkage_mode": "trajectory_pair_consistency",
                 "fixed_covariance_gamma": 1.0,
             }
         )
@@ -111,6 +127,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--fixed-gammas", type=parse_float_list, default=parse_float_list("0,0.5,1"))
     parser.add_argument("--include-pair-consistency", action="store_true")
     parser.add_argument("--include-support-gate", action="store_true")
+    parser.add_argument("--include-trajectory-pair-consistency", action="store_true")
     parser.add_argument(
         "--support-rmse-threshold",
         type=float,
@@ -132,6 +149,7 @@ def run_sweep(args: argparse.Namespace) -> dict[str, Any]:
         fixed_gammas=args.fixed_gammas,
         include_pair_consistency=args.include_pair_consistency,
         include_support_gate=args.include_support_gate,
+        include_trajectory_pair_consistency=args.include_trajectory_pair_consistency,
     )
 
     manifest: dict[str, Any] = {
@@ -150,6 +168,7 @@ def run_sweep(args: argparse.Namespace) -> dict[str, Any]:
             else None
         ),
         "selector_specs": selector_specs,
+        "task_preparation": [],
         "outputs": [],
         "label_access_count": 0,
         "protocol_violation_count": 0,
@@ -157,6 +176,28 @@ def run_sweep(args: argparse.Namespace) -> dict[str, Any]:
 
     for task in tasks:
         calibration_dir = calibration_directory(calibration_root, task)
+        context_namespace = argparse.Namespace(
+            task=task,
+            device=args.device,
+            candidate_root=candidate_root,
+            calibration_dir=calibration_dir,
+            sidecar_manifest=(
+                args.sidecar_manifest.resolve()
+                if args.sidecar_manifest is not None
+                else None
+            ),
+            spectral_mode="banded",
+        )
+        prepared_context = prepare_calibrated_context(context_namespace)
+        preparation_seconds = float(prepared_context["preparation_seconds"])
+        amortized_preparation_seconds = preparation_seconds / len(selector_specs)
+        manifest["task_preparation"].append(
+            {
+                "task": task,
+                "preparation_seconds": preparation_seconds,
+                "amortized_per_selector_seconds": amortized_preparation_seconds,
+            }
+        )
         for spec in selector_specs:
             selector_name = spec["selector"]
             print(f"[cov-sweep] task={task} selector={selector_name}", flush=True)
@@ -181,10 +222,21 @@ def run_sweep(args: argparse.Namespace) -> dict[str, Any]:
                 covariance_shrinkage_mode=spec["covariance_shrinkage_mode"],
                 fixed_covariance_gamma=float(spec["fixed_covariance_gamma"]),
                 output_selector=selector_name,
+                prepared_context=prepared_context,
             )
             if args.support_rmse_threshold is not None:
                 namespace.support_rmse_threshold = float(args.support_rmse_threshold)
             result = select_calibrated(namespace)
+            scoring_seconds = float(result.get("selector_runtime_seconds", 0.0))
+            result["selector_runtime_seconds"] = (
+                scoring_seconds + amortized_preparation_seconds
+            )
+            result["sweep_runtime_accounting"] = {
+                "task_preparation_seconds": preparation_seconds,
+                "amortized_preparation_seconds": amortized_preparation_seconds,
+                "variant_scoring_seconds": scoring_seconds,
+                "shared_task_context": True,
+            }
             output = output_root / task / f"{result['selector']}.json"
             atomic_json(result, output)
             manifest["label_access_count"] += int(result.get("label_access_count", 0))

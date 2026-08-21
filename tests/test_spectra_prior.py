@@ -10,6 +10,7 @@ from selector.spectra_cal import (
     pair_sum_consistency_gamma,
     recover_with_transport,
     shrink_transported_covariances,
+    trajectory_balanced_pair_sum_consistency_gamma,
 )
 
 
@@ -117,6 +118,92 @@ def test_pair_consistency_shrinkage_prefers_self_consistent_covariance() -> None
 
     assert gamma == 1.0
     assert reports[-1]["normalized_residual"] < 1.0e-24
+
+
+def test_pair_consistency_analytic_projection_matches_dense_lstsq() -> None:
+    generator = np.random.default_rng(17)
+    model_count = 7
+    risks = generator.uniform(0.02, 0.5, size=model_count)
+    covariance = generator.uniform(-0.03, 0.03, size=(2, model_count, model_count))
+    covariance = 0.5 * (covariance + covariance.transpose(0, 2, 1))
+    disagreement = np.stack(
+        [risks[:, None] + risks[None, :] for _ in range(2)],
+        axis=0,
+    ) - 2.0 * covariance
+    for band in range(2):
+        np.fill_diagonal(disagreement[band], 0.0)
+
+    gamma, reports = pair_sum_consistency_gamma(
+        disagreement,
+        covariance,
+        grid=(0.0, 0.3, 1.0),
+    )
+
+    first, second = np.triu_indices(model_count, k=1)
+    design = np.zeros((first.size, model_count), dtype=np.float64)
+    design[np.arange(first.size), first] = 1.0
+    design[np.arange(first.size), second] = 1.0
+    expected = []
+    for candidate_gamma in (0.0, 0.3, 1.0):
+        residual_energy = 0.0
+        observation_energy = 0.0
+        for band in range(2):
+            observations = (
+                disagreement[band, first, second]
+                + 2.0 * candidate_gamma * covariance[band, first, second]
+            )
+            fitted, *_ = np.linalg.lstsq(design, observations, rcond=None)
+            residual = observations - design @ fitted
+            residual_energy += float(np.sum(residual**2))
+            observation_energy += float(np.sum(observations**2))
+        expected.append(residual_energy / observation_energy)
+
+    np.testing.assert_allclose(
+        [report["normalized_residual"] for report in reports],
+        expected,
+        rtol=1.0e-12,
+        atol=1.0e-15,
+    )
+    assert gamma == (0.0, 0.3, 1.0)[int(np.argmin(expected))]
+
+
+def test_trajectory_balanced_consistency_is_invariant_to_checkpoint_duplication() -> None:
+    generator = np.random.default_rng(23)
+    groups = ["a", "a", "b", "b", "c", "c"]
+    model_count = len(groups)
+    disagreement = generator.uniform(0.0, 0.8, size=(2, model_count, model_count))
+    disagreement = 0.5 * (disagreement + disagreement.transpose(0, 2, 1))
+    covariance = generator.uniform(-0.05, 0.05, size=(2, model_count, model_count))
+    covariance = 0.5 * (covariance + covariance.transpose(0, 2, 1))
+    for band in range(2):
+        np.fill_diagonal(disagreement[band], 0.0)
+        np.fill_diagonal(covariance[band], 0.0)
+
+    gamma, reports = trajectory_balanced_pair_sum_consistency_gamma(
+        disagreement,
+        covariance,
+        groups,
+        grid=(0.0, 0.5, 1.0),
+    )
+
+    duplicated_indices = np.repeat(np.arange(model_count), 2)
+    duplicated_disagreement = disagreement[:, duplicated_indices][:, :, duplicated_indices]
+    duplicated_covariance = covariance[:, duplicated_indices][:, :, duplicated_indices]
+    duplicated_groups = [groups[index] for index in duplicated_indices]
+    duplicated_gamma, duplicated_reports = trajectory_balanced_pair_sum_consistency_gamma(
+        duplicated_disagreement,
+        duplicated_covariance,
+        duplicated_groups,
+        grid=(0.0, 0.5, 1.0),
+    )
+
+    assert duplicated_gamma == gamma
+    np.testing.assert_allclose(
+        [report["normalized_residual"] for report in duplicated_reports],
+        [report["normalized_residual"] for report in reports],
+        rtol=1.0e-12,
+        atol=1.0e-15,
+    )
 
 
 def test_prior_centering_reduces_recovery_error_under_pair_noise() -> None:

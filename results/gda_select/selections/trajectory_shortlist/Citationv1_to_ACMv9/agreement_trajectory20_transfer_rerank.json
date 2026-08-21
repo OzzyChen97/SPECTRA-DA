@@ -1,0 +1,1123 @@
+{
+  "candidate_bank_sha256": "159495e759c87650133193953ba20a495a2df802313cbc14057255b4c1c26de8",
+  "candidate_count": 675,
+  "candidate_scores": {
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2026__epoch-0001": 1000000000000.4773,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2026__epoch-0010": 1000000000000.4773,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2026__epoch-0020": 1000000000000.4773,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2026__epoch-0030": 1000000000000.4773,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2026__epoch-0040": 1000000000000.4773,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2026__epoch-0050": 1000000000000.4773,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2026__epoch-0060": 1000000000000.4773,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2026__epoch-0070": 1000000000000.4773,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2026__epoch-0080": 1000000000000.4773,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2026__epoch-0090": 1000000000000.4773,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2026__epoch-0100": 1000000000000.4773,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2026__epoch-0110": 1000000000000.4773,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2026__epoch-0120": 1000000000000.4773,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2026__epoch-0130": 1000000000000.4773,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2026__epoch-0140": 1000000000000.4773,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2027__epoch-0001": 1000000000000.4318,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2027__epoch-0010": 1000000000000.4318,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2027__epoch-0020": 1000000000000.4318,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2027__epoch-0030": 1000000000000.4318,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2027__epoch-0040": 1000000000000.4318,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2027__epoch-0050": 1000000000000.4318,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2027__epoch-0060": 1000000000000.4318,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2027__epoch-0070": 1000000000000.4318,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2027__epoch-0080": 1000000000000.4318,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2027__epoch-0090": 1000000000000.4318,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2027__epoch-0100": 1000000000000.4318,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2027__epoch-0110": 1000000000000.4318,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2027__epoch-0120": 1000000000000.4318,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2027__epoch-0130": 1000000000000.4318,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2027__epoch-0140": 1000000000000.4318,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2028__epoch-0001": 1000000000000.5227,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2028__epoch-0010": 1000000000000.5227,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2028__epoch-0020": 1000000000000.5227,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2028__epoch-0030": 1000000000000.5227,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2028__epoch-0040": 1000000000000.5227,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2028__epoch-0050": 1000000000000.5227,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2028__epoch-0060": 1000000000000.5227,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2028__epoch-0070": 1000000000000.5227,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2028__epoch-0080": 1000000000000.5227,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2028__epoch-0090": 1000000000000.5227,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2028__epoch-0100": 1000000000000.5227,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2028__epoch-0110": 1000000000000.5227,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2028__epoch-0120": 1000000000000.5227,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2028__epoch-0130": 1000000000000.5227,
+    "Citationv1_to_ACMv9__A2GNN__9a46ad4e4aff__seed-2028__epoch-0140": 1000000000000.5227,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2026__epoch-0001": 1000000000000.6136,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2026__epoch-0010": 1000000000000.6136,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2026__epoch-0020": 1000000000000.6136,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2026__epoch-0030": 1000000000000.6136,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2026__epoch-0040": 1000000000000.6136,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2026__epoch-0050": 1000000000000.6136,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2026__epoch-0060": 1000000000000.6136,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2026__epoch-0070": 1000000000000.6136,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2026__epoch-0080": 1000000000000.6136,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2026__epoch-0090": 1000000000000.6136,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2026__epoch-0100": 1000000000000.6136,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2026__epoch-0110": 1000000000000.6136,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2026__epoch-0120": 1000000000000.6136,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2026__epoch-0130": 1000000000000.6136,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2026__epoch-0140": 1000000000000.6136,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2027__epoch-0001": 1000000000000.5454,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2027__epoch-0010": 1000000000000.5454,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2027__epoch-0020": 1000000000000.5454,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2027__epoch-0030": 1000000000000.5454,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2027__epoch-0040": 1000000000000.5454,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2027__epoch-0050": 1000000000000.5454,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2027__epoch-0060": 1000000000000.5454,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2027__epoch-0070": 1000000000000.5454,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2027__epoch-0080": 1000000000000.5454,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2027__epoch-0090": 1000000000000.5454,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2027__epoch-0100": 1000000000000.5454,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2027__epoch-0110": 1000000000000.5454,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2027__epoch-0120": 1000000000000.5454,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2027__epoch-0130": 1000000000000.5454,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2027__epoch-0140": 1000000000000.5454,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2028__epoch-0001": 1000000000000.5682,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2028__epoch-0010": 1000000000000.5682,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2028__epoch-0020": 1000000000000.5682,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2028__epoch-0030": 1000000000000.5682,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2028__epoch-0040": 1000000000000.5682,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2028__epoch-0050": 1000000000000.5682,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2028__epoch-0060": 1000000000000.5682,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2028__epoch-0070": 1000000000000.5682,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2028__epoch-0080": 1000000000000.5682,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2028__epoch-0090": 1000000000000.5682,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2028__epoch-0100": 1000000000000.5682,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2028__epoch-0110": 1000000000000.5682,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2028__epoch-0120": 1000000000000.5682,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2028__epoch-0130": 1000000000000.5682,
+    "Citationv1_to_ACMv9__A2GNN__ca12b9a6cc8a__seed-2028__epoch-0140": 1000000000000.5682,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2026__epoch-0001": 1000000000000.8636,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2026__epoch-0010": 1000000000000.8636,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2026__epoch-0020": 1000000000000.8636,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2026__epoch-0030": 1000000000000.8636,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2026__epoch-0040": 1000000000000.8636,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2026__epoch-0050": 1000000000000.8636,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2026__epoch-0060": 1000000000000.8636,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2026__epoch-0070": 1000000000000.8636,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2026__epoch-0080": 1000000000000.8636,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2026__epoch-0090": 1000000000000.8636,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2026__epoch-0100": 1000000000000.8636,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2026__epoch-0110": 1000000000000.8636,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2026__epoch-0120": 1000000000000.8636,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2026__epoch-0130": 1000000000000.8636,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2026__epoch-0140": 1000000000000.8636,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2027__epoch-0001": 1000000000000.9773,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2027__epoch-0010": 1000000000000.9773,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2027__epoch-0020": 1000000000000.9773,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2027__epoch-0030": 1000000000000.9773,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2027__epoch-0040": 1000000000000.9773,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2027__epoch-0050": 1000000000000.9773,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2027__epoch-0060": 1000000000000.9773,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2027__epoch-0070": 1000000000000.9773,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2027__epoch-0080": 1000000000000.9773,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2027__epoch-0090": 1000000000000.9773,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2027__epoch-0100": 1000000000000.9773,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2027__epoch-0110": 1000000000000.9773,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2027__epoch-0120": 1000000000000.9773,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2027__epoch-0130": 1000000000000.9773,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2027__epoch-0140": 1000000000000.9773,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2028__epoch-0001": 1000000000001.0,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2028__epoch-0010": 1000000000001.0,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2028__epoch-0020": 1000000000001.0,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2028__epoch-0030": 1000000000001.0,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2028__epoch-0040": 1000000000001.0,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2028__epoch-0050": 1000000000001.0,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2028__epoch-0060": 1000000000001.0,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2028__epoch-0070": 1000000000001.0,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2028__epoch-0080": 1000000000001.0,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2028__epoch-0090": 1000000000001.0,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2028__epoch-0100": 1000000000001.0,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2028__epoch-0110": 1000000000001.0,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2028__epoch-0120": 1000000000001.0,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2028__epoch-0130": 1000000000001.0,
+    "Citationv1_to_ACMv9__A2GNN__e177a5eec888__seed-2028__epoch-0140": 1000000000001.0,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2026__epoch-0001": 1000000000000.2954,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2026__epoch-0010": 1000000000000.2954,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2026__epoch-0020": 1000000000000.2954,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2026__epoch-0030": 1000000000000.2954,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2026__epoch-0040": 1000000000000.2954,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2026__epoch-0050": 1000000000000.2954,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2026__epoch-0060": 1000000000000.2954,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2026__epoch-0070": 1000000000000.2954,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2026__epoch-0080": 1000000000000.2954,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2026__epoch-0090": 1000000000000.2954,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2026__epoch-0100": 1000000000000.2954,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2026__epoch-0110": 1000000000000.2954,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2026__epoch-0120": 1000000000000.2954,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2026__epoch-0130": 1000000000000.2954,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2026__epoch-0140": 1000000000000.2954,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2027__epoch-0001": 1000000000000.2727,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2027__epoch-0010": 1000000000000.2727,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2027__epoch-0020": 1000000000000.2727,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2027__epoch-0030": 1000000000000.2727,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2027__epoch-0040": 1000000000000.2727,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2027__epoch-0050": 1000000000000.2727,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2027__epoch-0060": 1000000000000.2727,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2027__epoch-0070": 1000000000000.2727,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2027__epoch-0080": 1000000000000.2727,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2027__epoch-0090": 1000000000000.2727,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2027__epoch-0100": 1000000000000.2727,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2027__epoch-0110": 1000000000000.2727,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2027__epoch-0120": 1000000000000.2727,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2027__epoch-0130": 1000000000000.2727,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2027__epoch-0140": 1000000000000.2727,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2028__epoch-0001": 1000000000000.2273,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2028__epoch-0010": 1000000000000.2273,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2028__epoch-0020": 1000000000000.2273,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2028__epoch-0030": 1000000000000.2273,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2028__epoch-0040": 1000000000000.2273,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2028__epoch-0050": 1000000000000.2273,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2028__epoch-0060": 1000000000000.2273,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2028__epoch-0070": 1000000000000.2273,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2028__epoch-0080": 1000000000000.2273,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2028__epoch-0090": 1000000000000.2273,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2028__epoch-0100": 1000000000000.2273,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2028__epoch-0110": 1000000000000.2273,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2028__epoch-0120": 1000000000000.2273,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2028__epoch-0130": 1000000000000.2273,
+    "Citationv1_to_ACMv9__ADAlign__7047bc64d360__seed-2028__epoch-0140": 1000000000000.2273,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2026__epoch-0001": 1000000000000.6364,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2026__epoch-0010": 1000000000000.6364,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2026__epoch-0020": 1000000000000.6364,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2026__epoch-0030": 1000000000000.6364,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2026__epoch-0040": 1000000000000.6364,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2026__epoch-0050": 1000000000000.6364,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2026__epoch-0060": 1000000000000.6364,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2026__epoch-0070": 1000000000000.6364,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2026__epoch-0080": 1000000000000.6364,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2026__epoch-0090": 1000000000000.6364,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2026__epoch-0100": 1000000000000.6364,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2026__epoch-0110": 1000000000000.6364,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2026__epoch-0120": 1000000000000.6364,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2026__epoch-0130": 1000000000000.6364,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2026__epoch-0140": 1000000000000.6364,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2027__epoch-0001": 1000000000000.591,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2027__epoch-0010": 1000000000000.591,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2027__epoch-0020": 1000000000000.591,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2027__epoch-0030": 1000000000000.591,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2027__epoch-0040": 1000000000000.591,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2027__epoch-0050": 1000000000000.591,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2027__epoch-0060": 1000000000000.591,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2027__epoch-0070": 1000000000000.591,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2027__epoch-0080": 1000000000000.591,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2027__epoch-0090": 1000000000000.591,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2027__epoch-0100": 1000000000000.591,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2027__epoch-0110": 1000000000000.591,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2027__epoch-0120": 1000000000000.591,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2027__epoch-0130": 1000000000000.591,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2027__epoch-0140": 1000000000000.591,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2028__epoch-0001": 1000000000000.659,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2028__epoch-0010": 1000000000000.659,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2028__epoch-0020": 1000000000000.659,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2028__epoch-0030": 1000000000000.659,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2028__epoch-0040": 1000000000000.659,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2028__epoch-0050": 1000000000000.659,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2028__epoch-0060": 1000000000000.659,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2028__epoch-0070": 1000000000000.659,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2028__epoch-0080": 1000000000000.659,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2028__epoch-0090": 1000000000000.659,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2028__epoch-0100": 1000000000000.659,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2028__epoch-0110": 1000000000000.659,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2028__epoch-0120": 1000000000000.659,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2028__epoch-0130": 1000000000000.659,
+    "Citationv1_to_ACMv9__ADAlign__7410645dc0c4__seed-2028__epoch-0140": 1000000000000.659,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2026__epoch-0001": 1000000000000.4546,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2026__epoch-0010": 1000000000000.4546,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2026__epoch-0020": 1000000000000.4546,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2026__epoch-0030": 1000000000000.4546,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2026__epoch-0040": 1000000000000.4546,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2026__epoch-0050": 1000000000000.4546,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2026__epoch-0060": 1000000000000.4546,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2026__epoch-0070": 1000000000000.4546,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2026__epoch-0080": 1000000000000.4546,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2026__epoch-0090": 1000000000000.4546,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2026__epoch-0100": 1000000000000.4546,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2026__epoch-0110": 1000000000000.4546,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2026__epoch-0120": 1000000000000.4546,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2026__epoch-0130": 1000000000000.4546,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2026__epoch-0140": 1000000000000.4546,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2027__epoch-0001": 1000000000000.409,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2027__epoch-0010": 1000000000000.409,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2027__epoch-0020": 1000000000000.409,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2027__epoch-0030": 1000000000000.409,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2027__epoch-0040": 1000000000000.409,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2027__epoch-0050": 1000000000000.409,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2027__epoch-0060": 1000000000000.409,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2027__epoch-0070": 1000000000000.409,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2027__epoch-0080": 1000000000000.409,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2027__epoch-0090": 1000000000000.409,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2027__epoch-0100": 1000000000000.409,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2027__epoch-0110": 1000000000000.409,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2027__epoch-0120": 1000000000000.409,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2027__epoch-0130": 1000000000000.409,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2027__epoch-0140": 1000000000000.409,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2028__epoch-0001": 1000000000000.5,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2028__epoch-0010": 1000000000000.5,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2028__epoch-0020": 1000000000000.5,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2028__epoch-0030": 1000000000000.5,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2028__epoch-0040": 1000000000000.5,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2028__epoch-0050": 1000000000000.5,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2028__epoch-0060": 1000000000000.5,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2028__epoch-0070": 1000000000000.5,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2028__epoch-0080": 1000000000000.5,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2028__epoch-0090": 1000000000000.5,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2028__epoch-0100": 1000000000000.5,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2028__epoch-0110": 1000000000000.5,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2028__epoch-0120": 1000000000000.5,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2028__epoch-0130": 1000000000000.5,
+    "Citationv1_to_ACMv9__ADAlign__861c4bdde228__seed-2028__epoch-0140": 1000000000000.5,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2026__epoch-0001": 0.9480712166172107,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2026__epoch-0010": 0.8827893175074184,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2026__epoch-0020": 0.6543026706231454,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2026__epoch-0030": 0.5341246290801187,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2026__epoch-0040": 0.49851632047477745,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2026__epoch-0050": 0.4970326409495549,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2026__epoch-0060": 0.4629080118694362,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2026__epoch-0070": 0.45103857566765576,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2026__epoch-0080": 0.41839762611275966,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2026__epoch-0090": 0.41097922848664686,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2026__epoch-0100": 0.4050445103857567,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2026__epoch-0110": 0.3961424332344214,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2026__epoch-0120": 0.3991097922848665,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2026__epoch-0130": 0.39317507418397624,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2026__epoch-0140": 0.3887240356083086,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2027__epoch-0001": 1000000000000.3182,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2027__epoch-0010": 1000000000000.3182,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2027__epoch-0020": 1000000000000.3182,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2027__epoch-0030": 1000000000000.3182,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2027__epoch-0040": 1000000000000.3182,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2027__epoch-0050": 1000000000000.3182,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2027__epoch-0060": 1000000000000.3182,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2027__epoch-0070": 1000000000000.3182,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2027__epoch-0080": 1000000000000.3182,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2027__epoch-0090": 1000000000000.3182,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2027__epoch-0100": 1000000000000.3182,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2027__epoch-0110": 1000000000000.3182,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2027__epoch-0120": 1000000000000.3182,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2027__epoch-0130": 1000000000000.3182,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2027__epoch-0140": 1000000000000.3182,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2028__epoch-0001": 0.9287833827893175,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2028__epoch-0010": 0.8353115727002968,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2028__epoch-0020": 0.6454005934718101,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2028__epoch-0030": 0.526706231454006,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2028__epoch-0040": 0.4732937685459941,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2028__epoch-0050": 0.48516320474777447,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2028__epoch-0060": 0.47181008902077154,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2028__epoch-0070": 0.45548961424332346,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2028__epoch-0080": 0.4495548961424332,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2028__epoch-0090": 0.4391691394658754,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2028__epoch-0100": 0.4362017804154303,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2028__epoch-0110": 0.4094955489614243,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2028__epoch-0120": 0.413946587537092,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2028__epoch-0130": 0.4020771513353116,
+    "Citationv1_to_ACMv9__GRADE__21365f93e920__seed-2028__epoch-0140": 0.41543026706231456,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2026__epoch-0001": 0.9465875370919882,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2026__epoch-0010": 0.9554896142433235,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2026__epoch-0020": 0.9065281899109793,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2026__epoch-0030": 0.8605341246290801,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2026__epoch-0040": 0.7818991097922848,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2026__epoch-0050": 0.7299703264094956,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2026__epoch-0060": 0.6928783382789317,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2026__epoch-0070": 0.6661721068249258,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2026__epoch-0080": 0.6498516320474778,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2026__epoch-0090": 0.629080118694362,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2026__epoch-0100": 0.6068249258160238,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2026__epoch-0110": 0.5801186943620178,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2026__epoch-0120": 0.5623145400593472,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2026__epoch-0130": 0.5489614243323442,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2026__epoch-0140": 0.5296735905044511,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2027__epoch-0001": 1000000000000.25,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2027__epoch-0010": 1000000000000.25,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2027__epoch-0020": 1000000000000.25,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2027__epoch-0030": 1000000000000.25,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2027__epoch-0040": 1000000000000.25,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2027__epoch-0050": 1000000000000.25,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2027__epoch-0060": 1000000000000.25,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2027__epoch-0070": 1000000000000.25,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2027__epoch-0080": 1000000000000.25,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2027__epoch-0090": 1000000000000.25,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2027__epoch-0100": 1000000000000.25,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2027__epoch-0110": 1000000000000.25,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2027__epoch-0120": 1000000000000.25,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2027__epoch-0130": 1000000000000.25,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2027__epoch-0140": 1000000000000.25,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2028__epoch-0001": 0.9258160237388724,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2028__epoch-0010": 0.9332344213649851,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2028__epoch-0020": 0.9020771513353115,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2028__epoch-0030": 0.8367952522255193,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2028__epoch-0040": 0.7611275964391692,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2028__epoch-0050": 0.7210682492581603,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2028__epoch-0060": 0.685459940652819,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2028__epoch-0070": 0.6572700296735905,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2028__epoch-0080": 0.6394658753709199,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2028__epoch-0090": 0.6172106824925816,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2028__epoch-0100": 0.5905044510385756,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2028__epoch-0110": 0.56973293768546,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2028__epoch-0120": 0.5534124629080118,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2028__epoch-0130": 0.5326409495548962,
+    "Citationv1_to_ACMv9__GRADE__45761a81dc7c__seed-2028__epoch-0140": 0.5207715133531158,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2026__epoch-0001": 0.9495548961424333,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2026__epoch-0010": 0.9540059347181009,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2026__epoch-0020": 0.9094955489614244,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2026__epoch-0030": 0.8649851632047477,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2026__epoch-0040": 0.7833827893175074,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2026__epoch-0050": 0.7329376854599406,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2026__epoch-0060": 0.6899109792284867,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2026__epoch-0070": 0.6646884272997032,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2026__epoch-0080": 0.6483679525222552,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2026__epoch-0090": 0.6275964391691394,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2026__epoch-0100": 0.599406528189911,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2026__epoch-0110": 0.5727002967359051,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2026__epoch-0120": 0.5548961424332344,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2026__epoch-0130": 0.5415430267062314,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2026__epoch-0140": 0.5192878338278932,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2027__epoch-0001": 1000000000000.2046,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2027__epoch-0010": 1000000000000.2046,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2027__epoch-0020": 1000000000000.2046,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2027__epoch-0030": 1000000000000.2046,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2027__epoch-0040": 1000000000000.2046,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2027__epoch-0050": 1000000000000.2046,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2027__epoch-0060": 1000000000000.2046,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2027__epoch-0070": 1000000000000.2046,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2027__epoch-0080": 1000000000000.2046,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2027__epoch-0090": 1000000000000.2046,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2027__epoch-0100": 1000000000000.2046,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2027__epoch-0110": 1000000000000.2046,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2027__epoch-0120": 1000000000000.2046,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2027__epoch-0130": 1000000000000.2046,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2027__epoch-0140": 1000000000000.2046,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2028__epoch-0001": 0.9243323442136498,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2028__epoch-0010": 0.9317507418397626,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2028__epoch-0020": 0.900593471810089,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2028__epoch-0030": 0.8323442136498517,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2028__epoch-0040": 0.7596439169139466,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2028__epoch-0050": 0.7225519287833828,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2028__epoch-0060": 0.6824925816023739,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2028__epoch-0070": 0.6528189910979229,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2028__epoch-0080": 0.6379821958456974,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2028__epoch-0090": 0.6112759643916914,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2028__epoch-0100": 0.5845697329376854,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2028__epoch-0110": 0.5637982195845698,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2028__epoch-0120": 0.5504451038575667,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2028__epoch-0130": 0.5252225519287834,
+    "Citationv1_to_ACMv9__GRADE__7c8691447d89__seed-2028__epoch-0140": 0.5118694362017804,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2026__epoch-0001": 1000000000000.9546,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2026__epoch-0010": 1000000000000.9546,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2026__epoch-0020": 1000000000000.9546,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2026__epoch-0030": 1000000000000.9546,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2026__epoch-0040": 1000000000000.9546,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2026__epoch-0050": 1000000000000.9546,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2026__epoch-0060": 1000000000000.9546,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2026__epoch-0070": 1000000000000.9546,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2026__epoch-0080": 1000000000000.9546,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2026__epoch-0090": 1000000000000.9546,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2026__epoch-0100": 1000000000000.9546,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2026__epoch-0110": 1000000000000.9546,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2026__epoch-0120": 1000000000000.9546,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2026__epoch-0130": 1000000000000.9546,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2026__epoch-0140": 1000000000000.9546,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2027__epoch-0001": 1000000000000.8864,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2027__epoch-0010": 1000000000000.8864,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2027__epoch-0020": 1000000000000.8864,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2027__epoch-0030": 1000000000000.8864,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2027__epoch-0040": 1000000000000.8864,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2027__epoch-0050": 1000000000000.8864,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2027__epoch-0060": 1000000000000.8864,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2027__epoch-0070": 1000000000000.8864,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2027__epoch-0080": 1000000000000.8864,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2027__epoch-0090": 1000000000000.8864,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2027__epoch-0100": 1000000000000.8864,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2027__epoch-0110": 1000000000000.8864,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2027__epoch-0120": 1000000000000.8864,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2027__epoch-0130": 1000000000000.8864,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2027__epoch-0140": 1000000000000.8864,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2028__epoch-0001": 1000000000000.909,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2028__epoch-0010": 1000000000000.909,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2028__epoch-0020": 1000000000000.909,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2028__epoch-0030": 1000000000000.909,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2028__epoch-0040": 1000000000000.909,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2028__epoch-0050": 1000000000000.909,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2028__epoch-0060": 1000000000000.909,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2028__epoch-0070": 1000000000000.909,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2028__epoch-0080": 1000000000000.909,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2028__epoch-0090": 1000000000000.909,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2028__epoch-0100": 1000000000000.909,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2028__epoch-0110": 1000000000000.909,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2028__epoch-0120": 1000000000000.909,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2028__epoch-0130": 1000000000000.909,
+    "Citationv1_to_ACMv9__PairAlign__39661ff570ea__seed-2028__epoch-0140": 1000000000000.909,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2026__epoch-0001": 1000000000000.8182,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2026__epoch-0010": 1000000000000.8182,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2026__epoch-0020": 1000000000000.8182,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2026__epoch-0030": 1000000000000.8182,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2026__epoch-0040": 1000000000000.8182,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2026__epoch-0050": 1000000000000.8182,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2026__epoch-0060": 1000000000000.8182,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2026__epoch-0070": 1000000000000.8182,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2026__epoch-0080": 1000000000000.8182,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2026__epoch-0090": 1000000000000.8182,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2026__epoch-0100": 1000000000000.8182,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2026__epoch-0110": 1000000000000.8182,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2026__epoch-0120": 1000000000000.8182,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2026__epoch-0130": 1000000000000.8182,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2026__epoch-0140": 1000000000000.8182,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2027__epoch-0001": 1000000000000.75,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2027__epoch-0010": 1000000000000.75,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2027__epoch-0020": 1000000000000.75,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2027__epoch-0030": 1000000000000.75,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2027__epoch-0040": 1000000000000.75,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2027__epoch-0050": 1000000000000.75,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2027__epoch-0060": 1000000000000.75,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2027__epoch-0070": 1000000000000.75,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2027__epoch-0080": 1000000000000.75,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2027__epoch-0090": 1000000000000.75,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2027__epoch-0100": 1000000000000.75,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2027__epoch-0110": 1000000000000.75,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2027__epoch-0120": 1000000000000.75,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2027__epoch-0130": 1000000000000.75,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2027__epoch-0140": 1000000000000.75,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2028__epoch-0001": 1000000000000.7727,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2028__epoch-0010": 1000000000000.7727,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2028__epoch-0020": 1000000000000.7727,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2028__epoch-0030": 1000000000000.7727,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2028__epoch-0040": 1000000000000.7727,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2028__epoch-0050": 1000000000000.7727,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2028__epoch-0060": 1000000000000.7727,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2028__epoch-0070": 1000000000000.7727,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2028__epoch-0080": 1000000000000.7727,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2028__epoch-0090": 1000000000000.7727,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2028__epoch-0100": 1000000000000.7727,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2028__epoch-0110": 1000000000000.7727,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2028__epoch-0120": 1000000000000.7727,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2028__epoch-0130": 1000000000000.7727,
+    "Citationv1_to_ACMv9__PairAlign__83d7298a8538__seed-2028__epoch-0140": 1000000000000.7727,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2026__epoch-0001": 1000000000000.9318,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2026__epoch-0010": 1000000000000.9318,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2026__epoch-0020": 1000000000000.9318,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2026__epoch-0030": 1000000000000.9318,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2026__epoch-0040": 1000000000000.9318,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2026__epoch-0050": 1000000000000.9318,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2026__epoch-0060": 1000000000000.9318,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2026__epoch-0070": 1000000000000.9318,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2026__epoch-0080": 1000000000000.9318,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2026__epoch-0090": 1000000000000.9318,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2026__epoch-0100": 1000000000000.9318,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2026__epoch-0110": 1000000000000.9318,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2026__epoch-0120": 1000000000000.9318,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2026__epoch-0130": 1000000000000.9318,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2026__epoch-0140": 1000000000000.9318,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2027__epoch-0001": 1000000000000.7954,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2027__epoch-0010": 1000000000000.7954,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2027__epoch-0020": 1000000000000.7954,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2027__epoch-0030": 1000000000000.7954,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2027__epoch-0040": 1000000000000.7954,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2027__epoch-0050": 1000000000000.7954,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2027__epoch-0060": 1000000000000.7954,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2027__epoch-0070": 1000000000000.7954,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2027__epoch-0080": 1000000000000.7954,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2027__epoch-0090": 1000000000000.7954,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2027__epoch-0100": 1000000000000.7954,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2027__epoch-0110": 1000000000000.7954,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2027__epoch-0120": 1000000000000.7954,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2027__epoch-0130": 1000000000000.7954,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2027__epoch-0140": 1000000000000.7954,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2028__epoch-0001": 1000000000000.841,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2028__epoch-0010": 1000000000000.841,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2028__epoch-0020": 1000000000000.841,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2028__epoch-0030": 1000000000000.841,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2028__epoch-0040": 1000000000000.841,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2028__epoch-0050": 1000000000000.841,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2028__epoch-0060": 1000000000000.841,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2028__epoch-0070": 1000000000000.841,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2028__epoch-0080": 1000000000000.841,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2028__epoch-0090": 1000000000000.841,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2028__epoch-0100": 1000000000000.841,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2028__epoch-0110": 1000000000000.841,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2028__epoch-0120": 1000000000000.841,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2028__epoch-0130": 1000000000000.841,
+    "Citationv1_to_ACMv9__PairAlign__a4b2bca2a375__seed-2028__epoch-0140": 1000000000000.841,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2026__epoch-0001": 1000000000000.7273,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2026__epoch-0010": 1000000000000.7273,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2026__epoch-0020": 1000000000000.7273,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2026__epoch-0030": 1000000000000.7273,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2026__epoch-0040": 1000000000000.7273,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2026__epoch-0050": 1000000000000.7273,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2026__epoch-0060": 1000000000000.7273,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2026__epoch-0070": 1000000000000.7273,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2026__epoch-0080": 1000000000000.7273,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2026__epoch-0090": 1000000000000.7273,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2026__epoch-0100": 1000000000000.7273,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2026__epoch-0110": 1000000000000.7273,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2026__epoch-0120": 1000000000000.7273,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2026__epoch-0130": 1000000000000.7273,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2026__epoch-0140": 1000000000000.7273,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2027__epoch-0001": 1000000000000.6818,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2027__epoch-0010": 1000000000000.6818,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2027__epoch-0020": 1000000000000.6818,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2027__epoch-0030": 1000000000000.6818,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2027__epoch-0040": 1000000000000.6818,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2027__epoch-0050": 1000000000000.6818,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2027__epoch-0060": 1000000000000.6818,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2027__epoch-0070": 1000000000000.6818,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2027__epoch-0080": 1000000000000.6818,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2027__epoch-0090": 1000000000000.6818,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2027__epoch-0100": 1000000000000.6818,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2027__epoch-0110": 1000000000000.6818,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2027__epoch-0120": 1000000000000.6818,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2027__epoch-0130": 1000000000000.6818,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2027__epoch-0140": 1000000000000.6818,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2028__epoch-0001": 1000000000000.7046,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2028__epoch-0010": 1000000000000.7046,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2028__epoch-0020": 1000000000000.7046,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2028__epoch-0030": 1000000000000.7046,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2028__epoch-0040": 1000000000000.7046,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2028__epoch-0050": 1000000000000.7046,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2028__epoch-0060": 1000000000000.7046,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2028__epoch-0070": 1000000000000.7046,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2028__epoch-0080": 1000000000000.7046,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2028__epoch-0090": 1000000000000.7046,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2028__epoch-0100": 1000000000000.7046,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2028__epoch-0110": 1000000000000.7046,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2028__epoch-0120": 1000000000000.7046,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2028__epoch-0130": 1000000000000.7046,
+    "Citationv1_to_ACMv9__SourceOnly__27f8f3a22eee__seed-2028__epoch-0140": 1000000000000.7046,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2026__epoch-0001": 0.9436201780415431,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2026__epoch-0010": 0.9391691394658753,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2026__epoch-0020": 0.8456973293768546,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2026__epoch-0030": 0.6839762611275965,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2026__epoch-0040": 0.6023738872403561,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2026__epoch-0050": 0.5029673590504451,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2026__epoch-0060": 0.44510385756676557,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2026__epoch-0070": 0.40059347181008903,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2026__epoch-0080": 0.3768545994065282,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2026__epoch-0090": 0.35756676557863504,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2026__epoch-0100": 0.34124629080118696,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2026__epoch-0110": 0.31602373887240354,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2026__epoch-0120": 0.2997032640949555,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2026__epoch-0130": 0.2818991097922849,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2026__epoch-0140": 0.2685459940652819,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2027__epoch-0001": 0.9629080118694362,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2027__epoch-0010": 0.9599406528189911,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2027__epoch-0020": 0.8991097922848664,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2027__epoch-0030": 0.7047477744807121,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2027__epoch-0040": 0.6320474777448071,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2027__epoch-0050": 0.5400593471810089,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2027__epoch-0060": 0.47774480712166173,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2027__epoch-0070": 0.4332344213649852,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2027__epoch-0080": 0.39762611275964393,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2027__epoch-0090": 0.3724035608308605,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2027__epoch-0100": 0.3486646884272997,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2027__epoch-0110": 0.3293768545994065,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2027__epoch-0120": 0.3086053412462908,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2027__epoch-0130": 0.2952522255192878,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2027__epoch-0140": 0.28486646884273,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2028__epoch-0001": 0.9347181008902077,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2028__epoch-0010": 0.9451038575667656,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2028__epoch-0020": 0.8813056379821959,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2028__epoch-0030": 0.6869436201780416,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2028__epoch-0040": 0.586053412462908,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2028__epoch-0050": 0.5014836795252225,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2028__epoch-0060": 0.443620178041543,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2028__epoch-0070": 0.4035608308605341,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2028__epoch-0080": 0.3827893175074184,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2028__epoch-0090": 0.3590504451038576,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2028__epoch-0100": 0.34421364985163205,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2028__epoch-0110": 0.32047477744807124,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2028__epoch-0120": 0.30118694362017806,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2028__epoch-0130": 0.28338278931750743,
+    "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2028__epoch-0140": 0.27002967359050445,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2026__epoch-0001": 1000000000000.3864,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2026__epoch-0010": 1000000000000.3864,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2026__epoch-0020": 1000000000000.3864,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2026__epoch-0030": 1000000000000.3864,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2026__epoch-0040": 1000000000000.3864,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2026__epoch-0050": 1000000000000.3864,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2026__epoch-0060": 1000000000000.3864,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2026__epoch-0070": 1000000000000.3864,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2026__epoch-0080": 1000000000000.3864,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2026__epoch-0090": 1000000000000.3864,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2026__epoch-0100": 1000000000000.3864,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2026__epoch-0110": 1000000000000.3864,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2026__epoch-0120": 1000000000000.3864,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2026__epoch-0130": 1000000000000.3864,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2026__epoch-0140": 1000000000000.3864,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2027__epoch-0001": 1000000000000.341,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2027__epoch-0010": 1000000000000.341,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2027__epoch-0020": 1000000000000.341,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2027__epoch-0030": 1000000000000.341,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2027__epoch-0040": 1000000000000.341,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2027__epoch-0050": 1000000000000.341,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2027__epoch-0060": 1000000000000.341,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2027__epoch-0070": 1000000000000.341,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2027__epoch-0080": 1000000000000.341,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2027__epoch-0090": 1000000000000.341,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2027__epoch-0100": 1000000000000.341,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2027__epoch-0110": 1000000000000.341,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2027__epoch-0120": 1000000000000.341,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2027__epoch-0130": 1000000000000.341,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2027__epoch-0140": 1000000000000.341,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2028__epoch-0001": 1000000000000.3636,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2028__epoch-0010": 1000000000000.3636,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2028__epoch-0020": 1000000000000.3636,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2028__epoch-0030": 1000000000000.3636,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2028__epoch-0040": 1000000000000.3636,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2028__epoch-0050": 1000000000000.3636,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2028__epoch-0060": 1000000000000.3636,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2028__epoch-0070": 1000000000000.3636,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2028__epoch-0080": 1000000000000.3636,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2028__epoch-0090": 1000000000000.3636,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2028__epoch-0100": 1000000000000.3636,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2028__epoch-0110": 1000000000000.3636,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2028__epoch-0120": 1000000000000.3636,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2028__epoch-0130": 1000000000000.3636,
+    "Citationv1_to_ACMv9__SourceOnly__dbadd2725ab4__seed-2028__epoch-0140": 1000000000000.3636
+  },
+  "created_at": "2026-08-21T02:24:15.642347+00:00",
+  "fusion_config": {
+    "best_q": 3,
+    "fusion_mode": "trajectory_shortlist_consensus_rerank",
+    "rerank_rule": "tie-aware candidate percentile rank",
+    "rerank_selector": "transfer_score",
+    "shortlist_candidate_count": 135,
+    "shortlist_exclusion_score": 1000000000000.0,
+    "shortlist_owners": [
+      "agreement_reference"
+    ],
+    "shortlist_trajectories": [
+      "GRADE__21365f93e920__seed-2026",
+      "GRADE__21365f93e920__seed-2028",
+      "GRADE__45761a81dc7c__seed-2026",
+      "GRADE__45761a81dc7c__seed-2028",
+      "GRADE__7c8691447d89__seed-2026",
+      "GRADE__7c8691447d89__seed-2028",
+      "SourceOnly__c3648cf2ab20__seed-2026",
+      "SourceOnly__c3648cf2ab20__seed-2027",
+      "SourceOnly__c3648cf2ab20__seed-2028"
+    ],
+    "shortlist_trajectory_count": 9,
+    "trajectory_count": 45,
+    "trajectory_fraction": 0.2,
+    "trajectory_score": "mean best-q checkpoint percentile ranks"
+  },
+  "label_access_count": 0,
+  "protocol_violation_count": 0,
+  "schema_version": 1,
+  "score_direction": "minimize",
+  "score_semantics": "ranking",
+  "selected_candidate_id": "Citationv1_to_ACMv9__SourceOnly__c3648cf2ab20__seed-2026__epoch-0140",
+  "selector": "agreement_trajectory20_transfer_rerank",
+  "task": "Citationv1_to_ACMv9",
+  "trajectory_scores": {
+    "A2GNN__9a46ad4e4aff__seed-2026": {
+      "consensus_percentile_rank": 0.4772727272727273,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.2809099901088032
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.4772727272727273
+      }
+    },
+    "A2GNN__9a46ad4e4aff__seed-2027": {
+      "consensus_percentile_rank": 0.4318181818181818,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.22403560830860536
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.4318181818181818
+      }
+    },
+    "A2GNN__9a46ad4e4aff__seed-2028": {
+      "consensus_percentile_rank": 0.5227272727272727,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.29871414441147376
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.5227272727272727
+      }
+    },
+    "A2GNN__ca12b9a6cc8a__seed-2026": {
+      "consensus_percentile_rank": 0.6136363636363636,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.4067754698318497
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.6136363636363636
+      }
+    },
+    "A2GNN__ca12b9a6cc8a__seed-2027": {
+      "consensus_percentile_rank": 0.5454545454545454,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.326162215628091
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.5454545454545454
+      }
+    },
+    "A2GNN__ca12b9a6cc8a__seed-2028": {
+      "consensus_percentile_rank": 0.5681818181818182,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.3521266073194857
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.5681818181818182
+      }
+    },
+    "A2GNN__e177a5eec888__seed-2026": {
+      "consensus_percentile_rank": 0.8636363636363636,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.6510880316518298
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.8636363636363636
+      }
+    },
+    "A2GNN__e177a5eec888__seed-2027": {
+      "consensus_percentile_rank": 0.9772727272727273,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.7532146389713156
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.9772727272727273
+      }
+    },
+    "A2GNN__e177a5eec888__seed-2028": {
+      "consensus_percentile_rank": 1.0,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.7754698318496538
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 1.0
+      }
+    },
+    "ADAlign__7047bc64d360__seed-2026": {
+      "consensus_percentile_rank": 0.29545454545454547,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.09940652818991098
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.29545454545454547
+      }
+    },
+    "ADAlign__7047bc64d360__seed-2027": {
+      "consensus_percentile_rank": 0.2727272727272727,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.09050445103857567
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.2727272727272727
+      }
+    },
+    "ADAlign__7047bc64d360__seed-2028": {
+      "consensus_percentile_rank": 0.22727272727272727,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.07912957467853611
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.22727272727272727
+      }
+    },
+    "ADAlign__7410645dc0c4__seed-2026": {
+      "consensus_percentile_rank": 0.6363636363636364,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.4213649851632047
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.6363636363636364
+      }
+    },
+    "ADAlign__7410645dc0c4__seed-2027": {
+      "consensus_percentile_rank": 0.5909090909090909,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.3899604352126607
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.5909090909090909
+      }
+    },
+    "ADAlign__7410645dc0c4__seed-2028": {
+      "consensus_percentile_rank": 0.6590909090909091,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.4782393669634026
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.6590909090909091
+      }
+    },
+    "ADAlign__861c4bdde228__seed-2026": {
+      "consensus_percentile_rank": 0.45454545454545453,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.2324431256181998
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.45454545454545453
+      }
+    },
+    "ADAlign__861c4bdde228__seed-2027": {
+      "consensus_percentile_rank": 0.4090909090909091,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.2109297725024728
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.4090909090909091
+      }
+    },
+    "ADAlign__861c4bdde228__seed-2028": {
+      "consensus_percentile_rank": 0.5,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.29080118694362017
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.5
+      }
+    },
+    "GRADE__21365f93e920__seed-2026": {
+      "consensus_percentile_rank": 0.18181818181818182,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.060089020771513346
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.18181818181818182
+      }
+    },
+    "GRADE__21365f93e920__seed-2027": {
+      "consensus_percentile_rank": 0.3181818181818182,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.11696340257171117
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.3181818181818182
+      }
+    },
+    "GRADE__21365f93e920__seed-2028": {
+      "consensus_percentile_rank": 0.1590909090909091,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.05415430267062315
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.1590909090909091
+      }
+    },
+    "GRADE__45761a81dc7c__seed-2026": {
+      "consensus_percentile_rank": 0.056818181818181816,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.015331355093966369
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.056818181818181816
+      }
+    },
+    "GRADE__45761a81dc7c__seed-2027": {
+      "consensus_percentile_rank": 0.25,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.08456973293768545
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.25
+      }
+    },
+    "GRADE__45761a81dc7c__seed-2028": {
+      "consensus_percentile_rank": 0.056818181818181816,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.015331355093966369
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.056818181818181816
+      }
+    },
+    "GRADE__7c8691447d89__seed-2026": {
+      "consensus_percentile_rank": 0.0,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.0071711177052423344
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.0
+      }
+    },
+    "GRADE__7c8691447d89__seed-2027": {
+      "consensus_percentile_rank": 0.20454545454545456,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.0751730959446093
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.20454545454545456
+      }
+    },
+    "GRADE__7c8691447d89__seed-2028": {
+      "consensus_percentile_rank": 0.022727272727272728,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.007418397626112759
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.022727272727272728
+      }
+    },
+    "PairAlign__39661ff570ea__seed-2026": {
+      "consensus_percentile_rank": 0.9545454545454546,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.734915924826904
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.9545454545454546
+      }
+    },
+    "PairAlign__39661ff570ea__seed-2027": {
+      "consensus_percentile_rank": 0.8863636363636364,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.6723541048466863
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.8863636363636364
+      }
+    },
+    "PairAlign__39661ff570ea__seed-2028": {
+      "consensus_percentile_rank": 0.9090909090909091,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.6726013847675568
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.9090909090909091
+      }
+    },
+    "PairAlign__83d7298a8538__seed-2026": {
+      "consensus_percentile_rank": 0.8181818181818182,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.615727002967359
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.8181818181818182
+      }
+    },
+    "PairAlign__83d7298a8538__seed-2027": {
+      "consensus_percentile_rank": 0.75,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.5798714144411474
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.75
+      }
+    },
+    "PairAlign__83d7298a8538__seed-2028": {
+      "consensus_percentile_rank": 0.7727272727272727,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.5905044510385756
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.7727272727272727
+      }
+    },
+    "PairAlign__a4b2bca2a375__seed-2026": {
+      "consensus_percentile_rank": 0.9318181818181818,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.712166172106825
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.9318181818181818
+      }
+    },
+    "PairAlign__a4b2bca2a375__seed-2027": {
+      "consensus_percentile_rank": 0.7954545454545454,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.6083086053412463
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.7954545454545454
+      }
+    },
+    "PairAlign__a4b2bca2a375__seed-2028": {
+      "consensus_percentile_rank": 0.8409090909090909,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.6444114737883284
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.8409090909090909
+      }
+    },
+    "SourceOnly__27f8f3a22eee__seed-2026": {
+      "consensus_percentile_rank": 0.7272727272727273,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.5019782393669634
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.7272727272727273
+      }
+    },
+    "SourceOnly__27f8f3a22eee__seed-2027": {
+      "consensus_percentile_rank": 0.6818181818181818,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.4908506429277943
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.6818181818181818
+      }
+    },
+    "SourceOnly__27f8f3a22eee__seed-2028": {
+      "consensus_percentile_rank": 0.7045454545454546,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.4957962413452028
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.7045454545454546
+      }
+    },
+    "SourceOnly__c3648cf2ab20__seed-2026": {
+      "consensus_percentile_rank": 0.13636363636363635,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.0380811078140455
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.13636363636363635
+      }
+    },
+    "SourceOnly__c3648cf2ab20__seed-2027": {
+      "consensus_percentile_rank": 0.11363636363636363,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.02769535113748764
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.11363636363636363
+      }
+    },
+    "SourceOnly__c3648cf2ab20__seed-2028": {
+      "consensus_percentile_rank": 0.09090909090909091,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.01904055390702275
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.09090909090909091
+      }
+    },
+    "SourceOnly__dbadd2725ab4__seed-2026": {
+      "consensus_percentile_rank": 0.38636363636363635,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.17408506429277945
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.38636363636363635
+      }
+    },
+    "SourceOnly__dbadd2725ab4__seed-2027": {
+      "consensus_percentile_rank": 0.3409090909090909,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.13724035608308605
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.3409090909090909
+      }
+    },
+    "SourceOnly__dbadd2725ab4__seed-2028": {
+      "consensus_percentile_rank": 0.36363636363636365,
+      "owner_best_q_scores": {
+        "agreement_reference": 0.15677546983184965
+      },
+      "owner_percentile_ranks": {
+        "agreement_reference": 0.36363636363636365
+      }
+    }
+  }
+}

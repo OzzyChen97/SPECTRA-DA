@@ -79,6 +79,30 @@ when the repository contains verifiable artifacts or commands that prove it.
   improvement is claimed from it yet. `spectra_cal.py --output-selector` now
   allows fixed-gamma and pair-consistency runs to be written under distinct
   selector names without overwriting the default `spectra_cal.json`.
+- The full four-task covariance-gamma diagnostic is complete. Fixed gamma
+  `.25` is the best global fixed control (`0.140279` mean NRegret), but it
+  fails worst-task and non-inferiority guardrails. Candidate-level pair
+  consistency chooses overly large gamma values and reaches `0.339996` mean
+  regret. A trajectory-balanced variant is invariant to checkpoint
+  duplication and improves this only to `0.320986`; it still does not track
+  task-wise oracle gamma. Covariance consistency is therefore a no-go as a
+  deployment trust signal. The authoritative reports are
+  `results/gda_select/open_dev/covariance_gamma_sweep_objective_v2.json` and
+  `results/gda_select/open_dev/covariance_trajectory_pair_consistency_objective_v2.json`.
+- The covariance sweep now reuses immutable task-level candidate,
+  calibration, and spectral-disagreement context. Its complete-pair projection
+  uses the exact analytic inverse of `(M-2)I + 11^T` instead of dense least
+  squares. Cached and direct gamma-zero scientific outputs are identical, and
+  the complete 28-selector CPU sweep finishes in `449.26` seconds.
+- Regret factorization is executable at
+  `selector/selection_error_decomposition.py`. For the best candidate-level
+  Agreement shortlist selector, `95.5%` of remaining normalized regret is
+  trajectory gap and only `4.5%` is checkpoint gap. The first q=3
+  trajectory-level shortlist control was nevertheless unsuccessful:
+  Agreement-owned trajectory screening reaches `0.247994`, while
+  Agreement/SPECTRA trajectory midrank reaches `0.164165`, both worse than the
+  candidate-level `0.087507`. This control is frozen as a no-go result rather
+  than tuned further.
 - The v3 AutoSOTA objective scaffold is available at
   `selector/objective_v2.py` with configuration in
   `configs/v3_search_space.yaml`. It consumes an exported open-development
@@ -282,16 +306,13 @@ torch-importing tests should use Python 3.12 in this container.
 - The first explicit Stage-B consensus attempt is also not ready to freeze.
   Its four-task mean is competitive, but LOTO validation shows that the
   apparent gain is not stable enough for sealed evaluation.
-- Actual covariance-shrinkage sweeps are runnable but not yet part of the
-  four-task open-development evidence table. A single CPU smoke test on
-  `ACMv9_to_Citationv1` with `--covariance-shrinkage-mode fixed`,
-  `--fixed-covariance-gamma 0`, and `--output-selector spectra_cov_gamma000`
-  completed with `label_access_count: 0`, `protocol_violation_count: 0`, and
-  `selector_runtime_seconds: 68.96`. `selector/run_covariance_gamma_sweep.py`
-  now provides the manifest-backed runner for the planned four-task
-  `{0, 0.5, 1, pair_consistency}` diagnostic. The full sweep still has not
-  been executed/evaluated and must remain open-development only, not an ad hoc
-  sealed-evaluation precursor.
+- Actual covariance-shrinkage sweeps are complete on the four open-development
+  tasks. The manifest-backed run covers fixed gamma
+  `{0, .25, .5, .75, 1}`, support gating, and pair consistency, with a separate
+  trajectory-balanced follow-up. The full run has zero label accesses and
+  protocol violations and remains open-development evidence only. Neither
+  consistency rule is eligible for promotion; see the completed-result bullets
+  above and `docs/RESULTS.md`.
 - The final one-time 12 held-out transfer sealed evaluation is still pending.
   It should not be run until exactly one "ours" configuration is frozen from
   open-development evidence. Until that evaluator runs once on a frozen

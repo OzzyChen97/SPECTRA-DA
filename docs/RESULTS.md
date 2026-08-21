@@ -123,9 +123,80 @@ through `--covariance-shrinkage-mode fixed` and `pair_consistency`, and
 `--output-selector` now prevents those runs from overwriting the default
 `spectra_cal.json`. A single CPU smoke test for
 `ACMv9_to_Citationv1`/`spectra_cov_gamma000` completed with zero label access
-and zero protocol violations. The full four-task `{0, 0.5, 1,
-pair_consistency}` sweep remains pending and should be run as a planned
-open-development diagnostic before any sealed evaluation.
+and zero protocol violations. The complete sweep and its trajectory-balanced
+follow-up are reported below.
+
+## Covariance-gamma sweep and no-go result
+
+The planned four-task sweep is now complete. It evaluates fixed
+`gamma in {0, .25, .5, .75, 1}`, the descriptor support gate, candidate-level
+pair consistency, and a trajectory-balanced pair-consistency control. All
+selectors read the same 675-candidate banks, report zero label accesses and
+zero protocol violations, and use only the four open-development tasks for
+evaluation.
+
+| Covariance rule | Mean NRegret | Worst NRegret | Mean selected Micro-F1 |
+|---|---:|---:|---:|
+| Fixed gamma=0 | 0.162345 | 0.222591 | 0.594642 |
+| Fixed gamma=0.25 | **0.140279** | 0.328358 | 0.591542 |
+| Fixed gamma=0.50 | 0.227879 | 0.537313 | 0.558070 |
+| Fixed gamma=0.75 | 0.339996 | 0.537313 | 0.495640 |
+| Fixed gamma=1 | 0.339996 | 0.537313 | 0.495640 |
+| Descriptor support gate | 0.232580 | 0.301272 | 0.544995 |
+| Candidate-pair consistency | 0.339996 | 0.537313 | 0.495640 |
+| Trajectory-balanced consistency | 0.320986 | 0.537313 | 0.509686 |
+
+The task-wise diagnostic oracle over the frozen fixed-gamma grid reaches mean
+NRegret `0.102191`: ACM prefers `0.5`, Citation ties across `0/.25/.5`,
+USA prefers `0`, and BRAZIL prefers `.25`. In contrast, candidate-pair
+consistency chooses `.75/1/1/.75`; trajectory balancing changes only ACM to
+`.5`. Thus pair-sum residual consistency does not predict when transported
+covariance improves target model selection. The covariance-gamma route is
+therefore stopped as a deployment trust signal. Fixed gamma `.25` is a useful
+ablation but fails the worst-task and task-noninferiority guardrails and cannot
+be promoted.
+
+The optimized sweep is scientifically identical to the direct selector path:
+the cached and uncached gamma-zero outputs match exactly for candidate scores,
+point estimates, uncertainty, band risks, selected candidate, and transport
+diagnostics. Sharing task-level spectral disagreement and replacing the dense
+complete-pair least-squares solve with its analytic projection reduced the
+full 28-selector CPU wall time to `449.26` seconds, below the registered
+`480`-second diagnostic budget.
+
+## Regret factorization and trajectory-screening control
+
+`selection_error_decomposition.py` exactly separates selected regret into
+trajectory and checkpoint components, and separately into method and
+within-method components. For the current best Agreement@20% -> Transfer Score
+selector:
+
+| Component | Mean normalized gap | Share of total gap |
+|---|---:|---:|
+| Selected trajectory vs global oracle | 0.083604 | 95.5% |
+| Selected checkpoint vs trajectory oracle | 0.003903 | 4.5% |
+| Selected method vs global oracle | 0.058063 | 66.4% |
+| Within selected method | 0.029444 | 33.6% |
+
+This confirms that its remaining error is overwhelmingly trajectory-level.
+However, the first explicit trajectory-screening implementation does not solve
+that error. It scores each `(method, config, seed)` trajectory by the mean of
+its best three checkpoint ranks, selects the top 20% trajectories, expands
+them, and lets Transfer Score choose a checkpoint:
+
+| Trajectory shortlist owner | Mean NRegret | Worst NRegret | Mean selected Micro-F1 |
+|---|---:|---:|---:|
+| Agreement | 0.247994 | 0.582090 | 0.551518 |
+| SPECTRA-Cal | 0.321541 | 0.641791 | 0.502471 |
+| Agreement/SPECTRA trajectory midrank | 0.164165 | 0.343284 | 0.594632 |
+| Candidate-level Agreement@20% -> TS | **0.087507** | **0.223881** | **0.623427** |
+
+Expanding whole trajectories removes useful checkpoint-level filtering and
+allows Transfer Score to select poor checkpoints or trajectories. The q=3
+trajectory aggregation is therefore recorded as a failed structural control,
+not promoted or tuned further on these four tasks. The next viable direction
+is a stability/coverage diagnostic that preserves the successful candidate
+shortlist while testing temporal thinning and trajectory coverage.
 
 ## Final metrics
 

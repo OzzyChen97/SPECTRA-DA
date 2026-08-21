@@ -1,0 +1,361 @@
+{
+  "calibration_root": "/mnt/workspace/Wilson/AutoSOTA/baseline/ADAlign/trajectory_bank/calibration/gda_select_v1",
+  "candidate_root": "/mnt/workspace/Wilson/AutoSOTA/baseline/ADAlign/trajectory_bank/candidates/gda_select_v1",
+  "config": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/configs/search_space.yaml",
+  "created_at": "2026-08-21T01:59:54.352461+00:00",
+  "device": "cpu",
+  "label_access_count": 0,
+  "output_root": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/selections/covariance_gamma_sweep",
+  "outputs": [
+    {
+      "covariance_shrinkage_mode": "fixed",
+      "fixed_covariance_gamma": 0.0,
+      "label_access_count": 0,
+      "output": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/selections/covariance_gamma_sweep/ACMv9_to_Citationv1/spectra_cov_gamma000.json",
+      "protocol_violation_count": 0,
+      "selector": "spectra_cov_gamma000",
+      "selector_runtime_seconds": 16.203567320713773,
+      "task": "ACMv9_to_Citationv1"
+    },
+    {
+      "covariance_shrinkage_mode": "fixed",
+      "fixed_covariance_gamma": 0.25,
+      "label_access_count": 0,
+      "output": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/selections/covariance_gamma_sweep/ACMv9_to_Citationv1/spectra_cov_gamma025.json",
+      "protocol_violation_count": 0,
+      "selector": "spectra_cov_gamma025",
+      "selector_runtime_seconds": 16.28856584150344,
+      "task": "ACMv9_to_Citationv1"
+    },
+    {
+      "covariance_shrinkage_mode": "fixed",
+      "fixed_covariance_gamma": 0.5,
+      "label_access_count": 0,
+      "output": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/selections/covariance_gamma_sweep/ACMv9_to_Citationv1/spectra_cov_gamma050.json",
+      "protocol_violation_count": 0,
+      "selector": "spectra_cov_gamma050",
+      "selector_runtime_seconds": 16.638612584676594,
+      "task": "ACMv9_to_Citationv1"
+    },
+    {
+      "covariance_shrinkage_mode": "fixed",
+      "fixed_covariance_gamma": 0.75,
+      "label_access_count": 0,
+      "output": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/selections/covariance_gamma_sweep/ACMv9_to_Citationv1/spectra_cov_gamma075.json",
+      "protocol_violation_count": 0,
+      "selector": "spectra_cov_gamma075",
+      "selector_runtime_seconds": 16.321246467530727,
+      "task": "ACMv9_to_Citationv1"
+    },
+    {
+      "covariance_shrinkage_mode": "fixed",
+      "fixed_covariance_gamma": 1.0,
+      "label_access_count": 0,
+      "output": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/selections/covariance_gamma_sweep/ACMv9_to_Citationv1/spectra_cov_gamma100.json",
+      "protocol_violation_count": 0,
+      "selector": "spectra_cov_gamma100",
+      "selector_runtime_seconds": 16.32641888060607,
+      "task": "ACMv9_to_Citationv1"
+    },
+    {
+      "covariance_shrinkage_mode": "pair_consistency",
+      "fixed_covariance_gamma": 1.0,
+      "label_access_count": 0,
+      "output": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/selections/covariance_gamma_sweep/ACMv9_to_Citationv1/spectra_cov_pair_consistency.json",
+      "protocol_violation_count": 0,
+      "selector": "spectra_cov_pair_consistency",
+      "selector_runtime_seconds": 17.495086326729506,
+      "task": "ACMv9_to_Citationv1"
+    },
+    {
+      "covariance_shrinkage_mode": "support_gate",
+      "fixed_covariance_gamma": 1.0,
+      "label_access_count": 0,
+      "output": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/selections/covariance_gamma_sweep/ACMv9_to_Citationv1/spectra_cov_support_gate.json",
+      "protocol_violation_count": 0,
+      "selector": "spectra_cov_support_gate",
+      "selector_runtime_seconds": 16.641116947634146,
+      "task": "ACMv9_to_Citationv1"
+    },
+    {
+      "covariance_shrinkage_mode": "fixed",
+      "fixed_covariance_gamma": 0.0,
+      "label_access_count": 0,
+      "output": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/selections/covariance_gamma_sweep/Citationv1_to_ACMv9/spectra_cov_gamma000.json",
+      "protocol_violation_count": 0,
+      "selector": "spectra_cov_gamma000",
+      "selector_runtime_seconds": 17.453363671765796,
+      "task": "Citationv1_to_ACMv9"
+    },
+    {
+      "covariance_shrinkage_mode": "fixed",
+      "fixed_covariance_gamma": 0.25,
+      "label_access_count": 0,
+      "output": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/selections/covariance_gamma_sweep/Citationv1_to_ACMv9/spectra_cov_gamma025.json",
+      "protocol_violation_count": 0,
+      "selector": "spectra_cov_gamma025",
+      "selector_runtime_seconds": 18.502588946006394,
+      "task": "Citationv1_to_ACMv9"
+    },
+    {
+      "covariance_shrinkage_mode": "fixed",
+      "fixed_covariance_gamma": 0.5,
+      "label_access_count": 0,
+      "output": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/selections/covariance_gamma_sweep/Citationv1_to_ACMv9/spectra_cov_gamma050.json",
+      "protocol_violation_count": 0,
+      "selector": "spectra_cov_gamma050",
+      "selector_runtime_seconds": 18.888583618781663,
+      "task": "Citationv1_to_ACMv9"
+    },
+    {
+      "covariance_shrinkage_mode": "fixed",
+      "fixed_covariance_gamma": 0.75,
+      "label_access_count": 0,
+      "output": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/selections/covariance_gamma_sweep/Citationv1_to_ACMv9/spectra_cov_gamma075.json",
+      "protocol_violation_count": 0,
+      "selector": "spectra_cov_gamma075",
+      "selector_runtime_seconds": 18.61518989885891,
+      "task": "Citationv1_to_ACMv9"
+    },
+    {
+      "covariance_shrinkage_mode": "fixed",
+      "fixed_covariance_gamma": 1.0,
+      "label_access_count": 0,
+      "output": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/selections/covariance_gamma_sweep/Citationv1_to_ACMv9/spectra_cov_gamma100.json",
+      "protocol_violation_count": 0,
+      "selector": "spectra_cov_gamma100",
+      "selector_runtime_seconds": 18.759355257830716,
+      "task": "Citationv1_to_ACMv9"
+    },
+    {
+      "covariance_shrinkage_mode": "pair_consistency",
+      "fixed_covariance_gamma": 1.0,
+      "label_access_count": 0,
+      "output": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/selections/covariance_gamma_sweep/Citationv1_to_ACMv9/spectra_cov_pair_consistency.json",
+      "protocol_violation_count": 0,
+      "selector": "spectra_cov_pair_consistency",
+      "selector_runtime_seconds": 20.655892087944917,
+      "task": "Citationv1_to_ACMv9"
+    },
+    {
+      "covariance_shrinkage_mode": "support_gate",
+      "fixed_covariance_gamma": 1.0,
+      "label_access_count": 0,
+      "output": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/selections/covariance_gamma_sweep/Citationv1_to_ACMv9/spectra_cov_support_gate.json",
+      "protocol_violation_count": 0,
+      "selector": "spectra_cov_support_gate",
+      "selector_runtime_seconds": 18.80695083374823,
+      "task": "Citationv1_to_ACMv9"
+    },
+    {
+      "covariance_shrinkage_mode": "fixed",
+      "fixed_covariance_gamma": 0.0,
+      "label_access_count": 0,
+      "output": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/selections/covariance_gamma_sweep/USA_to_BRAZIL/spectra_cov_gamma000.json",
+      "protocol_violation_count": 0,
+      "selector": "spectra_cov_gamma000",
+      "selector_runtime_seconds": 7.282715265339773,
+      "task": "USA_to_BRAZIL"
+    },
+    {
+      "covariance_shrinkage_mode": "fixed",
+      "fixed_covariance_gamma": 0.25,
+      "label_access_count": 0,
+      "output": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/selections/covariance_gamma_sweep/USA_to_BRAZIL/spectra_cov_gamma025.json",
+      "protocol_violation_count": 0,
+      "selector": "spectra_cov_gamma025",
+      "selector_runtime_seconds": 8.975224030370425,
+      "task": "USA_to_BRAZIL"
+    },
+    {
+      "covariance_shrinkage_mode": "fixed",
+      "fixed_covariance_gamma": 0.5,
+      "label_access_count": 0,
+      "output": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/selections/covariance_gamma_sweep/USA_to_BRAZIL/spectra_cov_gamma050.json",
+      "protocol_violation_count": 0,
+      "selector": "spectra_cov_gamma050",
+      "selector_runtime_seconds": 13.123115969289627,
+      "task": "USA_to_BRAZIL"
+    },
+    {
+      "covariance_shrinkage_mode": "fixed",
+      "fixed_covariance_gamma": 0.75,
+      "label_access_count": 0,
+      "output": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/selections/covariance_gamma_sweep/USA_to_BRAZIL/spectra_cov_gamma075.json",
+      "protocol_violation_count": 0,
+      "selector": "spectra_cov_gamma075",
+      "selector_runtime_seconds": 16.66924687235483,
+      "task": "USA_to_BRAZIL"
+    },
+    {
+      "covariance_shrinkage_mode": "fixed",
+      "fixed_covariance_gamma": 1.0,
+      "label_access_count": 0,
+      "output": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/selections/covariance_gamma_sweep/USA_to_BRAZIL/spectra_cov_gamma100.json",
+      "protocol_violation_count": 0,
+      "selector": "spectra_cov_gamma100",
+      "selector_runtime_seconds": 20.561659717167327,
+      "task": "USA_to_BRAZIL"
+    },
+    {
+      "covariance_shrinkage_mode": "pair_consistency",
+      "fixed_covariance_gamma": 1.0,
+      "label_access_count": 0,
+      "output": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/selections/covariance_gamma_sweep/USA_to_BRAZIL/spectra_cov_pair_consistency.json",
+      "protocol_violation_count": 0,
+      "selector": "spectra_cov_pair_consistency",
+      "selector_runtime_seconds": 22.27779211935454,
+      "task": "USA_to_BRAZIL"
+    },
+    {
+      "covariance_shrinkage_mode": "support_gate",
+      "fixed_covariance_gamma": 1.0,
+      "label_access_count": 0,
+      "output": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/selections/covariance_gamma_sweep/USA_to_BRAZIL/spectra_cov_support_gate.json",
+      "protocol_violation_count": 0,
+      "selector": "spectra_cov_support_gate",
+      "selector_runtime_seconds": 6.965266324280362,
+      "task": "USA_to_BRAZIL"
+    },
+    {
+      "covariance_shrinkage_mode": "fixed",
+      "fixed_covariance_gamma": 0.0,
+      "label_access_count": 0,
+      "output": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/selections/covariance_gamma_sweep/BRAZIL_to_USA/spectra_cov_gamma000.json",
+      "protocol_violation_count": 0,
+      "selector": "spectra_cov_gamma000",
+      "selector_runtime_seconds": 8.174760294645758,
+      "task": "BRAZIL_to_USA"
+    },
+    {
+      "covariance_shrinkage_mode": "fixed",
+      "fixed_covariance_gamma": 0.25,
+      "label_access_count": 0,
+      "output": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/selections/covariance_gamma_sweep/BRAZIL_to_USA/spectra_cov_gamma025.json",
+      "protocol_violation_count": 0,
+      "selector": "spectra_cov_gamma025",
+      "selector_runtime_seconds": 11.107911502742873,
+      "task": "BRAZIL_to_USA"
+    },
+    {
+      "covariance_shrinkage_mode": "fixed",
+      "fixed_covariance_gamma": 0.5,
+      "label_access_count": 0,
+      "output": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/selections/covariance_gamma_sweep/BRAZIL_to_USA/spectra_cov_gamma050.json",
+      "protocol_violation_count": 0,
+      "selector": "spectra_cov_gamma050",
+      "selector_runtime_seconds": 10.001547106807784,
+      "task": "BRAZIL_to_USA"
+    },
+    {
+      "covariance_shrinkage_mode": "fixed",
+      "fixed_covariance_gamma": 0.75,
+      "label_access_count": 0,
+      "output": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/selections/covariance_gamma_sweep/BRAZIL_to_USA/spectra_cov_gamma075.json",
+      "protocol_violation_count": 0,
+      "selector": "spectra_cov_gamma075",
+      "selector_runtime_seconds": 11.673788368735195,
+      "task": "BRAZIL_to_USA"
+    },
+    {
+      "covariance_shrinkage_mode": "fixed",
+      "fixed_covariance_gamma": 1.0,
+      "label_access_count": 0,
+      "output": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/selections/covariance_gamma_sweep/BRAZIL_to_USA/spectra_cov_gamma100.json",
+      "protocol_violation_count": 0,
+      "selector": "spectra_cov_gamma100",
+      "selector_runtime_seconds": 17.39318652361232,
+      "task": "BRAZIL_to_USA"
+    },
+    {
+      "covariance_shrinkage_mode": "pair_consistency",
+      "fixed_covariance_gamma": 1.0,
+      "label_access_count": 0,
+      "output": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/selections/covariance_gamma_sweep/BRAZIL_to_USA/spectra_cov_pair_consistency.json",
+      "protocol_violation_count": 0,
+      "selector": "spectra_cov_pair_consistency",
+      "selector_runtime_seconds": 32.72769191654931,
+      "task": "BRAZIL_to_USA"
+    },
+    {
+      "covariance_shrinkage_mode": "support_gate",
+      "fixed_covariance_gamma": 1.0,
+      "label_access_count": 0,
+      "output": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/selections/covariance_gamma_sweep/BRAZIL_to_USA/spectra_cov_support_gate.json",
+      "protocol_violation_count": 0,
+      "selector": "spectra_cov_support_gate",
+      "selector_runtime_seconds": 12.215846317853511,
+      "task": "BRAZIL_to_USA"
+    }
+  ],
+  "protocol_violation_count": 0,
+  "runner": "selector/run_covariance_gamma_sweep.py",
+  "schema_version": 1,
+  "selector_specs": [
+    {
+      "covariance_shrinkage_mode": "fixed",
+      "fixed_covariance_gamma": 0.0,
+      "selector": "spectra_cov_gamma000"
+    },
+    {
+      "covariance_shrinkage_mode": "fixed",
+      "fixed_covariance_gamma": 0.25,
+      "selector": "spectra_cov_gamma025"
+    },
+    {
+      "covariance_shrinkage_mode": "fixed",
+      "fixed_covariance_gamma": 0.5,
+      "selector": "spectra_cov_gamma050"
+    },
+    {
+      "covariance_shrinkage_mode": "fixed",
+      "fixed_covariance_gamma": 0.75,
+      "selector": "spectra_cov_gamma075"
+    },
+    {
+      "covariance_shrinkage_mode": "fixed",
+      "fixed_covariance_gamma": 1.0,
+      "selector": "spectra_cov_gamma100"
+    },
+    {
+      "covariance_shrinkage_mode": "pair_consistency",
+      "fixed_covariance_gamma": 1.0,
+      "selector": "spectra_cov_pair_consistency"
+    },
+    {
+      "covariance_shrinkage_mode": "support_gate",
+      "fixed_covariance_gamma": 1.0,
+      "selector": "spectra_cov_support_gate"
+    }
+  ],
+  "sidecar_manifest": null,
+  "task_preparation": [
+    {
+      "amortized_per_selector_seconds": 10.09565067756921,
+      "preparation_seconds": 70.66955474298447,
+      "task": "ACMv9_to_Citationv1"
+    },
+    {
+      "amortized_per_selector_seconds": 12.3110352848723,
+      "preparation_seconds": 86.1772469941061,
+      "task": "Citationv1_to_ACMv9"
+    },
+    {
+      "amortized_per_selector_seconds": 2.2690692513050243,
+      "preparation_seconds": 15.883484759135172,
+      "task": "USA_to_BRAZIL"
+    },
+    {
+      "amortized_per_selector_seconds": 3.26508846672784,
+      "preparation_seconds": 22.85561926709488,
+      "task": "BRAZIL_to_USA"
+    }
+  ],
+  "tasks": [
+    "ACMv9_to_Citationv1",
+    "Citationv1_to_ACMv9",
+    "USA_to_BRAZIL",
+    "BRAZIL_to_USA"
+  ],
+  "wall_clock_seconds": 449.25621603499167
+}

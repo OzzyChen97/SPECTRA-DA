@@ -1,0 +1,24 @@
+{
+  "best_q": 3,
+  "contains_target_labels": false,
+  "created_at": "2026-08-21T02:24:15.585234+00:00",
+  "label_access_count": 0,
+  "protocol_violation_count": 0,
+  "rerank_root": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/submissions/final_multi_selector/selections",
+  "rerank_selector": "transfer_score",
+  "schema_version": 1,
+  "selector": "agreement_trajectory20_transfer_rerank",
+  "shortlist_roots": [
+    "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/submissions/final_multi_selector/selections"
+  ],
+  "shortlist_selectors": [
+    "agreement_reference"
+  ],
+  "tasks": [
+    "ACMv9_to_Citationv1",
+    "Citationv1_to_ACMv9",
+    "USA_to_BRAZIL",
+    "BRAZIL_to_USA"
+  ],
+  "trajectory_fraction": 0.2
+}

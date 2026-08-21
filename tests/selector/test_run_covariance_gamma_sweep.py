@@ -45,6 +45,7 @@ def test_build_selector_specs_names_are_stable() -> None:
         fixed_gammas=[0.0, 0.5, 1.0],
         include_pair_consistency=True,
         include_support_gate=True,
+        include_trajectory_pair_consistency=True,
     )
 
     assert [spec["selector"] for spec in specs] == [
@@ -53,6 +54,7 @@ def test_build_selector_specs_names_are_stable() -> None:
         "spectra_cov_gamma100",
         "spectra_cov_pair_consistency",
         "spectra_cov_support_gate",
+        "spectra_cov_trajectory_pair_consistency",
     ]
 
 
@@ -65,6 +67,12 @@ def test_run_sweep_writes_distinct_outputs_and_manifest(
     _write_config(config)
     output_root = tmp_path / "outputs"
     calls = []
+
+    def fake_prepare(namespace: argparse.Namespace) -> dict:
+        return {
+            "task": namespace.task,
+            "preparation_seconds": 0.7,
+        }
 
     def fake_select(namespace: argparse.Namespace) -> dict:
         calls.append(namespace)
@@ -88,6 +96,7 @@ def test_run_sweep_writes_distinct_outputs_and_manifest(
         }
 
     monkeypatch.setattr(sweep, "select_calibrated", fake_select)
+    monkeypatch.setattr(sweep, "prepare_calibrated_context", fake_prepare)
     args = argparse.Namespace(
         candidate_root=candidate_root,
         calibration_root=calibration_root,
@@ -100,6 +109,7 @@ def test_run_sweep_writes_distinct_outputs_and_manifest(
         fixed_gammas=[0.0, 0.5],
         include_pair_consistency=True,
         include_support_gate=False,
+        include_trajectory_pair_consistency=False,
         support_rmse_threshold=None,
     )
 
@@ -125,3 +135,17 @@ def test_run_sweep_writes_distinct_outputs_and_manifest(
     assert written["protocol_violation_count"] == 0
     assert len(written["outputs"]) == 3
     assert manifest["outputs"][1]["fixed_covariance_gamma"] == 0.5
+    assert manifest["task_preparation"] == [
+        {
+            "task": "A_to_B",
+            "preparation_seconds": 0.7,
+            "amortized_per_selector_seconds": 0.7 / 3.0,
+        }
+    ]
+    written_selector = json.loads(
+        (output_root / "A_to_B" / "spectra_cov_gamma000.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert written_selector["sweep_runtime_accounting"]["shared_task_context"] is True
+    assert written_selector["selector_runtime_seconds"] == 0.01 + 0.7 / 3.0

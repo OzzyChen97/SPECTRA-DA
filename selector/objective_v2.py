@@ -41,6 +41,7 @@ SHORTLIST_FUSION_MODES = {
     "transfer_shortlist_spectra_rerank",
     "spectra_shortlist_transfer_rerank",
     "shortlist_consensus_rerank",
+    "trajectory_shortlist_consensus_rerank",
 }
 SOURCE_SIM_CVAR_KEYS = (
     "source_sim_leave_one_shift_family_cvar",

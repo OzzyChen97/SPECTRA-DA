@@ -84,14 +84,22 @@ python selector/run_covariance_gamma_sweep.py \
   --task Citationv1_to_ACMv9 \
   --task USA_to_BRAZIL \
   --task BRAZIL_to_USA \
-  --fixed-gammas 0,0.5,1 \
-  --include-pair-consistency
+  --fixed-gammas 0,0.25,0.5,0.75,1 \
+  --include-pair-consistency \
+  --include-support-gate
 ```
 
 The runner writes `covariance_gamma_sweep_manifest.json` with the emitted
 selector names, shrinkage modes, per-selector runtimes, and aggregated protocol
 counters. It remains an open-development diagnostic; it is not a sealed-final
-selection mechanism.
+selection mechanism. The runner prepares candidate records, calibration, and
+spectral disagreement once per task and amortizes that cost across variants.
+Complete-pair consistency uses the exact analytic projection for
+`(M-2)I + 11^T`; `--include-trajectory-pair-consistency` instead assigns equal
+total mass to each `(method, config, seed)` trajectory pair. The current
+reports show that neither label-free consistency residual tracks task-wise
+oracle gamma, so these modes are retained as diagnostics rather than promoted
+selectors.
 
 The deployment selector optionally accepts a frozen source-only sidecar
 manifest. Every sidecar is hash-checked against the base candidate ordering,
@@ -221,6 +229,29 @@ Its four-task score maps exactly match the previously misnamed repaired-grid
 winner. The true SPECTRA-Cal shortlist and Agreement/SPECTRA union controls are
 stored in the same output root and evaluated in
 `results/gda_select/open_dev/shortlist_attribution_objective_v2.json`.
+
+`selection_error_decomposition.py` reads the already exported open-dev truth
+report and exactly decomposes selected regret into method/within-method and
+trajectory/checkpoint components without importing the sealed evaluator:
+
+```bash
+python selector/selection_error_decomposition.py \
+  --dev-truth-report results/gda_select/open_dev/gate1_candidate_truth.json \
+  --selection-root results/gda_select/submissions/final_multi_selector/selections \
+  --selection-root results/gda_select/selections/shortlist_attribution \
+  --selector transfer_score \
+  --selector agreement_reference \
+  --selector agreement20_transfer_rerank \
+  --output results/gda_select/open_dev/selection_error_decomposition.json
+```
+
+`trajectory_shortlist_selection.py` implements the registered q=3 structural
+control. It scores every method/config/seed trajectory by the mean of its best
+three checkpoint ranks, selects the top trajectory fraction, expands those
+trajectories, and applies a label-free checkpoint reranker. The first
+Agreement, SPECTRA-Cal, and trajectory-midrank controls are stored under
+`results/gda_select/selections/trajectory_shortlist`; all underperform the
+candidate-level Agreement shortlist and are not promotion candidates.
 
 `core_ablation.py` evaluates the frozen four-task source-simulated folds under
 equal-information controls. It verifies global/spectral linear equivalence and
