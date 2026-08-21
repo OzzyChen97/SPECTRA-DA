@@ -1,0 +1,132 @@
+{
+  "candidate_metrics": {
+    "loto_mean_normalized_regret": 0.08750696889597581,
+    "mean_normalized_regret": 0.08750696889597581,
+    "mean_selected_micro_f1": 0.6234268353054324,
+    "oracle_trajectory_recall_at_20pct": 1.0,
+    "runtime_evidence_seconds": 449.256,
+    "source_sim_family_out_cvar_status": "not_evaluated",
+    "task_count": 4,
+    "task_noninferiority_count_vs_transfer": 2,
+    "worst_normalized_regret": 0.2238805970144876
+  },
+  "candidate_selector": "agreement20_transfer_rerank",
+  "controls": {
+    "agreement20_trajectory_ts_k1": {
+      "mean_normalized_regret": 0.08750696889597581,
+      "mean_oracle_trajectory_recall_at_20pct": 1.0,
+      "mean_selected_micro_f1": 0.6234268353054324,
+      "worst_normalized_regret": 0.2238805970144876
+    },
+    "agreement20_trajectory_ts_k2": {
+      "mean_normalized_regret": 0.20184498804107584,
+      "mean_oracle_trajectory_recall_at_20pct": 1.0,
+      "mean_selected_micro_f1": 0.592410576137222,
+      "worst_normalized_regret": 0.4385382059783325
+    },
+    "agreement20_trajectory_ts_k3": {
+      "mean_normalized_regret": 0.2951285701304457,
+      "mean_oracle_trajectory_recall_at_20pct": 1.0,
+      "mean_selected_micro_f1": 0.5447006524731,
+      "worst_normalized_regret": 0.597014925371967
+    },
+    "agreement20_transfer_rerank": {
+      "mean_normalized_regret": 0.08750696889597581,
+      "mean_oracle_trajectory_recall_at_20pct": 1.0,
+      "mean_selected_micro_f1": 0.6234268353054324,
+      "worst_normalized_regret": 0.2238805970144876
+    },
+    "agreement_gamma025_midrank20_transfer_rerank": {
+      "mean_normalized_regret": 0.14191679474758695,
+      "mean_oracle_trajectory_recall_at_20pct": 0.75,
+      "mean_selected_micro_f1": 0.601694591479994,
+      "worst_normalized_regret": 0.3432835820888812
+    },
+    "agreement_gamma025_union10_transfer_rerank": {
+      "mean_normalized_regret": 0.15769752564453446,
+      "mean_oracle_trajectory_recall_at_20pct": 0.75,
+      "mean_selected_micro_f1": 0.5977029948413386,
+      "worst_normalized_regret": 0.3432835820888812
+    },
+    "agreement_lomo20_transfer_rerank": {
+      "mean_normalized_regret": 0.14150025430529728,
+      "mean_oracle_trajectory_recall_at_20pct": 1.0,
+      "mean_selected_micro_f1": 0.6020023698795463,
+      "worst_normalized_regret": 0.3432835820888812
+    },
+    "agreement_loto20_transfer_rerank": {
+      "mean_normalized_regret": 0.11362637188099936,
+      "mean_oracle_trajectory_recall_at_20pct": 1.0,
+      "mean_selected_micro_f1": 0.6100680566794782,
+      "worst_normalized_regret": 0.3283582089545818
+    },
+    "agreement_method_balanced27_ts": {
+      "mean_normalized_regret": 0.12796484948035297,
+      "mean_oracle_trajectory_recall_at_20pct": 1.0,
+      "mean_selected_micro_f1": 0.617315769084072,
+      "worst_normalized_regret": 0.2238805970144876
+    },
+    "agreement_trajectory_floor1_ts": {
+      "mean_normalized_regret": 0.11899397110024951,
+      "mean_oracle_trajectory_recall_at_20pct": 1.0,
+      "mean_selected_micro_f1": 0.6065424156538372,
+      "worst_normalized_regret": 0.3283582089545818
+    },
+    "agreement_trajectory_floor2_ts": {
+      "mean_normalized_regret": 0.15018353821466707,
+      "mean_oracle_trajectory_recall_at_20pct": 1.0,
+      "mean_selected_micro_f1": 0.6054053959604637,
+      "worst_normalized_regret": 0.22923588039776446
+    },
+    "agreement_trajectory_floor3_ts": {
+      "mean_normalized_regret": 0.12934741291561436,
+      "mean_oracle_trajectory_recall_at_20pct": 1.0,
+      "mean_selected_micro_f1": 0.6164076494259525,
+      "worst_normalized_regret": 0.2238805970144876
+    },
+    "gamma025_20_transfer_rerank": {
+      "mean_normalized_regret": 0.21456227476803133,
+      "mean_oracle_trajectory_recall_at_20pct": 0.5,
+      "mean_selected_micro_f1": 0.5684894338052584,
+      "worst_normalized_regret": 0.5671641791033686
+    },
+    "stable_agreement20_transfer_rerank": {
+      "mean_normalized_regret": 0.11362637188099936,
+      "mean_oracle_trajectory_recall_at_20pct": 1.0,
+      "mean_selected_micro_f1": 0.6100680566794782,
+      "worst_normalized_regret": 0.3283582089545818
+    },
+    "transfer_score": {
+      "mean_normalized_regret": 0.21680687052186795,
+      "mean_oracle_trajectory_recall_at_20pct": 0.75,
+      "mean_selected_micro_f1": 0.575663895006123,
+      "worst_normalized_regret": 0.6417910447748646
+    }
+  },
+  "created_at": "2026-08-21T04:16:20.608893+00:00",
+  "decision": "stop_no_freeze_no_sealed_evaluation",
+  "failed_checks": [
+    "source_sim_family_out_cvar_degradation_le_5pct",
+    "task_noninferiority_at_least_3_of_4",
+    "worst_normalized_regret_le_0_20"
+  ],
+  "freeze_allowed": false,
+  "label_access_count": 0,
+  "promotion_checks": {
+    "label_access_count_zero": true,
+    "loto_mean_normalized_regret_le_0_15": true,
+    "mean_normalized_regret_le_0_10": true,
+    "oracle_trajectory_recall_at_20pct_ge_0_75": true,
+    "protocol_violation_count_zero": true,
+    "runtime_lt_480_seconds": true,
+    "source_sim_family_out_cvar_degradation_le_5pct": false,
+    "task_noninferiority_at_least_3_of_4": false,
+    "worst_normalized_regret_le_0_20": false
+  },
+  "protocol_violation_count": 0,
+  "router_heldout_noninferior_expert_count": 2,
+  "router_qualification_pass": false,
+  "schema_version": 1,
+  "sealed_final_evaluation_allowed": false,
+  "transfer_selector": "transfer_score"
+}

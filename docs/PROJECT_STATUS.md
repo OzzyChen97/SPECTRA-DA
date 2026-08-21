@@ -121,6 +121,29 @@ when the repository contains verifiable artifacts or commands that prove it.
   `0.295129`. All Stage-C outputs report zero label access and zero protocol
   violations. These controls are recorded as no-go results; no selector is
   frozen and no sealed-final evaluation has been run.
+- Stage-C fixed-budget coverage floors are complete. Every-trajectory top-1,
+  top-2, top-3 and every-method top-27 shortlists reach mean NRegret
+  `0.118994`, `0.150184`, `0.129347`, and `0.127965`, respectively. All are
+  worse than candidate-level Agreement@20% -> Transfer Score (`0.087507`).
+- Fixed gamma `.25` has also been exhausted as a shortlist-only auxiliary
+  signal. Gamma-only, Agreement/gamma midrank, and their top-10% union reach
+  `0.214562`, `0.141917`, and `0.157698` mean NRegret. None is eligible for
+  promotion.
+- Bootstrap stability is implemented at
+  `selector/bootstrap_stability_selection.py` and
+  `selector/bootstrap_transfer_score.py`. Both use 32 deterministic 80%-node
+  subsamples. Exact Transfer Score bootstrap reconstruction error is zero and
+  the optimized four-task runtime is `156.73s`. Stable Agreement reaches
+  `0.113626` mean and `0.328358` worst NRegret. The parameter-free trajectory-
+  stability router chooses the non-inferior expert on only `2/4` open-
+  development tasks under its per-task audit, below the required `3/4`
+  qualification.
+- The authoritative Stage-C decision is stored in
+  `results/gda_select/open_dev/stage_c_promotion_audit.json`. Agreement@20% ->
+  Transfer Score passes mean, LOTO mean, trajectory recall, runtime, and
+  protocol checks, but fails worst NRegret (`0.223881 > 0.20`), task
+  non-inferiority (`2/4 < 3/4`), and lacks a passing source-sim family-out CVaR
+  artifact. The recorded decision is `stop_no_freeze_no_sealed_evaluation`.
 - The v3 AutoSOTA objective scaffold is available at
   `selector/objective_v2.py` with configuration in
   `configs/v3_search_space.yaml`. It consumes an exported open-development
@@ -331,81 +354,25 @@ torch-importing tests should use Python 3.12 in this container.
   protocol violations and remains open-development evidence only. Neither
   consistency rule is eligible for promotion; see the completed-result bullets
   above and `docs/RESULTS.md`.
-- The final one-time 12 held-out transfer sealed evaluation is still pending.
-  It should not be run until exactly one "ours" configuration is frozen from
-  open-development evidence. Until that evaluator runs once on a frozen
-  submission bundle, the paper must not claim state-of-the-art real-target
-  selection.
+- The final 12 held-out transfers remain sealed by decision, not merely
+  pending. Stage-C exhausted the pre-registered five structural iterations and
+  did not produce a selector that passes all promotion checks. Do not freeze a
+  selector, package an "ours" submission, or run the final evaluator from the
+  current four-task evidence.
 
-## Required next commands before sealed evaluation
+## Allowed next research paths
 
-Re-run only the repaired open-development/reliable-selection path, then freeze
-one "ours" selector before any sealed-final call:
+The current protocol permits only two scientifically defensible continuations:
 
-```bash
-python selector/run_reliable_grid.py \
-  --selection-root /mnt/workspace/Wilson/AutoSOTA/baseline/ADAlign/results/gda_select/selections/gda_select_v1 \
-  --spectra-root /mnt/workspace/Wilson/AutoSOTA/baseline/ADAlign/results/gda_select/selections/gda_select_v1 \
-  --transfer-root /mnt/workspace/Wilson/AutoSOTA/baseline/ADAlign/results/gda_select/selections/gda_select_v1 \
-  --output-root results/gda_select/selections/reliable_grid_repaired \
-  --spectra-selector agreement_reference \
-  --transfer-selector transfer_score \
-  --uncertainty-weights 0 \
-  --transfer-score-weights 0,0.5,1 \
-  --covariance-shrinkages 0 \
-  --calibration-temperatures 1 \
-  --fusion-modes rank_fusion,transfer_shortlist_spectra_rerank,spectra_shortlist_transfer_rerank \
-  --shortlist-fractions 0.2
+1. Open one Blog and one Twitch transfer as additional development tasks,
+   reduce the final sealed set from 12 to 10, and pre-register a new
+   cross-family selection audit before further method changes.
+2. Keep all 12 transfers sealed, stop selector development, and position the
+   paper around the benchmark/protocol, spectral covariance recovery theory,
+   and the negative finding that real-shift trust transport remains unresolved.
 
-python selector/objective_v2.py \
-  --dev-truth-report results/gda_select/open_dev/gate1_candidate_truth.json \
-  --selection-root /mnt/workspace/Wilson/AutoSOTA/baseline/ADAlign/results/gda_select/selections/gda_select_v1 \
-  --selection-root results/gda_select/selections/reliable_grid_repaired \
-  --selector transfer_score \
-  --selector agreement_reference \
-  --selector <candidate_selector_from_repaired_grid> \
-  --objective-selector <candidate_selector_from_repaired_grid> \
-  --transfer-selector transfer_score \
-  --expected-candidate-count 675 \
-  --runtime-budget-seconds 480 \
-  --output results/gda_select/open_dev/repaired_reliable_objective_v2.json
-```
-
-Check v3 readiness before freezing or submitting:
-
-```bash
-python scripts/check_v3_readiness.py \
-  --open-dev-truth results/gda_select/open_dev/gate1_candidate_truth.json \
-  --open-dev-selection-root /mnt/workspace/Wilson/AutoSOTA/baseline/ADAlign/results/gda_select/selections/gda_select_v1 \
-  --open-dev-selection-root results/gda_select/selections/reliable_grid_repaired \
-  --final-submission-manifest results/gda_select/submissions/final_multi_selector/submission_manifest.json \
-  --required-open-dev-selector transfer_score \
-  --required-open-dev-selector <one_preselected_open_dev_winner> \
-  --required-final-selector transfer_score \
-  --min-final-selector-count 2
-```
-
-Freeze one pre-registered selector before sealed evaluation:
-
-```bash
-python selector/freeze_reliable_selector.py \
-  --grid-root results/gda_select/selections/reliable_grid_repaired \
-  --selector <one_preselected_open_dev_winner> \
-  --output-root results/gda_select/selections/reliable_frozen
-```
-
-Package a frozen selector root for the external evaluator:
-
-```bash
-python scripts/package_external_evaluation.py \
-  --candidate-root trajectory_bank/candidates/gda_select_v1 \
-  --selection-root results/gda_select/selections/baselines \
-  --selection-root results/gda_select/selections/reliable_frozen \
-  --output-root results/gda_select/submissions/final_multi_selector \
-  --archive results/gda_select/submissions/final_multi_selector.tar.gz \
-  --require-selector transfer_score \
-  --min-selector-count 2
-```
+The current repository follows option 2 until an explicit protocol change is
+approved. The paper must not claim a frozen real-target SOTA selector.
 
 Rebuild the paper PDF with the repository-pinned Tectonic binary:
 

@@ -42,6 +42,10 @@ SHORTLIST_FUSION_MODES = {
     "spectra_shortlist_transfer_rerank",
     "shortlist_consensus_rerank",
     "trajectory_shortlist_consensus_rerank",
+    "trajectory_aware_shortlist_rerank",
+    "coverage_floor_shortlist_rerank",
+    "fixed_auxiliary_shortlist_rerank",
+    "bootstrap_stable_shortlist_rerank",
 }
 SOURCE_SIM_CVAR_KEYS = (
     "source_sim_leave_one_shift_family_cvar",
@@ -339,10 +343,20 @@ def _pct_key(fraction: float) -> str:
     return f"{int(round(100.0 * fraction))}pct"
 
 
+def _candidate_trajectory(candidate_id: str) -> tuple[str, ...]:
+    parts = str(candidate_id).split("__")
+    if len(parts) >= 4:
+        seed = next((part for part in parts if part.startswith("seed-")), None)
+        if seed is not None:
+            return (parts[1], parts[2], seed)
+    return (str(candidate_id),)
+
+
 def shortlist_recall_metrics(
     predicted_risks: np.ndarray,
     true_risks: np.ndarray,
     *,
+    candidate_ids: list[str] | None = None,
     fractions: tuple[float, ...] = SHORTLIST_RECALL_FRACTIONS,
 ) -> dict[str, float]:
     if predicted_risks.shape != true_risks.shape or predicted_risks.ndim != 1:
@@ -350,8 +364,13 @@ def shortlist_recall_metrics(
     model_count = predicted_risks.size
     if model_count == 0:
         raise ValueError("shortlist recall requires at least one candidate")
+    if candidate_ids is None:
+        candidate_ids = [str(index) for index in range(model_count)]
+    if len(candidate_ids) != model_count:
+        raise ValueError("candidate_ids must align with shortlist recall vectors")
     true_order = np.argsort(true_risks, kind="stable")
     oracle_index = int(true_order[0])
+    oracle_trajectory = _candidate_trajectory(candidate_ids[oracle_index])
     top5_count = max(1, math.ceil(0.05 * model_count))
     top5_boundary = float(true_risks[int(true_order[top5_count - 1])])
     true_top5 = {
@@ -370,6 +389,12 @@ def shortlist_recall_metrics(
         )
         key = _pct_key(fraction)
         metrics[f"oracle_recall_at_{key}"] = float(oracle_index in predicted_top)
+        metrics[f"oracle_trajectory_recall_at_{key}"] = float(
+            any(
+                _candidate_trajectory(candidate_ids[index]) == oracle_trajectory
+                for index in predicted_top
+            )
+        )
         metrics[f"top5_recall_at_{key}"] = float(len(predicted_top & true_top5) / len(true_top5))
         metrics[f"predicted_shortlist_size_at_{key}"] = float(len(predicted_top))
     return metrics
@@ -434,7 +459,13 @@ def evaluate_selection(selection: dict[str, Any], truth: dict[str, Any]) -> dict
         "fusion_mode": fusion_mode,
     }
     report.update(score_tie_diagnostics(selection, candidate_ids))
-    report.update(shortlist_recall_metrics(predicted_risks, true_risks))
+    report.update(
+        shortlist_recall_metrics(
+            predicted_risks,
+            true_risks,
+            candidate_ids=candidate_ids,
+        )
+    )
     return report
 
 
@@ -484,6 +515,15 @@ def aggregate_selector(reports: list[dict[str, Any]]) -> dict[str, Any]:
         **{
             f"mean_oracle_recall_at_{_pct_key(fraction)}": finite_mean(
                 [float(report[f"oracle_recall_at_{_pct_key(fraction)}"]) for report in reports]
+            )
+            for fraction in SHORTLIST_RECALL_FRACTIONS
+        },
+        **{
+            f"mean_oracle_trajectory_recall_at_{_pct_key(fraction)}": finite_mean(
+                [
+                    float(report[f"oracle_trajectory_recall_at_{_pct_key(fraction)}"])
+                    for report in reports
+                ]
             )
             for fraction in SHORTLIST_RECALL_FRACTIONS
         },
@@ -679,6 +719,11 @@ def add_objective_guardrails(
                     float(candidate["mean_oracle_recall_at_20pct"]) >= 0.75
                 ),
                 "oracle_recall_20pct_absolute_min": 0.75,
+                "oracle_trajectory_recall_20pct_absolute_guardrail_pass": (
+                    float(candidate["mean_oracle_trajectory_recall_at_20pct"])
+                    >= 0.75
+                ),
+                "oracle_trajectory_recall_20pct_absolute_min": 0.75,
                 "localized_gain_share_vs_transfer": localized_gain_share(
                     candidate["tasks"],
                     transfer["tasks"],
@@ -724,7 +769,10 @@ def add_objective_guardrails(
         )
         and (
             not shortlist_guardrail_required
-            or guardrails.get("oracle_recall_20pct_absolute_guardrail_pass") is not False
+            or guardrails.get(
+                "oracle_trajectory_recall_20pct_absolute_guardrail_pass"
+            )
+            is not False
         )
         and guardrails.get("worst_task_guardrail_pass") is not False
     )

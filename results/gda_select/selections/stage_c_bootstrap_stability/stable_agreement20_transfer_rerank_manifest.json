@@ -1,0 +1,47 @@
+{
+  "base_seed": 20260821,
+  "bootstrap_count": 32,
+  "budget": 135,
+  "candidate_root": "/mnt/workspace/Wilson/AutoSOTA/baseline/ADAlign/trajectory_bank/candidates/gda_select_v1",
+  "contains_target_labels": false,
+  "created_at": "2026-08-21T04:02:38.383330+00:00",
+  "label_access_count": 0,
+  "node_fraction": 0.8,
+  "outputs": [
+    {
+      "output": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/selections/stage_c_bootstrap_stability/ACMv9_to_Citationv1/stable_agreement20_transfer_rerank.json",
+      "seed": 232169582,
+      "selector_runtime_seconds": 11.462031761184335,
+      "task": "ACMv9_to_Citationv1"
+    },
+    {
+      "output": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/selections/stage_c_bootstrap_stability/Citationv1_to_ACMv9/stable_agreement20_transfer_rerank.json",
+      "seed": 4101773836,
+      "selector_runtime_seconds": 12.008080675965175,
+      "task": "Citationv1_to_ACMv9"
+    },
+    {
+      "output": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/selections/stage_c_bootstrap_stability/USA_to_BRAZIL/stable_agreement20_transfer_rerank.json",
+      "seed": 2953644814,
+      "selector_runtime_seconds": 0.8982744212262332,
+      "task": "USA_to_BRAZIL"
+    },
+    {
+      "output": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/selections/stage_c_bootstrap_stability/BRAZIL_to_USA/stable_agreement20_transfer_rerank.json",
+      "seed": 2032700376,
+      "selector_runtime_seconds": 1.9696626560762525,
+      "task": "BRAZIL_to_USA"
+    }
+  ],
+  "protocol_violation_count": 0,
+  "rerank_root": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/submissions/final_multi_selector/selections",
+  "rerank_selector": "transfer_score",
+  "schema_version": 1,
+  "selector": "stable_agreement20_transfer_rerank",
+  "tasks": [
+    "ACMv9_to_Citationv1",
+    "Citationv1_to_ACMv9",
+    "USA_to_BRAZIL",
+    "BRAZIL_to_USA"
+  ]
+}

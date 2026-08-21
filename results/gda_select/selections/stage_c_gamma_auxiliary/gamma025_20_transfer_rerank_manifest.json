@@ -1,0 +1,25 @@
+{
+  "budget": 135,
+  "contains_target_labels": false,
+  "created_at": "2026-08-21T03:29:14.000030+00:00",
+  "label_access_count": 0,
+  "mode": "single",
+  "owner_fraction": 0.1,
+  "owner_roots": [
+    "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/selections/covariance_gamma_sweep"
+  ],
+  "owner_selectors": [
+    "spectra_cov_gamma025"
+  ],
+  "protocol_violation_count": 0,
+  "rerank_root": "/mnt/workspace/Wilson/AutoSOTA/spectra-da-public/results/gda_select/submissions/final_multi_selector/selections",
+  "rerank_selector": "transfer_score",
+  "schema_version": 1,
+  "selector": "gamma025_20_transfer_rerank",
+  "tasks": [
+    "ACMv9_to_Citationv1",
+    "Citationv1_to_ACMv9",
+    "USA_to_BRAZIL",
+    "BRAZIL_to_USA"
+  ]
+}

@@ -40,6 +40,14 @@ gap is trajectory-level, while the first explicit q=3 trajectory-screening
 control is worse than candidate-level screening. These are recorded as no-go
 results, not as post-hoc selector choices.
 
+Stage-C is now complete. Fixed-budget trajectory/method coverage floors,
+fixed `gamma=.25` auxiliary shortlists, bootstrap-stable Agreement, and the
+pre-registered trajectory-stability router all fail promotion. The strongest
+selector remains Agreement@20% -> Transfer Score (`0.087507` mean NRegret),
+but its worst task is `0.223881` and it is non-inferior to Transfer Score on
+only `2/4` tasks. The consolidated audit therefore records
+`stop_no_freeze_no_sealed_evaluation`; the final 12 tasks remain sealed.
+
 ## Final controlled result
 
 | Metric | Value |

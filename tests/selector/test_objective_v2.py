@@ -6,7 +6,14 @@ from pathlib import Path
 
 import pytest
 
-from selector.objective_v2 import discover_selection_paths, load_open_dev_truth, run
+from selector.objective_v2 import (
+    discover_selection_paths,
+    load_open_dev_truth,
+    run,
+    shortlist_recall_metrics,
+)
+
+import numpy as np
 
 
 def _write_json(path: Path, document: dict) -> None:
@@ -111,6 +118,27 @@ def test_objective_v2_evaluates_open_dev_rank_fusion_inputs(tmp_path: Path) -> N
     assert result["guardrails"]["worst_task_guardrail_pass"]
     assert result["guardrails"]["source_sim_cvar_guardrail_pass"] is None
     assert result["guardrails"]["gate_b_pass"]
+
+
+def test_shortlist_recall_tracks_oracle_trajectory_separately() -> None:
+    candidate_ids = [
+        "A_to_B__M1__c1__seed-1__epoch-0010",
+        "A_to_B__M1__c1__seed-1__epoch-0020",
+        "A_to_B__M2__c2__seed-2__epoch-0010",
+        "A_to_B__M3__c3__seed-3__epoch-0010",
+    ]
+    true_risks = np.asarray([0.1, 0.2, 0.3, 0.4])
+    predicted_risks = np.asarray([1.0, 0.0, 2.0, 3.0])
+
+    metrics = shortlist_recall_metrics(
+        predicted_risks,
+        true_risks,
+        candidate_ids=candidate_ids,
+        fractions=(0.25,),
+    )
+
+    assert metrics["oracle_recall_at_25pct"] == 0.0
+    assert metrics["oracle_trajectory_recall_at_25pct"] == 1.0
 
 
 def test_discover_selection_paths_searches_across_roots(tmp_path: Path) -> None:

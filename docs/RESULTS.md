@@ -249,9 +249,89 @@ evidence with `k=2` or `k=3` is harmful:
 | k=3 | 0.295129 | 0.597015 | 0.544701 |
 
 The Stage-C evidence rejects both self-vote removal and naive repeated-TS
-trajectory evidence as solutions. The next experiment should target the
-shortlist's top-of-ranking checkpoint calibration directly rather than add
-trajectory coverage or average more checkpoints.
+trajectory evidence as solutions.
+
+### Fixed-budget coverage floors
+
+`coverage_floor_selection.py` keeps the shortlist budget exactly 135 while
+reserving Agreement-ranked candidates for every trajectory or method. Unlike
+the failed whole-trajectory expansion, it never restores unfiltered
+checkpoints:
+
+| Coverage-floor control | Mean NRegret | Worst NRegret | Mean selected Micro-F1 |
+|---|---:|---:|---:|
+| Every trajectory top-1 + global fill | 0.118994 | 0.328358 | 0.606542 |
+| Every trajectory top-2 + global fill | 0.150184 | 0.229236 | 0.605405 |
+| Every trajectory top-3 | 0.129347 | 0.223881 | 0.616408 |
+| Every method top-27 | 0.127965 | 0.223881 | 0.617316 |
+| Candidate Agreement@20% -> TS | **0.087507** | **0.223881** | **0.623427** |
+
+Coverage is not the missing signal: the corrected objective reports oracle
+trajectory recall@20% of `1.00` for the current best shortlist. The earlier
+`0.50` figure is exact-candidate oracle recall, not trajectory recall.
+
+### Fixed gamma=.25 auxiliary shortlists
+
+The registered auxiliary controls use exact 135-candidate budgets and leave
+Transfer Score unchanged:
+
+| Auxiliary shortlist -> TS | Mean NRegret | Worst NRegret | Mean selected Micro-F1 |
+|---|---:|---:|---:|
+| gamma=.25 top-20% | 0.214562 | 0.567164 | 0.568489 |
+| Agreement/gamma=.25 percentile midrank | 0.141917 | 0.343284 | 0.601695 |
+| Agreement top-10% union gamma=.25 top-10% | 0.157698 | 0.343284 | 0.597703 |
+
+The union is filled to 135 by the two-signal mean percentile midrank when its
+raw union is smaller. No gamma auxiliary control approaches the unmodified
+Agreement shortlist, so gamma=.25 provides no deployable incremental benefit.
+
+### Bootstrap stability and router audit
+
+`bootstrap_stability_selection.py` performs 32 deterministic 80%-node
+subsamples. Its stable Agreement shortlist reaches `0.113626` mean NRegret and
+`0.328358` worst NRegret, worse than the original shortlist. The hard
+USA->BRAZIL cell has the lowest Agreement candidate-shortlist Jaccard
+(`0.8422`) and trajectory-set Jaccard (`0.7439`).
+
+`bootstrap_transfer_score.py` exactly recomputes the Hopkins and normalized
+information-maximization terms on the same subsamples while holding the
+classifier-geometry term fixed. Full Transfer Score reconstruction error is
+exactly zero for every candidate. With numerical-library threads constrained
+to one per 16 candidate workers, all four tasks finish in `156.73s`, below the
+480-second budget.
+
+The pre-registered router chooses Agreement@20% -> TS only when its
+trajectory-set shortlist Jaccard exceeds Transfer Score's. Transfer Score is
+more stable on all four tasks, so the router always falls back to Transfer
+Score and selects the non-inferior expert on only `2/4` open-development tasks
+under the per-task audit. It therefore fails the required `3/4` qualification
+and is rejected before use.
+
+### Stage-C promotion decision
+
+`results/gda_select/open_dev/stage_c_promotion_audit.json` consolidates all
+Stage-C controls. The best selector remains Agreement@20% -> Transfer Score:
+
+| Registered promotion check | Evidence | Pass |
+|---|---:|:---:|
+| Mean NRegret <= 0.10 | 0.087507 | yes |
+| Worst NRegret <= 0.20 | 0.223881 | **no** |
+| Non-inferior to TS on at least 3/4 tasks | 2/4 | **no** |
+| LOTO mean NRegret <= 0.15 | 0.087507 | yes |
+| Oracle trajectory recall@20% >= 0.75 | 1.00 | yes |
+| Source-sim family-out CVaR degradation <=5% | not evaluated for this selector | **no** |
+| Runtime <480s | 449.26s conservative full-sweep evidence | yes |
+| Label/protocol counts | 0 / 0 | yes |
+
+The audit decision is:
+
+```text
+stop_no_freeze_no_sealed_evaluation
+```
+
+No Stage-C selector is frozen, no stability router is promoted, and the final
+12 transfer labels remain sealed. Further four-task tuning would be
+leaderboard overfitting rather than evidence of cross-family reliability.
 
 ## Final metrics
 

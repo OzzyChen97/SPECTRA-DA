@@ -253,7 +253,7 @@ Agreement, SPECTRA-Cal, and trajectory-midrank controls are stored under
 `results/gda_select/selections/trajectory_shortlist`; all underperform the
 candidate-level Agreement shortlist and are not promotion candidates.
 
-Stage-C adds three structural diagnostics while preserving the sealed-label
+Stage-C adds structural diagnostics while preserving the sealed-label
 boundary:
 
 - `shortlist_error_decomposition.py` separates represented-trajectory
@@ -264,11 +264,22 @@ boundary:
 - `trajectory_aware_rerank.py` keeps the candidate shortlist fixed, chooses a
   trajectory using the mean of its best-k reranker ranks, and then chooses the
   best checkpoint within that trajectory.
+- `coverage_floor_selection.py` reserves fixed candidate slots for every
+  trajectory or method without expanding whole trajectories.
+- `auxiliary_shortlist_selection.py` implements the three fixed gamma=.25
+  auxiliary shortlist controls under an exact 135-candidate budget.
+- `bootstrap_stability_selection.py` and `bootstrap_transfer_score.py`
+  implement exact 32-resample Agreement and Transfer Score stability audits.
+- `stability_router_diagnostic.py` enforces the 3/4 held-out expert-choice
+  qualification, and `stage_c_promotion_audit.py` blocks freezing whenever any
+  registered guard fails.
 
 The frozen four-task Stage-C reports are under
 `results/gda_select/open_dev/stage_c_*.json`. LOTO/LOMO Agreement and k=2/3
 trajectory-aware Transfer Score are all no-go controls; k=1 exactly reproduces
-the current Agreement@20% -> Transfer Score selector.
+the current Agreement@20% -> Transfer Score selector. Coverage floors,
+gamma=.25 auxiliaries, stable Agreement, and the stability router also fail.
+The final audit records `stop_no_freeze_no_sealed_evaluation`.
 
 `core_ablation.py` evaluates the frozen four-task source-simulated folds under
 equal-information controls. It verifies global/spectral linear equivalence and
